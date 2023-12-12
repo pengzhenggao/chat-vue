@@ -1,0 +1,428 @@
+<template>
+    <div class="WeChat">
+        <el-container style="height: 100%; border: 1px solid #eee">
+            <el-aside class="sidebar"  style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
+                <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
+                    }">
+                    <div class="header-R">
+                        <el-input
+                                ref="input"
+                                prefix-icon="el-icon-search"
+                                class="custom-input "
+                                style="width: 85%;"
+                                v-model="keyword"
+                                placeholder="搜索" size="mini"
+                                @input="remoteSearch"
+                                @focus="focusInit"
+                                @blur="isLoseFocus">
+                            <span @click.prevent="cancelFocus" v-if="clearFlag" slot="suffix" class="clear">
+                                <i class="el-icon-close"></i>
+                            </span>
+                        </el-input>
+                        <el-dropdown placement="bottom-start" trigger="click" @command="handleCommand">
+                            <el-button><span style="font-weight: bold" class="el-icon-setting"></span></el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="addFriend" icon="el-icon-s-custom">添加好友</el-dropdown-item>
+                                <el-dropdown-item command="addGroup" icon="el-icon-notebook-2">添加分组</el-dropdown-item>
+                                <el-dropdown-item command="buildGroupChat" icon="el-icon-s-promotion">发起群聊
+                                </el-dropdown-item>
+                                <el-dropdown-item command="tagFriends" icon="el-icon-refresh">
+                                    <template v-if="showSwitching==='0'">
+                                        <span @click.prevent="switchShow('1')">全部展示</span>
+                                    </template>
+                                    <template v-if="showSwitching==='1'">
+                                        <span @click.prevent="switchShow('0')">分组展示</span>
+                                    </template>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                </el-header>
+                <AsideFriend @currentFriend="currentFriend" @completeSearch="completeSearch" ref="asideFriend"/>
+            </el-aside>
+            <el-container v-show="this.item.friendshipId">
+                <el-header height="60px" class="my-header"
+                           style="background-color:#ffffff;border-bottom: 1px solid #e1e1e1">
+                    <div style="display: flex;flex-direction: row;align-items: center;position: relative">
+                        <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
+                        </div>
+                        <div class="callFriend">
+                            <el-tooltip content="通知好友上线" placement="bottom" effect="light" v-show="item.type===1">
+                                <span class="bell" @click.prevent="notifyFriend(item.friendshipId)"><i
+                                        class="el-icon-bell"></i></span>
+                            </el-tooltip>
+
+                            <el-tooltip :disabled="true" placement="left" effect="light" v-show="item.type===0">
+                                <el-popover
+                                        placement="bottom"
+                                        width="245"
+                                        trigger="click"
+                                >
+                                    <span class="bell" slot="reference"
+                                          @click.prevent="getGroupMembers(item.friendshipId)"><i
+                                            class="el-icon-more"></i></span>
+                                    <el-scrollbar>
+                                    <ChatGroupMember :total="this.total" ref="chatGroupMember" :loadingMore="this.loadingMore" :loadFlag="this.loadFlag" :item="this.item"/>
+                                    </el-scrollbar>
+                                </el-popover>
+                            </el-tooltip>
+                        </div>
+                    </div>
+                </el-header>
+                <el-main>
+                    <ChatBox ref="chatBox"/>
+                </el-main>
+            </el-container>
+        </el-container>
+        <div>
+            <el-dialog
+                    title="添加好友"
+                    :visible.sync="precisionSearchView"
+                    width="30%"
+                    :before-close="clearName"
+                    @open="handleOpen"
+                    center>
+                <div style="display: flex;flex-direction: column;justify-content: center;align-items: center">
+                    <el-input placeholder="登入名/手机号/邮箱"
+                              v-model="name" size="small"
+                              clearable
+                              style="width: 300px">
+                    </el-input>
+                    <PrecisionSearch :keyword="name" @precisionSearch="precisionSearch"/>
+                </div>
+            </el-dialog>
+        </div>
+        <div>
+            <el-dialog
+                    title="创建群聊"
+                    width="380px"
+                    :visible.sync="buildGroupChat"
+                    :before-close="buildGroupChatClose"
+                    center>
+                <BuildGroupChat ref="buildGroupChat" @cancelBuildGroupChat="cancelBuildGroupChat"></BuildGroupChat>
+            </el-dialog>
+        </div>
+    </div>
+</template>
+
+<script>
+    import AsideFriend from "../../components/Wechat/AsideFriend";
+    import ChatBox from "../../components/ChatBox";
+    import addFriend from "@/assets/icon/add-friend.svg"
+    import zhuming from "@/assets/icon/zhuming.svg"
+    import PrecisionSearch from "../../components/Wechat/PrecisionSearch";
+    import BuildGroupChat from "../../components/Wechat/BuildGroupChat";
+    import service from "../../http";
+    import ChatGroupMember from "../../components/Wechat/ChatGroupMember";
+    export default {
+        components: {
+            addFriend,
+            ChatBox,
+            AsideFriend,
+            zhuming,
+            PrecisionSearch,
+            BuildGroupChat,
+            ChatGroupMember
+        },
+        data() {
+            return {
+                showSwitching: '0',
+                name: null,
+                buildGroupChat: false,
+                precisionSearchView: false,
+                item: {
+                    friendshipId: null,
+                    remark: null,
+                },
+                clearFlag: false,
+                keyword: "",
+                loadingMore: false,
+                loadFlag: true,
+                total: 0,
+                groupMemberList: []
+            }
+        }, methods: {
+            handleOpen() {
+                this.name = null;
+                this.completeSearch()
+            },
+            clearName(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        this.precisionSearchView = false;
+                        this.name = null;
+                        done();
+                    })
+                    .catch(_ => {
+
+                    });
+            },
+            buildGroupChatClose(done) {
+                this.$confirm('确认关闭创建群聊窗口吗？')
+                    .then(_ => {
+                        this.buildGroupChat = false;
+                        this.$refs.buildGroupChat.initData()
+                        done();
+                    })
+                    .catch(_ => {
+
+                    });
+            },
+
+            getGroupMembers(groupId){
+                this.$refs.chatGroupMember.getGroupMembers(groupId)
+
+            },
+            cancelBuildGroupChat() {
+                this.buildGroupChat = false;
+            },
+            currentFriend(event) {
+                this.item = event;
+                if (this.item.type===0){
+                    this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId)
+                }
+                this.$refs.chatBox.chatBox(this.item);
+            },
+            completeSearch() {
+                this.cancelFocus()
+            },
+            isLoseFocus() {
+                if (this.clearFlag) {
+                    this.$refs.input.focus();
+                    return
+                }
+                this.$refs.input.clear();
+                this.$refs.asideFriend.isSearchStatus(this.clearFlag);
+            },
+            cancelFocus() {
+                this.clearFlag = false;
+                this.$refs.input.blur()
+            },
+            focusInit() {
+                this.clearFlag = true;
+                this.$refs.asideFriend.isSearchStatus(this.clearFlag);
+                this.$refs.asideFriend.remoteSearchFriend(this.keyword)
+            },
+            remoteSearch() {
+                this.$refs.asideFriend.remoteSearchFriend(this.keyword)
+            },
+            handleCommand(command) {
+                switch (command) {
+                    case "addFriend":
+                        this.precisionSearchView = true;
+                        break;
+                    case "addGroup":
+                        this.$router.replace({
+                            path: "/Informationall",
+                            query: {
+                                activeName: "group"
+                            }
+                        });
+                        break;
+                    case "buildGroupChat":
+                        this.buildGroupChat = true;
+                        break
+                }
+
+            },
+            notifyFriend(friendId) {
+                const params = {
+                    friendId: friendId,
+                    content: ""
+                };
+                service.post("/notify/friend/online", params).then(res => {
+                    if (res.code === 20000) {
+                        this.$notify({
+                            type: "success",
+                            title: "邀请好友上线",
+                            message: "发送成功"
+                        })
+                    } else {
+                        this.$notify({
+                            type: "error",
+                            title: "邀请好友上线",
+                            message: res.message
+                        })
+                    }
+                })
+            },
+            switchShow(showSwitching) {
+                this.showSwitching = showSwitching;
+                localStorage.setItem("showSwitching", showSwitching);
+                this.$refs.asideFriend.getFriendshipsMenu(showSwitching)
+            },
+            precisionSearch(searchResult) {
+                this.precisionSearchView = false;
+                this.$refs.asideFriend.clickAddSession(searchResult);
+            },
+            initFriendshipId() {
+                this.item.friendshipId = null
+            },
+            chatTime(time) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/; // 验证YYYY-MM-DD格式
+                if (regex.test(time)) {
+                    return time;
+                } else {
+                    var date = new Date(time.toString());
+                    var now = new Date(); // 获取当前时间
+                    var diff = now - date; // 计算时间差（毫秒）
+                    if (diff > 24 * 60 * 60 * 1000) { // 如果时间差大于一天（毫秒）
+                        return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0'); // 返回年月日格式
+                    } else {
+                        return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')// 返回时分秒格式
+                    }
+                }
+            },
+            initContainer(){
+                this.item ={
+                    friendshipId: null,
+                    remark: null,
+                }
+            }
+        }, created() {
+
+        },
+        mounted() {
+            if (localStorage.getItem("showSwitching") !== null) {
+                this.showSwitching = localStorage.getItem("showSwitching")
+            }
+            window.addEventListener('initFriendshipId', this.initFriendshipId);
+            window.addEventListener("initContainer",this.initContainer);
+            if (this.$route.query.friendId && this.$route.query.remark) {
+                const params = {
+                    friendId: this.$route.query.friendId,
+                    remark: this.$route.query.remark,
+                    userInfoId: this.$route.query.userInfoId
+                };
+                this.$refs.asideFriend.clickAddSession(params)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .WeChat {
+
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+        /* padding: 5px; */
+    }
+
+    .WeChat-left {
+        width: 240px;
+        height: 100%;
+        background-image: linear-gradient(#3DBCFD, #97DBFE, #30D791);
+    }
+
+    .my-header {
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .el-header {
+        background-color: #f5f5f5;
+        color: #333;
+        height: 50px !important;
+        line-height: 50px;
+    }
+
+    .sidebar {
+           overflow: hidden; /* 隐藏滚动条 */
+       }
+
+
+    /deep/ .el-aside {
+        color: #e4e4e4;
+    }
+
+    /deep/.el-card__body {
+        padding: 0 !important;
+    }
+
+    .el-main{
+        background-color: #f1f2f6;
+        padding: 0 !important;
+    }
+    .header-R {
+        line-height: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center
+    }
+
+    /deep/ .header-R .el-button {
+        margin-left: 10px;
+        padding: 5px 5px;
+        background-color: #f3f3f3;
+    }
+
+    /deep/ .header-R .el-input__inner {
+        background-color: #f3f3f3;
+
+    }
+
+    /deep/ .header-R .el-input__inner:focus {
+        border-color: #f3f3f3;
+    }
+
+    .clear {
+        background-color: #d1d1d1;
+        cursor: pointer;
+        color: #999999;
+        font-weight: bold;
+        border-radius: 50%;
+        padding: 1px
+    }
+
+    .clear :hover {
+        color: #7e7e7e;
+    }
+
+    .function-content {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .function-icon {
+
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+    }
+
+    .function-icon:hover {
+        transition: 0.5s;
+        transform: scale(1.1);
+    }
+
+    .operation {
+        margin-left: auto;
+        font-size: 22px;
+    }
+
+    .operation:hover {
+        cursor: pointer;
+        color: #999999;
+    }
+
+    .callFriend {
+        position: absolute;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .callFriend .bell {
+        font-size: 18px;
+    }
+
+    .callFriend .bell:hover {
+        color: #1AB8B8;
+    }
+    /deep/ .el-popover{
+        padding: 0 !important;
+    }
+</style>
