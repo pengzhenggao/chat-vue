@@ -1,13 +1,13 @@
 <template>
     <div>
         <vue-editor
+                ref="editor"
                 id="editor"
-                useCustomImageHandler
                 @image-added="handleImageAdded"
                 :editor-toolbar="customToolbar"
                 v-model="content"
-                use-custom-image-handler
-        >
+                use-custom-image-handler>
+
         </vue-editor>
         <div style="text-align: right"><el-button  @click="submitMessage">发送(S)</el-button></div>
     </div>
@@ -47,10 +47,15 @@
                     }
                 });
             },
+            emojiOptions(){
+                return 222
+            },
             submitMessage(){
                 this.$emit('submitMessage',this.content);
                 this.content = ""
             }
+        },mounted() {
+            this.$refs.editor.quill.focus();
         }
     }
 </script>

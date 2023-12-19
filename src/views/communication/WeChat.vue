@@ -1,7 +1,7 @@
 <template>
     <div class="WeChat">
         <el-container style="height: 100%; border: 1px solid #eee">
-            <el-aside class="sidebar"  style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
+            <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
                     }">
                     <div class="header-R">
@@ -47,23 +47,26 @@
                         <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
                         </div>
                         <div class="callFriend">
-                            <el-tooltip content="通知好友上线" placement="bottom" effect="light" v-show="item.type===1">
-                                <span class="bell" @click.prevent="notifyFriend(item.friendshipId)"><i
-                                        class="el-icon-bell"></i></span>
+                            <el-tooltip content="操作栏" placement="bottom" effect="light" v-show="item.type===1">
+                                <el-dropdown trigger="click" @command="operationCommand">
+                                    <span class="bell"><i class="el-icon-s-operation"></i></span>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item icon="el-icon-message-solid" command="notifyOnline">通知上线</el-dropdown-item>
+                                        <el-dropdown-item icon="el-icon-video-camera-solid" command="videoCalls">视频通话</el-dropdown-item>
+                                        <el-dropdown-item icon="el-icon-phone" command="voiceCalls">语音通话</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
                             </el-tooltip>
 
                             <el-tooltip :disabled="true" placement="left" effect="light" v-show="item.type===0">
                                 <el-popover
                                         placement="bottom"
                                         width="245"
-                                        trigger="click"
-                                >
-                                    <span class="bell" slot="reference"
-                                          @click.prevent="getGroupMembers(item.friendshipId)"><i
-                                            class="el-icon-more"></i></span>
-                                    <el-scrollbar>
-                                    <ChatGroupMember :total="this.total" ref="chatGroupMember" :loadingMore="this.loadingMore" :loadFlag="this.loadFlag" :item="this.item"/>
-                                    </el-scrollbar>
+                                        trigger="click">
+                                    <span class="bell" slot="reference" @click.prevent="getGroupMembers(item.friendshipId)"><i class="el-icon-more"></i></span>
+                                    <el-scrollbar><ChatGroupMember :total="this.total" ref="chatGroupMember"
+                                                         :loadingMore="this.loadingMore" :loadFlag="this.loadFlag"
+                                                         :item="this.item"/></el-scrollbar>
                                 </el-popover>
                             </el-tooltip>
                         </div>
@@ -102,10 +105,24 @@
                 <BuildGroupChat ref="buildGroupChat" @cancelBuildGroupChat="cancelBuildGroupChat"></BuildGroupChat>
             </el-dialog>
         </div>
+
+        <PopContent
+                v-show="dialogVisibleScore"
+                :pop-width="700"
+                :full-screen-icon="true"
+                :btn-show="false"
+                title="视频通话"
+                @closePop="dialogVisibleScore = false">
+            <div>
+                <VideoCalls :friendItem="this.item" ref="videoCalls"/>
+            </div>
+        </PopContent>
+
     </div>
 </template>
 
 <script>
+    import PopContent from "../../components/PopUps/PopContent";
     import AsideFriend from "../../components/Wechat/AsideFriend";
     import ChatBox from "../../components/ChatBox";
     import addFriend from "@/assets/icon/add-friend.svg"
@@ -114,6 +131,9 @@
     import BuildGroupChat from "../../components/Wechat/BuildGroupChat";
     import service from "../../http";
     import ChatGroupMember from "../../components/Wechat/ChatGroupMember";
+    import VideoCalls from "../../components/Wechat/VideoCalls";
+    import {socket} from "../../config/websocket/socket";
+    import {getToken} from "../../utils/auth";
     export default {
         components: {
             addFriend,
@@ -122,10 +142,13 @@
             zhuming,
             PrecisionSearch,
             BuildGroupChat,
-            ChatGroupMember
+            ChatGroupMember,
+            PopContent,
+            VideoCalls
         },
         data() {
             return {
+                dialogVisibleScore:false,
                 showSwitching: '0',
                 name: null,
                 buildGroupChat: false,
@@ -139,7 +162,14 @@
                 loadingMore: false,
                 loadFlag: true,
                 total: 0,
-                groupMemberList: []
+                groupMemberList: [],
+                sendMessage: {
+                    action: 10007,
+                    token: getToken(),
+                    receiverId: "",
+                    content: "",
+                    extend: 1,
+                },
             }
         }, methods: {
             handleOpen() {
@@ -169,7 +199,7 @@
                     });
             },
 
-            getGroupMembers(groupId){
+            getGroupMembers(groupId) {
                 this.$refs.chatGroupMember.getGroupMembers(groupId)
 
             },
@@ -178,7 +208,7 @@
             },
             currentFriend(event) {
                 this.item = event;
-                if (this.item.type===0){
+                if (this.item.type === 0) {
                     this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId)
                 }
                 this.$refs.chatBox.chatBox(this.item);
@@ -224,6 +254,53 @@
                         break
                 }
 
+            },
+            operationCommand(command){
+                switch (command) {
+                    case "notifyOnline":
+                        this.notifyFriend(this.item.friendshipId);
+                        break;
+                    case "videoCalls":  //视屏通话
+                        const loading = this.$loading({
+                            lock: true,
+                            text: '建立通信中',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
+                        setTimeout(() => {
+                            loading.close();
+                            service({
+                                method:"get",
+                                url:"/userInfo/userOnlineStatus",
+                                params:{
+                                    userInfo: this.item.friendshipId
+                                }
+                            }).then(res=>{
+                                if (res && res.code===20000){
+                                    if (res.data===true){
+                                        this.sendMessage.receiverId = this.item.friendshipId;
+                                        socket.send(this.sendMessage);
+                                        this.dialogVisibleScore = true;
+                                    }else{
+                                        this.$notify({
+                                            title:"视屏通话",
+                                            type:"warning",
+                                            message:"对方不在线，无法进行视频通话"
+                                        })
+                                    }
+                                }
+                            });
+
+                        }, 2000);
+                        break;
+                    case "voiceCalls":   //语音通话
+                        this.$notify({
+                            title:"语音通话",
+                            type:"warning",
+                            message:"暂未实现"
+                        })
+                        break
+                }
             },
             notifyFriend(friendId) {
                 const params = {
@@ -273,8 +350,12 @@
                     }
                 }
             },
-            initContainer(){
-                this.item ={
+            videoCallsResponse(event){
+                this.$refs.videoCalls.VCResponse(event.detail.data)
+                this.dialogVisibleScore = true
+            },
+            initContainer() {
+                this.item = {
                     friendshipId: null,
                     remark: null,
                 }
@@ -287,7 +368,8 @@
                 this.showSwitching = localStorage.getItem("showSwitching")
             }
             window.addEventListener('initFriendshipId', this.initFriendshipId);
-            window.addEventListener("initContainer",this.initContainer);
+            window.addEventListener("initContainer", this.initContainer);
+            window.addEventListener("videoCallsResponse",this.videoCallsResponse);
             if (this.$route.query.friendId && this.$route.query.remark) {
                 const params = {
                     friendId: this.$route.query.friendId,
@@ -328,22 +410,23 @@
     }
 
     .sidebar {
-           overflow: hidden; /* 隐藏滚动条 */
-       }
+        overflow: hidden; /* 隐藏滚动条 */
+    }
 
 
     /deep/ .el-aside {
         color: #e4e4e4;
     }
 
-    /deep/.el-card__body {
+    /deep/ .el-card__body {
         padding: 0 !important;
     }
 
-    .el-main{
+    .el-main {
         background-color: #f1f2f6;
         padding: 0 !important;
     }
+
     .header-R {
         line-height: 50px;
         display: flex;
@@ -422,7 +505,8 @@
     .callFriend .bell:hover {
         color: #1AB8B8;
     }
-    /deep/ .el-popover{
+
+    /deep/ .el-popover {
         padding: 0 !important;
     }
 </style>

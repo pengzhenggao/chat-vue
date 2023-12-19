@@ -6,7 +6,7 @@
             </el-aside>-->
             <el-container class="main">
                 <el-header class="heads" height='50px' :style="themeColor[themeIndex].header">
-                    <Headers :asideShow.sync="asideShow" @targetIcon='targetIcon' :themeColor='themeColor' :themeIndex='themeIndex' @targetThemeIndex='targetThemeIndex'></Headers>
+                    <Headers :switchMode.sync="switchMode" @targetIcon='targetIcon' :themeColor='themeColor' :themeIndex='themeIndex' @targetThemeIndex='targetThemeIndex'></Headers>
                 </el-header>
                 <el-main class="main-container">
                     <div class="main-container-views" :style="themeColor[themeIndex].container">
@@ -35,8 +35,9 @@ import Headers from '../components/Headers/Headers.vue'
 
 // 获取本地存储的主题
 import { getTheme, setTheme } from '@/utils/theme'
-let Theme = parseInt(getTheme()) || 0
-
+import {setModeType,getModeType} from "@/utils/mode-type";
+let Theme = parseInt(getTheme()) || 0;
+let ModeType = JSON.parse(getModeType()==null?'true':getModeType());
 let themeColor =[
     {
         aside: 'background-image: linear-gradient(#001529, #001529);',
@@ -119,7 +120,7 @@ let themeColor =[
 export default {
     data(){
         return {
-            asideShow: true,
+            switchMode: ModeType,
             themeIndex: Theme,   //当前配色方案
             themeColor:themeColor  //配色方案
         }
@@ -130,11 +131,18 @@ export default {
     },
     methods:{
         targetIcon(boole){
-            this.asideShow = boole
+            this.switchMode = boole;
+            console.log(this.switchMode)
+            setModeType(this.switchMode);
+            if (!this.switchMode){
+                this.$router.push("/lobbychat")
+            }else{
+                this.$router.push("/wechat")
+            }
         },
         // 配色方案 子元素自定义事件
         targetThemeIndex(index){
-            this.themeIndex = index
+            this.themeIndex = index;
             setTheme(index)
         }
     }

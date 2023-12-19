@@ -111,7 +111,6 @@
                             </div>
                         </el-menu-item>
                     </div>
-
                 </div>
             </el-menu>
             <div v-show="isSearch">
@@ -758,6 +757,10 @@
 
     /deep/ .el-card__body, .el-main {
         padding: 0;
+    }
+
+    /deep/.el-scrollbar__wrap {
+        overflow-x: hidden;
     }
 
 

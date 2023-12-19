@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Layout from '@/layout' //布局页
+import Layout from '@/layout'
+import {getModeType} from "../utils/mode-type"; //布局页
 
 
 Vue.use(VueRouter)
@@ -73,7 +74,7 @@ export const constRouter = [
     {
         path: '',
         component: Layout, //应用布局页
-        redirect: '/communicationwechat',
+        redirect: getModeType()!=null?(JSON.parse(getModeType())===true?'/wechat':'/lobbychat'):'/wechat',
         hidden: true,
 
     },
@@ -89,19 +90,29 @@ export const constRouter = [
     {
         path: '/',
         component: Layout, //应用布局页
-        name: 'communicationwechat',
+        name: 'wechat',
         meta: {
             icon: 'el-icon-s-home' //导航菜单图标
         },
         children: [
             {
-                path: '/communicationwechat',
+                path: '/wechat',
                 component: () => import('@/views/communication/WeChat.vue'),
-                name: 'communicationwechat',
+                name: 'wechat',
                 meta: {
-                    title: "聊天页",
+                    title: "好友",
                     icon: 'el-icon-s-home',
-                    roles: ['admin', 'user']
+                    roles: ['user']
+                }
+            },
+            {
+                path: '/lobbychat',
+                component: () => import('@/views/communication/LobbyChat.vue'),
+                name: 'lobbychat',
+                meta: {
+                    title: "大厅",
+                    icon: 'el-icon-s-home',
+                    roles: ['user']
                 }
             },
             {

@@ -8,6 +8,7 @@ import {header} from "../../listening/header";
 import {asidefriend} from "../../listening/asidefriend";
 import {chatbox} from "../../listening/chatbox";
 import {chatcontent} from "../../listening/chatcontent";
+import {videocalls} from "../../listening/videocalls";
 // socket主要对象
 var socket = {
     websock: null,
@@ -198,14 +199,17 @@ var socket = {
             case 30003:  //同意添加请求
                 asidefriend.buddyListPopulation(recData);
                 break;
-            case 30004:
+            case 30004:   //撤回
                 chatcontent.retractMessage(recData);
                 break;
-            case 30005:
+            case 30005:   //发送群聊信息
                 chatbox.groupChatMessage(recData);
                 break;
-            case 30006:
+            case 30006:   //初始化好友栏
                 asidefriend.initAsideFriend();
+                break;
+            case 30007:   //视屏通话
+                videocalls.videoCallsResponse(recData);
                 break;
         }
         // 自行扩展其他业务处理...
