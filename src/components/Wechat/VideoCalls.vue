@@ -20,9 +20,16 @@
                 </div>
             </div>
         </div>
-        <div v-show="connecting===3">
-            <video ref="localVideo" playsinline autoplay></video>
-            <video ref="remoteVideo" playsinline autoplay></video>
+        <div v-show="connecting===3" style="text-align: center">
+            <div style="display: flex;justify-content: center;align-items: center">
+                <video ref="localVideo" playsinline autoplay
+                       :class="{'localVideo':this.switch,'remoteVideo':!this.switch}"></video>
+                <video ref="remoteVideo" playsinline autoplay
+                       :class="{'localVideo':!this.switch,'remoteVideo':this.switch}"></video>
+            </div>
+            <el-button type="danger" icon="el-icon-close" @click="closeVideo">结束通话</el-button>
+            <el-button v-if="this.switch" @click="switchWindos" icon="el-icon-refresh">切换对方窗口</el-button>
+            <el-button v-else @click="switchWindos" icon="el-icon-refresh">切换自己窗口</el-button>
         </div>
         <div v-show="connecting===4" style="width: 100%">
             <div style="margin: 0 auto;text-align: center">
@@ -34,8 +41,29 @@
                     <div></div>
                 </div>
                 <div>
-                    <el-button type="danger"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
-                    <el-button type="primary" @click="accept"><i class="el-icon-phone-outline" ></i>&nbsp;接受</el-button>
+                    <el-button type="danger" @click="hangUp"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
+                    <el-button type="primary" @click="accept"><i class="el-icon-phone-outline"></i>&nbsp;接受</el-button>
+
+                </div>
+            </div>
+        </div>
+        <div v-show="connecting===5" class="connection">
+            <div class="wait">
+                <span>正在建立连接</span>
+                <div class="loading">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div v-show="connecting===6" class="connection">
+            <div class="wait">
+                <span>正在中断</span>
+                <div class="loading">
+                    <div></div>
+                    <div></div>
+                    <div></div>
                 </div>
             </div>
         </div>
@@ -56,6 +84,7 @@
         name: "VideoCalls",
         data() {
             return {
+                switch: true,
                 connecting: 0,
                 peerConnection: null,
                 localStream: null,
@@ -65,6 +94,7 @@
                     avatar: null,
                     nickName: null,
                 },
+                fromId: null,
                 sendMessage: {
                     action: 10007,
                     token: getToken(),
@@ -81,9 +111,25 @@
         },
         methods: {
             accept() {
-                this.sendMessage.receiverId = this.requestFrom.id;
+                this.sendMessage.receiverId = this.fromId;
                 this.sendMessage.extend = 2;
+                this.connecting = 5;
                 socket.send(this.sendMessage)
+            },
+            hangUp() {
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.extend = 7;
+                this.connecting = 6;
+                socket.send(this.sendMessage);
+            },
+            closeVideo() {
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.extend = 8;
+                this.connecting = 6;
+                socket.send(this.sendMessage);
+            },
+            switchWindos() {
+                this.switch = !this.switch
             },
             initializePeerConnection() {
                 this.peerConnection = new RTCPeerConnection(null);
@@ -95,8 +141,8 @@
             },
             handleIceCandidate(event) {
                 if (event.candidate) {
-                    this.sendMessage.extend = 8;
-                    this.sendMessage.receiverId = this.requestFrom.id;
+                    this.sendMessage.extend = 6;
+                    this.sendMessage.receiverId = this.fromId;
                     this.sendMessage.content = event.candidate;
                     socket.send(this.sendMessage)
                 }
@@ -107,20 +153,19 @@
             //开启摄像头
             getLocalStream() {
                 var _this = this;
-                console.log("------------------>",this.$refs.localVideo)
                 return new Promise((resolve, reject) => {
                     navigator.mediaDevices.getUserMedia({
                         audio: true,
                         video: true,
                     }).then(stream => {
+                        this.connecting = 3;
                         _this.localStream = stream;
-                        console.log(_this.localStream)
-                        console.log(_this.$refs.localVideo)
-                            _this.$refs.localVideo.srcObject = stream;
-                            // this.localStream.getTracks().forEach(track => {
-                            //     this.peerConnection.addTrack(track, stream);
-                            // });
-                        })
+                        _this.$refs.localVideo.srcObject = stream;
+                        // this.localStream.getTracks().forEach(track => {
+                        //     this.peerConnection.addTrack(track, stream);
+                        // });
+                        resolve(true);
+                    })
                         .catch(error => {
                             console.error('Error accessing local media:', error);
                         });
@@ -129,44 +174,66 @@
             createOfferAndSendMessage(sessionDescription) {
                 this.peerConnection.setLocalDescription(sessionDescription);
                 this.sendMessage.extend = 4;
-                this.sendMessage.receiverId = this.requestFrom.id;
+                this.sendMessage.receiverId = this.fromId;
                 this.sendMessage.content = sessionDescription;
                 socket.send(this.sendMessage)
             },
             handleCreateOfferError() {
                 console.log("错误")
             },
-            doAnswer(){
+            doAnswer() {
                 if (this.peerConnection == null) {
                     this.initializePeerConnection();
                 }
                 this.peerConnection.createAnswer().then(this.createAnswerAndSendMessage, this.handleCreateAnswerError);
             },
-            createAnswerAndSendMessage (sessionDescription){
+            createAnswerAndSendMessage(sessionDescription) {
                 this.peerConnection.setLocalDescription(sessionDescription);
                 this.sendMessage.extend = 5;
-                this.sendMessage.receiverId = this.friendItem.friendshipId;
                 this.sendMessage.content = sessionDescription;
+                this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
                 socket.send(this.sendMessage)
                 // ws.value.send(JSON.stringify({type:"4",uid:uid.value,to:rid.value,message:sessionDescription}))
             },
-            handleCreateAnswerError (){
+            handleCreateAnswerError() {
                 console.log("错误")
             },
+            initData() {
+                this.switch = true;
+                this.connecting = 0;
+                this.peerConnection = null;
+                this.localStream = null;
+                this.remoteStream = null;
+                this.requestFrom = {
+                    id: null,
+                    avatar: null,
+                    nickName: null,
+                },
+                    this.fromId = null;
+                this.sendMessage = {
+                    action: 10007,
+                    token: getToken(),
+                    receiverId: "",
+                    content: "",
+                    extend: 0,
+                }
+            },
             VCResponse(event) {
-                console.log(event)
                 switch (event.message) {
                     case 1:
                         this.connecting = 4;
+                        this.fromId = event.data.id;
                         this.requestFrom.id = event.data.id;
                         this.requestFrom.avatar = event.data.avatar;
                         this.requestFrom.nickName = event.data.nickName;
                         break;
                     case 2:
-                        this.getLocalStream().then(() => {
-                            this.sendMessage.receiverId = this.friendItem.friendshipId;
+                        this.getLocalStream().then((res) => {
+                            this.fromId = event.data.from;
+                            this.sendMessage.receiverId = this.fromId;
                             this.sendMessage.extend = 3;
-                            socket.send(this.sendMessage)
+                            socket.send(this.sendMessage);
+
                         });
                         break;
                     case 3:
@@ -181,7 +248,6 @@
                         if (this.peerConnection == null) {
                             this.initializePeerConnection()
                         }
-                        console.log(event.data);
                         this.peerConnection.setRemoteDescription(new RTCSessionDescription(event.data));
                         this.doAnswer();
                         break;
@@ -189,17 +255,26 @@
                         this.peerConnection.setRemoteDescription(new RTCSessionDescription(event.data));
                         break;
                     case 6:
-                        console.log("----------------------------------");
                         var candidate = new RTCIceCandidate({
                             sdpMLineIndex: event.data.sdpMLineIndex,
                             candidate: event.data.candidate
                         });
                         this.peerConnection.addIceCandidate(candidate);
                         break;
+                    case 7:
+                        this.$emit('closeVideo', event.data);
+                        this.initData();
+                        break;
+                    case 8:
+                        this.peerConnection.close();
+                        this.localStream.getTracks().forEach(track => track.stop());
+                        this.$emit('closeVideo', event.data);
+                        this.initData();
+                        break;
                     default:
                         this.connecting = -1
                 }
-            }
+            },
         }, mounted() {
 
         }
@@ -208,6 +283,7 @@
 
 <style scoped>
     .contain {
+        position: relative;
         margin: 20px auto;
     }
 
@@ -300,5 +376,18 @@
             opacity: 0;
             transform: translateY(145%);
         }
+    }
+
+    .remoteVideo {
+        position: absolute;
+        top: 0;
+        right: 10px;
+        width: 130px;
+        height: 130px;
+    }
+
+    .localVideo {
+        width: 400px;
+        height: 400px;
     }
 </style>

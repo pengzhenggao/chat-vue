@@ -107,17 +107,27 @@
         </div>
 
         <PopContent
-                v-show="dialogVisibleScore"
+                v-show="dialogVisibleVideo"
                 :pop-width="700"
                 :full-screen-icon="true"
                 :btn-show="false"
                 title="视频通话"
-                @closePop="dialogVisibleScore = false">
+                @closePop="dialogVisibleVideo = false">
             <div>
-                <VideoCalls :friendItem="this.item" ref="videoCalls"/>
+                <VideoCalls @closeVideo="closeVideo" :friendItem="this.item" ref="videoCalls"/>
             </div>
         </PopContent>
-
+        <PopContent
+                v-show="dialogVisibleVoice"
+                :pop-width="700"
+                :full-screen-icon="false"
+                :btn-show="false"
+                title="语音通话"
+                @closePop="dialogVisibleVoice = false">
+            <div>
+                <VoiceCalls :friendItem="this.item" ref="voiceCalls"/>
+            </div>
+        </PopContent>
     </div>
 </template>
 
@@ -132,6 +142,7 @@
     import service from "../../http";
     import ChatGroupMember from "../../components/Wechat/ChatGroupMember";
     import VideoCalls from "../../components/Wechat/VideoCalls";
+    import VoiceCalls from "../../components/Wechat/VoiceCalls";
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
     export default {
@@ -144,11 +155,13 @@
             BuildGroupChat,
             ChatGroupMember,
             PopContent,
-            VideoCalls
+            VideoCalls,
+            VoiceCalls
         },
         data() {
             return {
-                dialogVisibleScore:false,
+                dialogVisibleVoice:false,
+                dialogVisibleVideo:false,
                 showSwitching: '0',
                 name: null,
                 buildGroupChat: false,
@@ -164,7 +177,7 @@
                 total: 0,
                 groupMemberList: [],
                 sendMessage: {
-                    action: 10007,
+                    action: 0,
                     token: getToken(),
                     receiverId: "",
                     content: "",
@@ -176,6 +189,7 @@
                 this.name = null;
                 this.completeSearch()
             },
+
             clearName(done) {
                 this.$confirm('确认关闭？')
                     .then(_ => {
@@ -255,20 +269,28 @@
                 }
 
             },
+            closeVideo(message){
+                this.dialogVisibleVideo = false;
+                this.$notify({
+                    title:"视频通话",
+                    type:"warning",
+                    message: message
+                });
+            },
             operationCommand(command){
                 switch (command) {
                     case "notifyOnline":
                         this.notifyFriend(this.item.friendshipId);
                         break;
                     case "videoCalls":  //视屏通话
-                        const loading = this.$loading({
+                        const videoLoading = this.$loading({
                             lock: true,
                             text: '建立通信中',
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         });
                         setTimeout(() => {
-                            loading.close();
+                            videoLoading.close();
                             service({
                                 method:"get",
                                 url:"/userInfo/userOnlineStatus",
@@ -278,9 +300,10 @@
                             }).then(res=>{
                                 if (res && res.code===20000){
                                     if (res.data===true){
+                                        this.sendMessage.action = 10007;
                                         this.sendMessage.receiverId = this.item.friendshipId;
                                         socket.send(this.sendMessage);
-                                        this.dialogVisibleScore = true;
+                                        this.dialogVisibleVideo = true;
                                     }else{
                                         this.$notify({
                                             title:"视屏通话",
@@ -294,11 +317,38 @@
                         }, 2000);
                         break;
                     case "voiceCalls":   //语音通话
-                        this.$notify({
-                            title:"语音通话",
-                            type:"warning",
-                            message:"暂未实现"
-                        })
+                        const voiceLoading = this.$loading({
+                            lock: true,
+                            text: '建立通信中',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
+                        setTimeout(() => {
+                            voiceLoading.close();
+                            service({
+                                method:"get",
+                                url:"/userInfo/userOnlineStatus",
+                                params:{
+                                    userInfo: this.item.friendshipId
+                                }
+                            }).then(res=>{
+                                if (res && res.code===20000){
+                                    if (res.data===true){
+                                        this.sendMessage.action = 10008;
+                                        this.sendMessage.receiverId = this.item.friendshipId;
+                                        socket.send(this.sendMessage);
+                                        this.dialogVisibleVoice = true;
+                                    }else{
+                                        this.$notify({
+                                            title:"语音通话",
+                                            type:"warning",
+                                            message:"对方不在线，无法进行语音通话"
+                                        })
+                                    }
+                                }
+                            });
+
+                        }, 2000);
                         break
                 }
             },
@@ -351,8 +401,12 @@
                 }
             },
             videoCallsResponse(event){
+                this.dialogVisibleVideo = true;
                 this.$refs.videoCalls.VCResponse(event.detail.data)
-                this.dialogVisibleScore = true
+            },
+            voiceCallsResponse(event){
+                this.dialogVisibleVoice = true;
+                this.$refs.voiceCalls.voiceResponse(event.detail.data)
             },
             initContainer() {
                 this.item = {
@@ -370,6 +424,7 @@
             window.addEventListener('initFriendshipId', this.initFriendshipId);
             window.addEventListener("initContainer", this.initContainer);
             window.addEventListener("videoCallsResponse",this.videoCallsResponse);
+            window.addEventListener("voiceCallsResponse",this.voiceCallsResponse);
             if (this.$route.query.friendId && this.$route.query.remark) {
                 const params = {
                     friendId: this.$route.query.friendId,

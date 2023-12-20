@@ -9,13 +9,14 @@ import {asidefriend} from "../../listening/asidefriend";
 import {chatbox} from "../../listening/chatbox";
 import {chatcontent} from "../../listening/chatcontent";
 import {videocalls} from "../../listening/videocalls";
+import {voicecalls} from "../../listening/voicecalls";
 // socket主要对象
 var socket = {
     websock: null,
     /** //pengzhenggao.top
      * 这个是我们的ws的地址//pengzhenggao.top
      * */
-    ws_url: "ws://localhost:8089/ws",
+    ws_url: "ws://192.168.31.149:8089/ws",
     /**
      * 开启标识
      * */
@@ -211,6 +212,8 @@ var socket = {
             case 30007:   //视屏通话
                 videocalls.videoCallsResponse(recData);
                 break;
+            case 30008:  //语音通话
+                voicecalls.videoCallsResponse(recData)
         }
         // 自行扩展其他业务处理...
     },

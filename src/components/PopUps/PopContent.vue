@@ -7,7 +7,6 @@
                 <div style="display: flex;flex-direction: row;align-items: center">
                     <i v-if="fullScreenIcon" class="el-icon-full-screen el-icon-tools" @click="isFullScreen"/>
                     <!--                    <i class="el-icon-close el-icon-tools" @click="closePop"/>-->
-                    <el-button type="danger" @click="closePop">断开</el-button>
                 </div>
             </div>
             <div :class="{'maxHeight5': !isFull}" class="main-container">
@@ -49,7 +48,6 @@
                 type: Number,
                 default: 400
             },
-
         },
         data() {
             return {
@@ -168,11 +166,11 @@
     }
 
     .maxHeight7 {
-        max-height 400px
+        max-height 700px
     }
 
     .maxHeight5 {
-        max-height 500px
+        max-height 600px
     }
 </style>
 
