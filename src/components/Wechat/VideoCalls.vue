@@ -9,6 +9,7 @@
                     <div></div>
                 </div>
             </div>
+            <el-button type="danger" @click="endEarly" style="margin-top: 10px"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
         </div>
         <div v-show="connecting===1" class="connection">
             <div class="wait">
@@ -115,6 +116,10 @@
                 this.sendMessage.extend = 2;
                 this.connecting = 5;
                 socket.send(this.sendMessage)
+            },
+            endEarly(){
+                this.fromId = this.friendItem.friendshipId;
+                this.hangUp()
             },
             hangUp() {
                 this.sendMessage.receiverId = this.fromId;
@@ -233,7 +238,6 @@
                             this.sendMessage.receiverId = this.fromId;
                             this.sendMessage.extend = 3;
                             socket.send(this.sendMessage);
-
                         });
                         break;
                     case 3:

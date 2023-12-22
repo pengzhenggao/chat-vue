@@ -6,9 +6,30 @@
                     <div>正在呼叫</div>
                     <Loading1/>
                 </div>
-                <el-button type="danger" icon="el-icon-close">挂断</el-button>
+                <el-button type="danger" icon="el-icon-close" @click="endEarly">挂断</el-button>
             </div>
-            <div v-show="connectStatus===1" style="width: 100%">
+            <div v-show="connectStatus===1">
+                <div style="display: flex;flex-direction: row;justify-content: center;align-items: center">
+                    <div>连接中</div>
+                    <Loading1/>
+                </div>
+            </div>
+            <div v-show="connectStatus===3">
+                <video v-show="false" ref="remoteVideo" playsinline autoplay></video>
+                <div class="play">
+                    <div v-if="play" class="microphone" @click="closePlay">
+                        <span class="el-icon-microphone"></span>
+                    </div>
+                    <div v-else class="microphone" @click="startPlay">
+                        <span class="el-icon-turn-off-microphone"></span>
+                    </div>
+                    <Loading2 v-if="play"/>
+                    <Loading3 v-if="!play"/>
+                    <el-button type="danger" style="margin-top: 10px" @click="closeVoice"><i class="el-icon-close"></i>挂断</el-button>
+                </div>
+            </div>
+
+            <div v-show="connectStatus===4" style="width: 100%">
                 <div style="margin: 0 auto;text-align: center;display: flex;flex-direction: column;align-items: center">
                     <div>
                         <img :src="requester.avatar" style="width: 70px;height: 70px;border-radius: 50%;margin: 0 auto">
@@ -19,15 +40,26 @@
                     <div style="margin: 15px 0 15px 0">
                         <Loading1/>
                     </div>
-
                     <div>
-                        <el-button type="danger"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
-                        <el-button type="primary"><i class="el-icon-phone-outline"></i>&nbsp;接受</el-button>
-
+                        <el-button type="danger" @click="hangUp"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
+                        <el-button type="primary" @click="accept"><i class="el-icon-phone-outline"></i>&nbsp;接受
+                        </el-button>
                     </div>
                 </div>
             </div>
-            <div v-show="connectStatus<0" class="connection">
+            <div v-show="connectStatus===5">
+                <div style="display: flex;flex-direction: row;justify-content: center;align-items: center">
+                    <span>正在建立连接</span>
+                    <Loading1/>
+                </div>
+            </div>
+            <div v-show="connectStatus===6">
+                <div style="display: flex;flex-direction: row;justify-content: center;align-items: center">
+                    <span>正在中断</span>
+                    <Loading1/>
+                </div>
+            </div>
+            <div v-show="connectStatus<0">
                 <div><span><i class="el-icon-warning" style="font-size: 30px;color: darkred"></i>
             </span>
                     <div style="color: darkred">服务器错误</div>
@@ -43,30 +75,30 @@
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
     import Loading1 from "../loading/Loading1";
+    import Loading2 from "../loading/Loading2";
+    import Loading3 from "../loading/Loading3";
 
     export default {
-        name: "VoiceCalls",
-        props: {
-            friendItem: Object
-        },
+        name: "VideoCalls",
         components: {
-            Loading1
+            Loading1,
+            Loading2,
+            Loading3
         },
         data() {
             return {
-                ws: null,
-                mediaStack: null,
-                audioCtx: null,
-                scriptNode: null,
-                source: null,
-                play: true,
-                fromId: null,
+                switch: true,
                 connectStatus: 0,
+                peerConnection: null,
+                localStream: null,
+                remoteStream: null,
+                play: true,
                 requester: {
                     id: null,
-                    nickName: null,
                     avatar: null,
+                    nickName: null,
                 },
+                fromId: null,
                 sendMessage: {
                     action: 10008,
                     token: getToken(),
@@ -75,107 +107,190 @@
                     extend: 0,
                 },
             }
-        }, methods: {
-            initWs1() {
-                //设置好友ID
-                let recipientId = localStorage.getItem('userId') == "2" ? "1" : "2";
-                this.ws = new WebSocket('ws://192.168.206.204:8081/video/' + localStorage.getItem('userId') + "/" + recipientId)
-                this.ws.onopen = () => {
-                    console.log('socket 已连接')
-                }
-                this.ws.binaryType = 'arraybuffer';
-                this.ws.onmessage = ({data}) => {
-                    console.log("接收到的数据--》" + data)
-
-
-                    // 将接收的数据转换成与传输过来的数据相同的Float32Array
-                    const buffer = new Float32Array(data)
-                    // 创建一个空白的AudioBuffer对象，这里的4096跟发送方保持一致，48000是采样率
-                    const myArrayBuffer = this.audioCtx.createBuffer(1, 4096, 48000)
-                    // 也是由于只创建了一个音轨，可以直接取到0
-                    const nowBuffering = myArrayBuffer.getChannelData(0)
-                    // 通过循环，将接收过来的数据赋值给简单音频对象
-                    for (let i = 0; i < 4096; i++) {
-                        nowBuffering[i] = buffer[i]
-                    }
-                    // 使用AudioBufferSourceNode播放音频
-                    const source = this.audioCtx.createBufferSource()
-                    source.buffer = myArrayBuffer
-                    const gainNode = this.audioCtx.createGain()
-                    source.connect(gainNode)
-                    gainNode.connect(this.audioCtx.destination)
-                    var muteValue = 1;
-                    if (!this.play) { // 是否静音
-                        muteValue = 0
-                    }
-                    gainNode.gain.setValueAtTime(muteValue, this.audioCtx.currentTime)
-                    source.start()
-                }
-                this.ws.onerror = (e) => {
-                    console.log('发生错误', e)
-                }
-                this.ws.onclose = () => {
-                    console.log('socket closed')
-                }
-
+        },
+        props: {
+            friendItem: {
+                type: Object
+            }
+        },
+        methods: {
+            accept() {
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.extend = 2;
+                this.connectStatus = 5;
+                socket.send(this.sendMessage)
             },
-            // 开始对讲
-            startCall() {
+            endEarly(){
+                this.fromId = this.friendItem.friendshipId;
+                this.hangUp()
+            },
+            hangUp() {
+
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.extend = 7;
+                this.connectStatus = 6;
+                console.log(this.sendMessage)
+                socket.send(this.sendMessage);
+            },
+            closeVoice() {
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.extend = 8;
+                this.connectStatus = 6;
+                socket.send(this.sendMessage);
+            },
+            closePlay() {
+                this.$refs.remoteVideo.pause();
+                this.play = false;
+            },
+            startPlay() {
+                this.$refs.remoteVideo.play();
                 this.play = true;
-                this.audioCtx = new AudioContext();
-                this.fromId = this.friendItem.friendshipId.toString()
-                // 该变量存储当前MediaStreamAudioSourceNode的引用
-                // 可以通过它关闭麦克风停止音频传输
-
-                // 创建一个ScriptProcessorNode 用于接收当前麦克风的音频
-                this.scriptNode = this.audioCtx.createScriptProcessor(4096, 1, 1)
-                navigator.mediaDevices
-                    .getUserMedia({audio: true, video: false})
-                    .then((stream) => {
-                        this.mediaStack = stream
-                        this.source = this.audioCtx.createMediaStreamSource(stream)
-
-                        this.source.connect(this.scriptNode)
-                        this.scriptNode.connect(this.audioCtx.destination)
-                    })
-                    .catch(function (err) {
-                        /* 处理error */
-                        console.log('err', err)
-                    });
-                // 当麦克风有声音输入时，会调用此事件
-                // 实际上麦克风始终处于打开状态时，即使不说话，此事件也在一直调用
-                this.scriptNode.onaudioprocess = (audioProcessingEvent) => {
-                    const inputBuffer = audioProcessingEvent.inputBuffer;
-                    // console.log("inputBuffer",inputBuffer);
-                    // 由于只创建了一个音轨，这里只取第一个频道的数据
-                    // 通过socket传输数据，实际上传输的是Float32Array
-                    // console.log("发送的数据",inputData);
-                    this.sendMessage.content = inputBuffer.getChannelData(0);
+            },
+            initializePeerConnection() {
+                this.peerConnection = new RTCPeerConnection(null);
+                this.peerConnection.onicecandidate = this.handleIceCandidate;
+                this.peerConnection.onaddstream = this.handleRemoteStreamAdded;
+                for (const track of this.localStream.getTracks()) {
+                    this.peerConnection.addTrack(track, this.localStream);
+                }
+            },
+            handleIceCandidate(event) {
+                if (event.candidate) {
+                    this.sendMessage.extend = 6;
                     this.sendMessage.receiverId = this.fromId;
+                    this.sendMessage.content = event.candidate;
                     socket.send(this.sendMessage)
                 }
             },
-            // 关闭麦克风
-            stopCall() {
-                this.play = false;
-                this.mediaStack.getTracks()[0].stop()
-                this.scriptNode.disconnect()
+            handleRemoteStreamAdded(event) {
+                this.$refs.remoteVideo.srcObject = event.stream;
+            },
+            //开启摄像头
+            getLocalStream() {
+                var _this = this;
+                return new Promise((resolve, reject) => {
+                    navigator.mediaDevices.getUserMedia({
+                        audio: true,
+                        video: false,
+                    }).then(stream => {
+                        this.connectStatus = 3;
+                        _this.localStream = stream;
+                        // _this.$refs.localVideo.srcObject = stream;
+                        // this.localStream.getTracks().forEach(track => {
+                        //     this.peerConnection.addTrack(track, stream);
+                        // });
+                        resolve(true);
+                    })
+                        .catch(error => {
+                            console.error('Error accessing local media:', error);
+                        });
+                })
+            },
+            createOfferAndSendMessage(sessionDescription) {
+                this.peerConnection.setLocalDescription(sessionDescription);
+                this.sendMessage.extend = 4;
+                this.sendMessage.receiverId = this.fromId;
+                this.sendMessage.content = sessionDescription;
+                socket.send(this.sendMessage)
+            },
+            handleCreateOfferError() {
+                console.log("错误")
+            },
+            doAnswer() {
+                if (this.peerConnection == null) {
+                    this.initializePeerConnection();
+                }
+                this.peerConnection.createAnswer().then(this.createAnswerAndSendMessage, this.handleCreateAnswerError);
+            },
+            createAnswerAndSendMessage(sessionDescription) {
+                this.peerConnection.setLocalDescription(sessionDescription);
+                this.sendMessage.extend = 5;
+                this.sendMessage.content = sessionDescription;
+                this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
+                socket.send(this.sendMessage)
+                // ws.value.send(JSON.stringify({type:"4",uid:uid.value,to:rid.value,message:sessionDescription}))
+            },
+            handleCreateAnswerError() {
+                console.log("错误")
+            },
+            initData() {
+                this.connectStatus = 0;
+                this.peerConnection = null;
+                this.localStream = null;
+                this.remoteStream = null;
+                this.requester = {
+                    id: null,
+                    avatar: null,
+                    nickName: null,
+                };
+                this.fromId = null;
+                this.sendMessage = {
+                    action: 10008,
+                    token: getToken(),
+                    receiverId: "",
+                    content: "",
+                    extend: 0,
+                }
             },
             voiceResponse(event) {
                 switch (event.message) {
                     case 1:
-                        this.connectStatus = 1;
+                        this.connectStatus = 4;
                         this.fromId = event.data.id;
                         this.requester.id = event.data.id;
                         this.requester.avatar = event.data.avatar;
                         this.requester.nickName = event.data.nickName;
                         break;
                     case 2:
+                        this.getLocalStream().then((res) => {
+                            this.fromId = event.data.from;
+                            this.sendMessage.receiverId = this.fromId;
+                            this.sendMessage.extend = 3;
+                            socket.send(this.sendMessage);
+                        });
+                        break;
+                    case 3:
+                        this.getLocalStream().then(res => {
+                            if (this.peerConnection == null) {
+                                this.initializePeerConnection();
+                            }
+                            this.peerConnection.createOffer(this.createOfferAndSendMessage, this.handleCreateOfferError)
+                        });
+                        break;
+                    case 4:
+                        if (this.peerConnection == null) {
+                            this.initializePeerConnection()
+                        }
+                        this.peerConnection.setRemoteDescription(new RTCSessionDescription(event.data));
+                        this.doAnswer();
+                        break;
+                    case 5:
+                        this.peerConnection.setRemoteDescription(new RTCSessionDescription(event.data));
+                        break;
+                    case 6:
+                        var candidate = new RTCIceCandidate({
+                            sdpMLineIndex: event.data.sdpMLineIndex,
+                            candidate: event.data.candidate
+                        });
+                        this.peerConnection.addIceCandidate(candidate);
+                        break;
+                    case 7:
+                        console.log(1111)
+                        this.$emit('closeVoice', event.data);
+                        this.initData();
+                        break;
+                    case 8:
+                        this.peerConnection.close();
+                        this.localStream.getTracks().forEach(track => track.stop());
+                        this.$emit('closeVoice', event.data);
+                        this.initData();
                         break;
                     default:
-
+                        this.connectStatus = -1
                 }
-            }
+            },
+        }, mounted() {
+
         }
     }
 </script>
@@ -205,5 +320,29 @@
 
     .accepting {
 
+    }
+
+    .play {
+        display: flex;
+        font-size: 60px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .play .microphone {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 50%;
+        background-color: #eeeeee;
+    }
+
+    .play .microphone:hover {
+        background-color: #e5e5e5;
     }
 </style>

@@ -17,9 +17,6 @@
                 </el-tabs>
             </div>
         </div>
-        <div style="position: absolute;bottom: 0;font-size: 13px">
-            <span><a style="color:black;" href="https://beian.miit.gov.cn/" target="_blank">备案号:桂ICP备2023000509号</a></span>
-        </div>
     </div>
 </template>
 

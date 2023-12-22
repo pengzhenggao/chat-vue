@@ -158,7 +158,19 @@ var socket = {
     send: (data, callback = null) => {
         // 开启状态直接发送
         if (socket.websock!=null && socket.websock.readyState === socket.websock.OPEN) {
-            socket.websock.send(JSON.stringify(data));
+            try {
+                socket.websock.send(JSON.stringify(data));
+            }catch (e) {
+                var i = 0;
+              var timer = setInterval(()=>{
+                   if (i>=6){
+                       clearInterval(timer);
+                       return
+                   }
+                  socket.websock.send(JSON.stringify(data));
+                   i++;
+               },2000)
+            }
             if (callback) {
                 callback()
             }
@@ -213,7 +225,7 @@ var socket = {
                 videocalls.videoCallsResponse(recData);
                 break;
             case 30008:  //语音通话
-                voicecalls.videoCallsResponse(recData)
+                voicecalls.voiceCallsResponse(recData)
         }
         // 自行扩展其他业务处理...
     },

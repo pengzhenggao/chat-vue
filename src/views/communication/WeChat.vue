@@ -125,7 +125,7 @@
                 title="语音通话"
                 @closePop="dialogVisibleVoice = false">
             <div>
-                <VoiceCalls :friendItem="this.item" ref="voiceCalls"/>
+                <VoiceCalls @closeVoice="closeVoice" :friendItem="this.item" ref="voiceCalls"/>
             </div>
         </PopContent>
     </div>
@@ -271,6 +271,15 @@
             },
             closeVideo(message){
                 this.dialogVisibleVideo = false;
+                this.$notify({
+                    title:"视频通话",
+                    type:"warning",
+                    message: message
+                });
+            },
+            closeVoice(message){
+                console.log(message)
+                this.dialogVisibleVoice = false;
                 this.$notify({
                     title:"视频通话",
                     type:"warning",

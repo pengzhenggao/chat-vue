@@ -238,7 +238,6 @@
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         if (this.rightClickFriendId.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
                             this.friendMenu[i].friendshipsDTOS[f].isTop = status;
-                            console.log(this.friendMenu[i].friendshipsDTOS[f].isStar)
                             if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation - 1, 0, itemToMove);

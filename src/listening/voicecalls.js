@@ -3,7 +3,7 @@ export {
 }
 
 var voicecalls={
-    videoCallsResponse:(event)=>{
+    voiceCallsResponse:(event)=>{
         window.dispatchEvent(new CustomEvent('voiceCallsResponse', {
             detail: {
                 data: event
