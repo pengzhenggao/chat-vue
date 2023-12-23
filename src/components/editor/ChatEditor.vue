@@ -21,9 +21,15 @@
         components:{
             VueEditor
         },
+        props:{
+            parentContent:{
+                type:String,
+                default:null
+            }
+        },
         data(){
             return{
-                content:"",
+                content:this.parentContent,
                 editorUrl:null,
                 customToolbar: [
                     ["image","video"]
@@ -34,7 +40,6 @@
                 //upload是我封装的方法
                 let formData = new FormData()
                 formData.append('file', file)
-                console.log(formData.get('file'))
                 let config = {
                     headers: {'Content-Type': 'multipart/form-data'}
                 }

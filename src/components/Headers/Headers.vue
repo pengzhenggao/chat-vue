@@ -1,14 +1,18 @@
 <template>
     <div class="headers">
         <div class="headers-left">
-            <div class="headers-left-box" :class="switchMode === false ? 'headers-left-active' : ''" @click="targetIcon">
+            <div class="headers-left-box" :class="switchMode === false ? 'headers-left-active' : ''"
+                 @click="targetIcon">
                 <i class="el-icon-s-fold "></i>
             </div>
             <Breadcrumb/>
         </div>
         <div class="headers-right">
             <div class="headers-right-left">
-
+                <el-tooltip class="item" effect="dark" content="反馈及建议" style="margin-right: 22px" placement="bottom">
+                    <!-- <i :class="isFullscreen ? 'el-icon-full-screen head-screen-news' : 'el-icon-rank head-screen'" @click="buttoncli"></i> -->
+                    <feedback class="headers-right-left-screenIcon" @click="feedback"></feedback>
+                </el-tooltip>
                 <!--                <el-tooltip class="item" effect="dark" content="源码" placement="bottom">-->
                 <!--                    <github2 class="headers-right-left-githubIcon" @click="goGithub" />-->
                 <!--                </el-tooltip>-->
@@ -27,13 +31,13 @@
                     <i class="el-icon-bell head-news-icon" @mouseover.self="dropShowBtn"
                        @mouseout.self="dropHideBtn"></i>
                 </el-badge>
-                    <el-badge v-if="friendCount !== 0 && friendCount !== null" :value="friendCount" :max="10"
-                              class="item">
-                        <i class="el-icon-user" @mouseover="friendDropShowBtn"
-                           @mouseout.self="friendDropHideBtn"></i>
-                    </el-badge>
-                    <div v-else><i class="el-icon-user" @mouseover="friendDropShowBtn"
-                                   @mouseout.self="friendDropHideBtn"></i></div>
+                <el-badge v-if="friendCount !== 0 && friendCount !== null" :value="friendCount" :max="10"
+                          class="item">
+                    <i class="el-icon-user" @mouseover="friendDropShowBtn"
+                       @mouseout.self="friendDropHideBtn"></i>
+                </el-badge>
+                <div v-else><i class="el-icon-user" @mouseover="friendDropShowBtn"
+                               @mouseout.self="friendDropHideBtn"></i></div>
                 <div class="header-right-friendDropdown" @mouseover="friendDropShowBtn"
                      @mouseout="friendDropShow = false">
                     <el-collapse-transition>
@@ -104,6 +108,20 @@
                 </div>
             </div>
         </el-drawer>
+        <el-dialog
+                @open="initData"
+                title="问题反馈及建议"
+                :visible.sync="feedbackShow"
+                width="40%"
+                :before-close="handleClose"
+                center>
+            <div style="height: 380px;">
+                <el-scrollbar style="height: 100%" wrap-style="overflow-x:hidden;">
+                    <FeedBackView @closeFeedback="closeFeedback" ref="feedBackView"/>
+                </el-scrollbar>
+
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -123,7 +141,8 @@
     import github2 from '../../assets/icon/github2.svg' //github
     import screen from '../../assets/icon/screen.svg'  //全屏
     import reduction from '../../assets/icon/reduction.svg'
-
+    import feedback from '../../assets/icon/feedback.svg';
+    import FeedBackView from "./FeedBackView";
     import service from "../../http"; //还原
     import {socket} from "../../config/websocket/socket"
 
@@ -144,7 +163,7 @@
         },
         data() {
             return {
-
+                feedbackShow: false,
                 isOnline: true,
                 squareUrl: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png",
                 isFullscreen: false,
@@ -163,9 +182,20 @@
             github2,
             screen,
             reduction,
-
+            feedback,
+            FeedBackView
         },
         methods: {
+            initData(){
+                this.$nextTick(()=>{
+                    this.$refs.feedBackView.initFeedBackData()
+                })
+            },
+            closeFeedback(){
+                this.$nextTick(()=>{
+                  this.feedbackShow = false
+                })
+            },
             handle(command) {
                 switch (command) {
                     case 'online':
@@ -214,7 +244,7 @@
             handleCommand(command) {
                 switch (command) {
                     case 'github':
-                        window.open('https://gitee.com/pengzhenggao/admin-vue');
+                        window.open('https://gitee.com/pengzhenggao/graduation-project-chat-vue');
                         break;
                     case 'quit':
                         service.post("userAuth/logout").then(res => {
@@ -284,7 +314,7 @@
                     this.isOnline = false;
                 } else this.isOnline = status === 1;
             },
-            reduceRequests(){
+            reduceRequests() {
                 if (this.friendCount > 0) {
                     this.friendCount = Number(this.friendCount) - 1
                 } else {
@@ -298,7 +328,14 @@
                     this.friendCount = 1
                 }
                 this.$refs.friendsRef.getAllFriendRequest()
-            }
+            },
+            feedback() {
+                this.feedbackShow = true;
+            },
+            handleClose(done){
+                this.$refs.feedBackView.dataClear()
+                done();
+            },
         },
         mounted() {
             // 浏览器窗口改变事件
@@ -375,13 +412,14 @@
         color: #413A3F;
     }
 
-    .headers-right-left-switchsvg{
+    .headers-right-left-switchsvg {
         width: 18px;
         height: 18px;
         margin-right: 20px;
         fill: currentColor;
         color: #413A3F;
     }
+
     .headers-right-left-githubIcon {
         width: 20px;
         height: 20px;
@@ -549,4 +587,9 @@
         cursor: pointer;
     }
 
+    .feedback {
+        font-size: 13px;
+        color: #9f9f9f;
+        margin-right: 60px;
+    }
 </style>

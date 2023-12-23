@@ -540,7 +540,7 @@
                 }
             },
             getContent(content) {
-                this.copyContent = content.trim()
+                this.copyContent = content.replace(/<.*?>/g,"").trim()
             },
             handleCommand(command) {
                 switch (parseInt(command)) {
@@ -555,7 +555,7 @@
                             this.$notify({
                                 type: "error",
                                 title: '复制',
-                                message: "复制成功",
+                                message: "复制失败",
                             })
                         });
                         break;

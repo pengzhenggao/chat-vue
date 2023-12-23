@@ -1,6 +1,6 @@
 module.exports = {
     // 关闭线上源码
-    // productionSourceMap: true,
+    productionSourceMap: true,
     chainWebpack: (config) => {
         const svgRule = config.module.rule('svg');
         svgRule.uses.clear();
@@ -12,15 +12,15 @@ module.exports = {
           .loader('vue-svg-loader');
       },
     devServer: {
-        // disableHostCheck: true,
-        // open: true,
-        host: '192.168.31.149',
+        disableHostCheck: true,
+        open: true,
+        host: 'localhost',
         port: 8001,
         https: false,
-        // hotOnly: false,
+        hotOnly: false,
         proxy: {
-            '/api': { //8.134.75.109
-                target: 'http://192.168.31.149:8088',
+            '/api': { //8.134.75.109  局域网//192.168.31.149
+                target: 'http://localhost:8088',
                 changeOrigin: true,
                 pathRewrite:{
                     '^/api': '/'

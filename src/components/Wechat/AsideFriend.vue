@@ -475,7 +475,6 @@
                             if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1 && this.showRules !== '0'
                                 && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                console.log(this.insertLocation)
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
                             }
                             return;

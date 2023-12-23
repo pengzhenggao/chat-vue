@@ -5,30 +5,32 @@
                 <WeChatContent ref="weChatContent" @positionView="positionView" @reEdit="reEdit"/>
             </el-main>
             <el-footer height="160px">
-<!--                <el-popover-->
-<!--                        placement="bottom"-->
-<!--                        title="标题"-->
-<!--                        width="500"-->
-<!--                        height="700"-->
-<!--                        trigger="click"-->
-<!--                        v-model="emojiShow">-->
-<!--                    <el-button class="la" slot="reference" @click="loadEmojis">😀</el-button>-->
-<!--                    <div class="browBox">-->
-<!--                        <ul>-->
-<!--                            <li v-for="(item, index) in faceList"-->
-<!--                                :key="index"-->
-<!--                                @click="getBrow(index)">-->
-<!--                                {{ item }}-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </div>-->
-<!--                </el-popover>-->
+                <!--                <el-popover-->
+                <!--                        placement="bottom"-->
+                <!--                        title="标题"-->
+                <!--                        width="500"-->
+                <!--                        height="700"-->
+                <!--                        trigger="click"-->
+                <!--                        v-model="emojiShow">-->
+                <!--                    <el-button class="la" slot="reference" @click="loadEmojis">😀</el-button>-->
+                <!--                    <div class="browBox">-->
+                <!--                        <ul>-->
+                <!--                            <li v-for="(item, index) in faceList"-->
+                <!--                                :key="index"-->
+                <!--                                @click="getBrow(index)">-->
+                <!--                                {{ item }}-->
+                <!--                            </li>-->
+                <!--                        </ul>-->
+                <!--                    </div>-->
+                <!--                </el-popover>-->
                 <div v-show="groupChatStatus">
-                    <ChatEditor @submitMessage="submitMessage" />
+                    <ChatEditor ref="chatEditor" :parentContent="this.sendMessage.content"
+                                @submitMessage="submitMessage"/>
                 </div>
                 <div v-show="!groupChatStatus">
                     <span style="border-top: 1px solid #cccccc;display: flex;justify-content: center;line-height: 100px;cursor: default">
-                        <span style="font-size: 18px;color: #999999"><span class="el-icon-warning" style="color: #a30000"></span>&nbsp;群主已解散该群聊，禁止发送消息</span>
+                        <span style="font-size: 18px;color: #999999"><span class="el-icon-warning"
+                                                                           style="color: #a30000"></span>&nbsp;群主已解散该群聊，禁止发送消息</span>
                     </span>
                 </div>
             </el-footer>
@@ -43,6 +45,7 @@
 
     import ChatEditor from "./editor/ChatEditor";
     import service from "../http";
+
     export default {
         components: {
             WeChatContent,
@@ -56,7 +59,7 @@
                 emojiShow: false,
                 //表情列表
                 faceList: [],
-                groupChatStatus:true,
+                groupChatStatus: true,
                 scrolltMax: 0,
                 //表情文本
                 content: "",
@@ -107,7 +110,7 @@
                     return
                 }
                 if (this.chatType === 1) {
-                    this.sendMessage.content = content;
+                    this.sendMessage.content = content.replace(/<.*?>/g, "").trim();
                     socket.send(this.sendMessage);
                 } else if (this.chatType === 0) {
                     this.sendGroupChatMessage.content = content;
@@ -115,7 +118,7 @@
                 }
             },
             chatBox(data) {
-                this.content = ''
+                this.content = '';
                 if (data.type === 1) {
                     this.sendMessage.receiverId = data.friendshipId;
                     this.scrolltMax = 0;
@@ -139,15 +142,15 @@
                 }
                 return isJPG;
             },
-            getGroupChatStatus(groupChatId){
+            getGroupChatStatus(groupChatId) {
                 service({
-                    method:"get",
-                    url:"groupChat/getGroupChatStatus",
-                    params:{
-                        groupChatId:groupChatId
+                    method: "get",
+                    url: "groupChat/getGroupChatStatus",
+                    params: {
+                        groupChatId: groupChatId
                     }
-                }).then(res=>{
-                    if (res && res.code===20000){
+                }).then(res => {
+                    if (res && res.code === 20000) {
                         this.groupChatStatus = res.data
                     }
                 })
@@ -177,8 +180,21 @@
                 this.scrolltMax = 0
             },
             reEdit(content) {
-                this.sendMessage.content = content
-            }
+                this.$refs.chatEditor.content = content
+            },
+            groupChatNotify(event) {
+                var params = event.detail.data;
+                switch (params.message) {
+                    case 1:
+                        if (this.chatType === 0 && this.sendGroupChatMessage.groupChatId.toString() === params.data.toString())
+                           this.groupChatStatus = false
+                            break;
+                    case 2:
+                        break;
+                    default:
+
+                }
+            },
         }, created() {
 
         }, mounted() {
@@ -186,7 +202,7 @@
                 const el = document.querySelector('.el-mai');
                 el.addEventListener('scroll', this.handleScroll);
             });
-
+            window.addEventListener("disbandGroupChat", this.groupChatNotify)
         },
         beforeDestroy() {
             // 取消滚动事件监听
@@ -224,12 +240,15 @@
     /deep/ .el-textarea__inner {
         resize: none;
     }
-    /deep/.el-main::-webkit-scrollbar-track {
+
+    /deep/ .el-main::-webkit-scrollbar-track {
         display: none;
     }
+
     .el-main::-webkit-scrollbar {
         width: 5px; /* 设置滚动条宽度 */
     }
+
     .el-main::-webkit-scrollbar-track {
         background: #ffffff; /* 设置轨道背景色 */
     }
@@ -238,6 +257,7 @@
         background: #c9c9c9; /* 设置滚动条颜色 */
         border-radius: 5px;
     }
+
     /deep/ .el-textarea .el-input__count {
         display: none;
     }
@@ -278,7 +298,8 @@
     .el-main .leaveScrollbar {
         overflow-y: hidden;
     }
-    /deep/.la.el-button{
+
+    /deep/ .la.el-button {
         padding: 10px 18px;
     }
 

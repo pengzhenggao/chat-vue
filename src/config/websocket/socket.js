@@ -16,7 +16,7 @@ var socket = {
     /** //pengzhenggao.top
      * 这个是我们的ws的地址//pengzhenggao.top
      * */
-    ws_url: "ws://192.168.31.149:8089/ws",
+    ws_url: "ws://localhost:8089/ws",
     /**
      * 开启标识
      * */
@@ -225,7 +225,11 @@ var socket = {
                 videocalls.videoCallsResponse(recData);
                 break;
             case 30008:  //语音通话
-                voicecalls.voiceCallsResponse(recData)
+                voicecalls.voiceCallsResponse(recData);
+                break;
+            case 30009:  //解散群聊通知操作
+                chatbox.disbandGroupChat(recData)
+
         }
         // 自行扩展其他业务处理...
     },

@@ -113,6 +113,11 @@
                 type: Object
             }
         },
+        beforeDestroy() {
+            this.peerConnection.close();
+            this.localStream.getTracks().forEach(track => track.stop());
+            this.initData()
+        },
         methods: {
             accept() {
                 this.sendMessage.receiverId = this.fromId;
@@ -275,7 +280,6 @@
                         this.peerConnection.addIceCandidate(candidate);
                         break;
                     case 7:
-                        console.log(1111)
                         this.$emit('closeVoice', event.data);
                         this.initData();
                         break;

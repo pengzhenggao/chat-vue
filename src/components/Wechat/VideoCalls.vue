@@ -110,6 +110,11 @@
                 type: Object
             }
         },
+        beforeDestroy() {
+            this.peerConnection.close();
+            this.localStream.getTracks().forEach(track => track.stop());
+            this.initData()
+        },
         methods: {
             accept() {
                 this.sendMessage.receiverId = this.fromId;

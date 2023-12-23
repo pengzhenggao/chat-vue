@@ -17,5 +17,12 @@ var chatbox={
                 data: event
             }
         }))
-    }
+    },
+    disbandGroupChat:(event)=>{
+        window.dispatchEvent(new CustomEvent('disbandGroupChat', {
+            detail: {
+                data: event
+            }
+        }))
+    },
 }

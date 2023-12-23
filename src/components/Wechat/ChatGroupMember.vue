@@ -124,7 +124,7 @@
                 }).then(() => {
                     service({
                         method: "put",
-                        url: `groupChat/disbandGroupChat/${this.item.friendshipId}`
+                        url: `/groupChat/disbandGroupChat/${this.item.friendshipId}`
                     }).then(res => {
                         if (res && res.code === 20000) {
                             asidefriend.initAsideFriend();
