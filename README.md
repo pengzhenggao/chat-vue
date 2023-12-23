@@ -24,8 +24,8 @@ npm run build
 
 # 主要界面
 
-##
-
+## 好友聊天页
+![src/assets/界面展示/聊天页.png](src/assets/界面展示/聊天页.png)
 
 ## 
 ### JAVA后端代码仓库地址
