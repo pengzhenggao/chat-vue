@@ -13,15 +13,20 @@ vue后台管理系统模板
 ```
 npm install
 ```
-### 运行
+## 运行
 ```
 npm run serve
 ```
-### 打包
+## 打包
 ```
 npm run build
 ```
+
+# 主要界面
+
+##
+
+
 ## 
 ### JAVA后端代码仓库地址
 https://gitee.com/pengzhenggao/graduation-project
-
