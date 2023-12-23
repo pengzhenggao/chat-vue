@@ -25,9 +25,9 @@ npm run build
 # 主要界面
 ## 登入
 ![src/assets/界面展示/login1.png](src/assets/界面展示/login1.png)
-![src/assets/界面展示/register2.png](src/assets/界面展示/register2.png)
-## 注册
 ![src/assets/界面展示/register1.png](src/assets/界面展示/register1.png)
+## 注册
+![src/assets/界面展示/register2.png](src/assets/界面展示/register2.png)
 ![src/assets/界面展示/login2.png](src/assets/界面展示/login2.png)
 ## 单聊
 ![src/assets/界面展示/聊天页.png](src/assets/界面展示/聊天页.png)
