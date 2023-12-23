@@ -11,17 +11,17 @@ vue后台管理系统模板
 
 ## 初始化
 ```
-yarn install
+npm install
 ```
 ### 运行
 ```
-yarn run serve
+npm run serve
 ```
 ### 打包
 ```
-yarn run build
+npm run build
 ```
 ## 
 ### JAVA后端代码仓库地址
-https://gitee.com/pengzhenggao/admin-menu
+https://gitee.com/pengzhenggao/graduation-project
 
