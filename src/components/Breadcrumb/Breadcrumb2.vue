@@ -2,7 +2,7 @@
     <el-breadcrumb class="app-breadcrumb" separator="/">
         <transition-group name="breadcrumb"  mode="out-in">
             <el-breadcrumb-item v-for="(item,index)  in levelList" :key="item.path" v-if='item.meta.title'>
-                <span v-if='item.redirect==="communicationwechat"||index===levelList.length-1' class="no-redirect">{{item.meta.title}}</span>
+                <span v-if='item.redirect==="wechat"||index===levelList.length-1' class="no-redirect">{{item.meta.title}}</span>
                 <router-link v-else :to="item.redirect||item.path">{{item.meta.title}}</router-link>
             </el-breadcrumb-item>
         </transition-group>
@@ -31,8 +31,8 @@
                 item => item.meta && item.meta.title && item.meta.breadcrumb !== false
             );
           const first = matched[0];
-          if (first && first.name !== 'communicationwechat') {
-            matched = [{ path: '/communicationwechat', meta: { title: '聊天页' }}].concat(matched)
+          if (first && first.name !== 'wechat') {
+            matched = [{ path: '/wechat', meta: { title: '主页' }}].concat(matched)
           }
           this.levelList = matched
         }

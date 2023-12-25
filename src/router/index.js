@@ -74,7 +74,7 @@ export const constRouter = [
     {
         path: '',
         component: Layout, //应用布局页
-        redirect: getModeType()!=null?(JSON.parse(getModeType())===true?'/wechat':'/lobbychat'):'/wechat',
+        redirect: '/wechat',
         hidden: true,
 
     },
@@ -100,7 +100,7 @@ export const constRouter = [
                 component: () => import('@/views/communication/WeChat.vue'),
                 name: 'wechat',
                 meta: {
-                    title: "好友",
+                    title: "主页",
                     icon: 'el-icon-s-home',
                     roles: ['user']
                 }

@@ -166,7 +166,7 @@
                 x: 0, // 浮动窗口的X坐标
                 y: 0, // 浮动窗口的Y坐标
                 isSearch: false,
-                showRules: 1,
+                showRules: '1',
                 keyword: "",
                 friendMenu: [],
                 insertLocation: 0,

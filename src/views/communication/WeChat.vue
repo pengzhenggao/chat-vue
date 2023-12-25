@@ -76,6 +76,12 @@
                     <ChatBox ref="chatBox"/>
                 </el-main>
             </el-container>
+        <el-container v-if="this.item.friendshipId===null"
+                      style="display: flex;justify-content: center;align-items: center">
+            <div>
+                <WechatFriend/>
+            </div>
+        </el-container>
         </el-container>
         <div>
             <el-dialog
@@ -132,6 +138,7 @@
 </template>
 
 <script>
+    import WechatFriend from "@/assets/icon/wechat-friend.svg"
     import PopContent from "../../components/PopUps/PopContent";
     import AsideFriend from "../../components/Wechat/AsideFriend";
     import ChatBox from "../../components/ChatBox";
@@ -156,7 +163,8 @@
             ChatGroupMember,
             PopContent,
             VideoCalls,
-            VoiceCalls
+            VoiceCalls,
+            WechatFriend
         },
         data() {
             return {

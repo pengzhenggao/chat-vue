@@ -13,9 +13,6 @@
                     <!-- <i :class="isFullscreen ? 'el-icon-full-screen head-screen-news' : 'el-icon-rank head-screen'" @click="buttoncli"></i> -->
                     <feedback class="headers-right-left-screenIcon" @click="feedback"></feedback>
                 </el-tooltip>
-                <!--                <el-tooltip class="item" effect="dark" content="源码" placement="bottom">-->
-                <!--                    <github2 class="headers-right-left-githubIcon" @click="goGithub" />-->
-                <!--                </el-tooltip>-->
                 <el-tooltip class="item" effect="dark" :content="isFullscreen ? '取消全屏' : '全屏'" placement="bottom">
                     <!-- <i :class="isFullscreen ? 'el-icon-full-screen head-screen-news' : 'el-icon-rank head-screen'" @click="buttoncli"></i> -->
                     <reduction v-if="isFullscreen" class="headers-right-left-screenIcon" @click="buttoncli"/>
@@ -26,7 +23,6 @@
                             placement="bottom">
                     <i class="el-icon-picture-outline-round" @click="theme = true"></i>
                 </el-tooltip>
-                <!-- <el-tooltip class="item" effect="dark" :disabled='dropShow' content="有5条未读消息" placement="bottom" @mouseover="dropShow = !dropShow"> -->
                 <el-badge is-dot class="item" style="margin: 0 20px 0 0; color: #171700">
                     <i class="el-icon-bell head-news-icon" @mouseover.self="dropShowBtn"
                        @mouseout.self="dropHideBtn"></i>
@@ -213,8 +209,8 @@
             },
             // 自定义 切换 侧边栏 事件
             targetIcon() {
-                console.log(this.switchMode)
-                this.$emit('targetIcon', !this.switchMode)
+                // console.log(this.switchMode)
+                // this.$emit('targetIcon', !this.switchMode)
             },
             // 全屏
             buttoncli() {

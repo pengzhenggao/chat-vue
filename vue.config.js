@@ -14,13 +14,13 @@ module.exports = {
     devServer: {
         disableHostCheck: true,
         open: true,
-        host: 'localhost',
+        host: process.env.VUE_APP_HOST,
         port: 8001,
         https: false,
         hotOnly: false,
         proxy: {
             '/api': { //8.134.75.109  局域网//192.168.31.149
-                target: 'http://localhost:8088',
+                target: process.env.VUE_APP_BASE_HOST,
                 changeOrigin: true,
                 pathRewrite:{
                     '^/api': '/'
