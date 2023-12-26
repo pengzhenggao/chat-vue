@@ -32,16 +32,16 @@
                                      style="margin-left: 14px;display: flex;flex-direction: column;">
                                     <span class="friend-remark">{{friend.remark}}</span>
                                     <!-- latestNews,latestTime -->
-                                    <span class="friend-latestNews" v-if="friend.latestNews && friend.messageType==0">
+                                    <span class="friend-latestNews">
                                          {{text(friend.latestNews)}}
                                     </span>
-                                    <span class="friend-latestNews"
-                                          v-else-if="friend.latestNews && friend.messageType==1">
-                                        图片
-                                    </span>
-                                    <span class="friend-latestNews" v-else>
-                                        暂无消息
-                                    </span>
+<!--                                    <span class="friend-latestNews"-->
+<!--                                          v-else-if="friend.latestNews && friend.messageType==1">-->
+<!--                                        图片-->
+<!--                                    </span>-->
+<!--                                    <span class="friend-latestNews" v-else>-->
+<!--                                        暂无消息-->
+<!--                                    </span>-->
                                 </div>
                                 <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
                                     {{chatTime(friend.latestTime)}}
@@ -85,15 +85,10 @@
                                  style="margin-left: 14px;display: flex;flex-direction: column;">
                                 <span class="friend-remark">{{friend.remark}}</span>
                                 <!-- latestNews,latestTime -->
-                                <span class="friend-latestNews" v-if="friend.latestNews && friend.messageType===0">
+                                <span class="friend-latestNews">
                                         {{text(friend.latestNews)}}
                                     </span>
-                                <span class="friend-latestNews" v-else-if="friend.latestNews && friend.messageType===1">
-                                        图片
-                                    </span>
-                                <span class="friend-latestNews" v-else>
-                                        暂无消息
-                                    </span>
+
                             </div>
                             <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
                                 {{chatTime(friend.latestTime)}}
@@ -213,14 +208,11 @@
             top(status) {
                 for (let i = 0; i < this.friendMenu.length; i++) {
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
-
                         if (this.rightClickFriendId.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
-                            this.friendMenu[i].friendshipsDTOS[f].isTop = status
-                            if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1) {
-                                const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                this.friendMenu[i].friendshipsDTOS.unshift(itemToMove);
-                                this.insertLocation = this.insertLocation + 1
-                            }
+                            this.friendMenu[i].friendshipsDTOS[f].isTop = status;
+                            const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
+                            this.friendMenu[i].friendshipsDTOS.unshift(itemToMove);
+                            this.insertLocation = this.insertLocation + 1
                             break;
                         }
                     }
@@ -238,11 +230,9 @@
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         if (this.rightClickFriendId.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
                             this.friendMenu[i].friendshipsDTOS[f].isTop = status;
-                            if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation - 1, 0, itemToMove);
                                 this.insertLocation = this.insertLocation - 1;
-                            }
                             break;
                         }
                     }
@@ -472,8 +462,7 @@
                             this.friendMenu[i].friendshipsDTOS[f].latestNews = params.content;
                             this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
                             this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
-                            if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1 && this.showRules !== '0'
-                                && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
+                            if ( this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
                             }
@@ -484,8 +473,7 @@
                             this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
                             this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
                             this.friendMenu[i].friendshipsDTOS[f].unreadCount = this.friendMenu[i].friendshipsDTOS[f].unreadCount + 1
-                            if (this.friendMenu[i].friendshipsDTOS[f].isStar !== 1 && this.showRules !== '0'
-                                && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
+                            if (this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
                             }
@@ -502,20 +490,6 @@
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         if (event.detail.data.friendId.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
                             this.friendMenu[i].friendshipsDTOS[f].isStar = event.detail.data.isStar;
-                            if (event.detail.data.isStar !== 0 && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
-                                const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                this.friendMenu[i].friendshipsDTOS.unshift(itemToMove);
-                                this.insertLocation = this.insertLocation + 1
-                            } else {
-                                if (this.insertLocation !== 0 && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
-                                    this.insertLocation = this.insertLocation - 1
-                                }
-                                //取消星标，将好友向下移动
-                                if (this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
-                                    const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                    this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
-                                }
-                            }
                             return;
                         }
                     }
@@ -589,11 +563,14 @@
 
             },
             text(html) {
+                if (!html){
+                    return "暂无消息"
+                }
                 var text = html.replace(/<img[^>]*>/g, "[图片] ");
-                if (text.replace(/<[^>]*>?/gm, '').length===0){
+                if (text.replace(/<[^<>]*>/g, '').replace("&lt;",'<').replace("&gt;",'>').length===0){
                     return "空白消息"
                 }
-                return text.replace(/<[^>]*>?/gm, '');
+                return text.replace(/<[^<>]*>/g, '').replaceAll("&lt;",'<').replaceAll("&gt;",'>');
             }
         },
         created() {
@@ -702,7 +679,7 @@
 
     .friend-remark {
         display: block;
-        margin-bottom: -1px;
+        margin-bottom: -5px;
         width: 100px;
         white-space: nowrap;
         overflow: hidden;

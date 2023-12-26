@@ -114,8 +114,12 @@
             }
         },
         beforeDestroy() {
-            this.peerConnection.close();
-            this.localStream.getTracks().forEach(track => track.stop());
+            if (this.peerConnection!=null ){
+                this.peerConnection.close();
+            }
+            if (this.localStream!=null){
+                this.localStream.getTracks().forEach(track => track.stop());
+            }
             this.initData()
         },
         methods: {
@@ -284,8 +288,12 @@
                         this.initData();
                         break;
                     case 8:
-                        this.peerConnection.close();
-                        this.localStream.getTracks().forEach(track => track.stop());
+                        if (this.peerConnection!=null ){
+                            this.peerConnection.close();
+                        }
+                        if (this.localStream!=null){
+                            this.localStream.getTracks().forEach(track => track.stop());
+                        }
                         this.$emit('closeVoice', event.data);
                         this.initData();
                         break;

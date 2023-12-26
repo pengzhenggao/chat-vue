@@ -104,7 +104,6 @@
                 });
             },
             handleAvatarSuccess(res,file) {
-                console.log(res)
                 this.form.feedbackImageUrl.push(res.message)
                 this.dialogVisible = true;
             },
@@ -157,6 +156,7 @@
     /deep/ .el-upload--picture-card {
         height: 120px;
         width: 120px;
+        line-height: 130px;
     }
 
     /deep/ .el-upload-list__item-thumbnail {

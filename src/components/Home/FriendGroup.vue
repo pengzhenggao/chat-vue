@@ -1,8 +1,8 @@
 <template>
-    <div  v-loading="loading"
-          element-loading-text="拼命加载中"
-          element-loading-spinner="el-icon-loading"
-          element-loading-background="rgba(0, 0, 0, 0)">
+    <div v-loading="loading"
+         element-loading-text="拼命加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0)">
         <div>
             <el-button type="primary" @click="openCreate">创建分组</el-button>
         </div>
@@ -52,7 +52,10 @@
                         label="操作">
                     <template slot-scope="scope">
                         <div v-if="scope.row.friendId">
-                            <el-button size="mini" type="primary" @click="sendMessage(scope.row.friendId,scope.row.remark,scope.row.id)"><i class="el-icon-thumb"></i>发消息</el-button>
+                            <el-button size="mini" type="primary"
+                                       @click="sendMessage(scope.row.friendId,scope.row.remark,scope.row.id)"><i
+                                    class="el-icon-thumb"></i>发消息
+                            </el-button>
                             <el-button
                                     size="mini"
                                     @click="updateGroup(scope.row.friendId)"
@@ -131,7 +134,7 @@
                     sort: 5
                 },
                 updateGroupView: false,
-                loading:false,
+                loading: false,
                 groupList: [],
                 tableData: [],
                 updateFriendGroup: {
@@ -149,9 +152,9 @@
                     url: "/getFriendGroup"
                 }).then(res => {
                     this.tableData = res.data;
-                   this.groupList = res.data;
+                    this.groupList = res.data;
                     this.loading = false
-                }).catch(()=>{
+                }).catch(() => {
                     this.loading = false
                 })
             },
@@ -231,40 +234,40 @@
                     } else {
                         this.$notify({
                             title: "失败",
-                            type:"error",
+                            type: "error",
                             message: "请刷新页面重试"
                         })
                     }
                 })
             },
-            confirmMoveFriendGroup(){
-               service({
-                   method:"post",
-                   url:"moveFriendGroup",
-                   data:this.updateFriendGroup
-               }).then(res=>{
-                   if (res && res.code===20000){
-                       this.$notify({
-                           title:"",
-                           type:"success",
-                           message:"移动成功"
-                       });
-                       this.init();
-                       this.updateFriendGroup= {
-                           friendId: "",
-                           groupId: "",
-                       };
-                       this.updateGroupView = false
-                   }
-               })
+            confirmMoveFriendGroup() {
+                service({
+                    method: "post",
+                    url: "moveFriendGroup",
+                    data: this.updateFriendGroup
+                }).then(res => {
+                    if (res && res.code === 20000) {
+                        this.$notify({
+                            title: "",
+                            type: "success",
+                            message: "移动成功"
+                        });
+                        this.init();
+                        this.updateFriendGroup = {
+                            friendId: "",
+                            groupId: "",
+                        };
+                        this.updateGroupView = false
+                    }
+                })
             },
-            sendMessage(userInfoId,remark,friendId){
+            sendMessage(userInfoId, remark, friendId) {
                 this.$router.replace({
-                    path:"communication/wechat",
-                    query:{
-                        friendId:friendId,
-                        remark:remark,
-                        userInfoId:userInfoId
+                    path: "/wechat",
+                    query: {
+                        friendId: friendId,
+                        remark: remark,
+                        userInfoId: userInfoId
                     }
                 })
             }

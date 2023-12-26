@@ -110,7 +110,7 @@
                     return
                 }
                 if (this.chatType === 1) {
-                    this.sendMessage.content = content.replace(/<.*?>/g, "").trim();
+                    this.sendMessage.content = content;
                     socket.send(this.sendMessage);
                 } else if (this.chatType === 0) {
                     this.sendGroupChatMessage.content = content;
@@ -133,7 +133,7 @@
                 this.chatType = data.type;
                 this.chatType === 1 ? this.$refs.weChatContent.userChatMessages(this.sendMessage.receiverId) :
                     this.$refs.weChatContent.userGroupChatMessages(this.sendGroupChatMessage.groupChatId)
-
+                this.$refs.chatEditor.editorFocus()
             },
             oss_upload(file) {
                 const isJPG = file.type === 'image/jpeg';

@@ -7,7 +7,6 @@
                 :editor-toolbar="customToolbar"
                 v-model="content"
                 use-custom-image-handler>
-
         </vue-editor>
         <div style="text-align: right"><el-button  @click="submitMessage">发送(S)</el-button></div>
     </div>
@@ -52,15 +51,28 @@
                     }
                 });
             },
-            emojiOptions(){
-                return 222
+            handlePaste(event) {
+                event.preventDefault();
+                const pastedData = (event.clipboardData || window.clipboardData).getData('text/plain');
+                // 你可以在这里处理粘贴事件，例如提取粘贴的内容
+                console.log('粘贴事件被触发:', pastedData);
+                this.content = pastedData
             },
             submitMessage(){
                 this.$emit('submitMessage',this.content);
                 this.content = ""
+            },
+            editorFocus(){
+                this.$nextTick(() => {
+                    this.$refs.editor.quill.focus();
+                })
             }
         },mounted() {
-            this.$refs.editor.quill.focus();
+           this.editorFocus()
+            this.$refs.editor.$el.addEventListener('paste', this.handlePaste);
+        },
+        beforeDestroy() {
+            this.$refs.editor.$el.removeEventListener('paste', this.handlePaste);
         }
     }
 </script>

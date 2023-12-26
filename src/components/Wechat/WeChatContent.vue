@@ -317,7 +317,7 @@
                             <span v-if="friendMessage.isStar===1" @click.prevent="setFriendStar(0)">取消星标朋友</span>
                         </div>
                         <div class="detail" @click="addBlacklist(friendMessage.friendId)">加入黑名单</div>
-                        <div class="detail" style="border-bottom: 1px solid #e1e1e1">投诉</div>
+                        <div class="detail" style="border-bottom: 1px solid #e1e1e1" @click="complaints(friendMessage)">投诉</div>
                         <div class="detail" @click="delFriend(friendMessage.friendId)">删除联系人</div>
                     </div>
                 </div>
@@ -376,6 +376,16 @@
             <audio ref="chaTone" src="@/assets/audio/chat-tone.mp3"></audio>
             <audio ref="chatGroupTone" src="@/assets/audio/chat-tone.mp3"></audio>
         </div>
+        <div class="complaints">
+            <el-dialog
+                    title="请填写投诉信息"
+                    :visible.sync="complaintsVisible"
+                    width="30%"
+                    center
+                    :before-close="complaintsHandleClose">
+                <Complaints ref="complaints"/>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -384,10 +394,14 @@
     import {getToken} from "../../utils/auth";
     import {socket} from "../../config/websocket/socket";
     import {asidefriend} from "../../listening/asidefriend";
-
+    import Complaints from "./Complaints";
     export default {
+        components:{
+            Complaints
+        },
         data() {
             return {
+                complaintsVisible:false,
                 labelOptions: [],
                 form: {
                     friendId: "",
@@ -508,7 +522,6 @@
                 }).then(res => {
                     if (res.code === 20000) {
                         this.friendMessage = res.data;
-
                         if (event.button === 0) {
                             this.leftClickView = true;
                             this.x = event.clientX; // 更新X坐标
@@ -540,7 +553,7 @@
                 }
             },
             getContent(content) {
-                this.copyContent = content.replace(/<.*?>/g,"").trim()
+                this.copyContent = content;
             },
             handleCommand(command) {
                 switch (parseInt(command)) {
@@ -750,6 +763,15 @@
                     this.flag = false;
                 });
             },
+            complaints(friend){
+                this.poolClickView = false;
+                this.leftClickView = false;
+                this.complaintsVisible = true;
+                this.$nextTick(()=>{
+                    this.$refs.complaints.initData(friend)
+                })
+
+            },
             cancelBlacklist() {
 
             },
@@ -897,6 +919,15 @@
                     .then(_ => {
                         this.remarkView = false;
                         this.flag = false;
+                        done();
+                    })
+                    .catch(_ => {
+                    });
+            },
+            complaintsHandleClose(){
+                this.$confirm('确认关闭投诉页？')
+                    .then(_ => {
+                        this.complaintsVisible = false;
                         done();
                     })
                     .catch(_ => {
