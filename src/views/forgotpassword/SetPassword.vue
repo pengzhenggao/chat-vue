@@ -22,9 +22,7 @@
                 </el-form>
             </div>
             <div style="text-align: center;margin-top: 15px;color: #666;font-size: 13px">
-                <span>后台管理系统</span>&nbsp;
-                <span>2023-2023</span> &emsp;
-                <span><a href="https://beian.miit.gov.cn/" target="_blank">备案号:桂ICP备2023000509号</a></span>
+                <span>@2023 即时聊天系统(网页版)</span>
             </div>
         </div>
     </div>

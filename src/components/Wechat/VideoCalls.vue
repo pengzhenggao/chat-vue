@@ -193,7 +193,6 @@
                 socket.send(this.sendMessage)
             },
             handleCreateOfferError() {
-                console.log("错误")
             },
             doAnswer() {
                 if (this.peerConnection == null) {
@@ -210,7 +209,6 @@
                 // ws.value.send(JSON.stringify({type:"4",uid:uid.value,to:rid.value,message:sessionDescription}))
             },
             handleCreateAnswerError() {
-                console.log("错误")
             },
             initData() {
                 this.switch = true;

@@ -18,7 +18,7 @@
                         </el-input>
                     </el-form-item>
                     <el-form-item >
-                        <el-button type="warning" @click="submit('form')">立即找回</el-button>
+                        <el-button type="primary" @click="submit('form')">立即找回</el-button>
                     </el-form-item>
                 </el-form>
             </div>

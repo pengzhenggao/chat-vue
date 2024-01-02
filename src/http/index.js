@@ -64,19 +64,10 @@ service.interceptors.response.use(
         }
     },
     error => {
-        console.log()
         if (error.message.includes('timeout')) {  // 如果错误信息中包含'timeout'，则认为是连接超时
-            Message({
-                message: "网络连接超时",
-                type: 'error',
-                duration: 5 * 1000
-            });
+            Message.error("网络超时");
         }else{
-            Message({
-                message: "服务器错误",
-                type: 'error',
-                duration: 5 * 1000
-            });
+            Message.error("网络超时");
         }
 
     }

@@ -41,7 +41,7 @@
                 <AsideFriend @currentFriend="currentFriend" @completeSearch="completeSearch" ref="asideFriend"/>
             </el-aside>
             <el-container v-show="this.item.friendshipId">
-                <el-header height="60px" class="my-header"
+                <el-header  class="my-header"
                            style="background-color:#ffffff;border-bottom: 1px solid #e1e1e1">
                     <div style="display: flex;flex-direction: row;align-items: center;position: relative">
                         <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
@@ -265,7 +265,7 @@
                         break;
                     case "addGroup":
                         this.$router.replace({
-                            path: "/Informationall",
+                            path: "/informationall",
                             query: {
                                 activeName: "group"
                             }
@@ -286,7 +286,6 @@
                 });
             },
             closeVoice(message){
-                console.log(message)
                 this.dialogVisibleVoice = false;
                 this.$notify({
                     title:"视频通话",
@@ -473,7 +472,9 @@
     .my-header {
         box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
     }
-
+    /deep/.el-card__body, .el-main{
+        padding-top: 5px !important;
+    }
     .el-header {
         background-color: #f5f5f5;
         color: #333;
@@ -491,11 +492,6 @@
     }
 
     /deep/ .el-card__body {
-        padding: 0 !important;
-    }
-
-    .el-main {
-        background-color: #f1f2f6;
         padding: 0 !important;
     }
 

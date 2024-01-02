@@ -6,10 +6,10 @@
              element-loading-spinner="el-icon-loading"
         ></div>
         <div v-show="endFlag || (recordContent.length<=0 && loading===false)"
-             style="text-align: center;margin-top: -12px"><span
+             style="text-align: center"><span
                 style="color: #999999;font-size: 13px">已经没有更多数据了</span>
         </div>
-
+        <!--单聊-->
         <div v-if="isSingleChat">
             <div v-for="(itemc,indexc) in recordContent" :key="indexc">
                 <div v-if="itemc.isRetract===0">
@@ -24,20 +24,23 @@
                                 <span>{{itemc.othersRemark}}</span>&nbsp;<span>{{chatTime(itemc.createTime)}}</span>
                             </p>
                             <div class="info-content">
-                                <div v-if="messageHandlerFlag===itemc.id" class="otherMessageHandler"
+                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)" class="otherMessageHandler"
                                      @click="getContent(itemc.content)">
                                     <el-dropdown trigger="click" @visible-change="dropdownClose"
                                                  @command="handleCommand"
                                                  placement="bottom-start">
                                         <i class="el-icon-more"></i>
                                         <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item command="1" v-if="itemc.messageType==0">复制
+                                            <el-dropdown-item command="1">复制
                                             </el-dropdown-item>
                                             <el-dropdown-item command="3">删除</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
-                                <span class="content-img" v-html="itemc.content"></span>
+                                <div v-html="itemc.content" v-if="itemc.messageType===0 || itemc.messageType===1"></div>
+                                <div v-else-if="itemc.messageType===3">
+                                    <Postcard :userInfoId="itemc.recommendId"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -49,14 +52,14 @@
                                 <span>{{chatTime(itemc.createTime)}}</span>&nbsp;<span>{{itemc.myNickName}}</span>
                             </p>
                             <div class="info-content">
-                                <div v-if="messageHandlerFlag===itemc.id" class="messageHandler"
+                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)" class="messageHandler"
                                      @click="getContent(itemc.content)">
                                     <el-dropdown trigger="click" @visible-change="dropdownClose"
                                                  @command="handleCommand"
                                                  placement="bottom-end">
                                         <i class="el-icon-more"></i>
                                         <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item command="1" v-if="itemc.messageType==0">复制
+                                            <el-dropdown-item command="1">复制
                                             </el-dropdown-item>
                                             <el-dropdown-item command="2" v-if="compareTime(itemc.createTime)">撤回
                                             </el-dropdown-item>
@@ -72,7 +75,10 @@
                               color: #ff004f">
                                     <span class="el-icon-warning"></span>
                                 </div>
-                                <span style="cursor: text" class="content-img" v-html="itemc.content"></span>
+                                <div style="cursor: text" v-html="itemc.content" v-if="itemc.messageType==0 || itemc.messageType==1"></div>
+                                <div v-else-if="itemc.messageType==3" class="postcard">
+                                    <Postcard :userInfoId="itemc.recommendId"/>
+                                </div>
                             </div>
                         </div>
                         <img :src="itemc.myAvatar">
@@ -111,7 +117,7 @@
             </div>
         </div>
 
-
+       <!-- 群聊-->
         <div v-else-if="!isSingleChat">
             <div v-for="(itemc,indexc) in recordContent" :key="indexc">
                 <div v-if="itemc.isRetract===0">
@@ -304,6 +310,7 @@
                     </div>
                 </div>
             </div>
+<!--            额外功能-->
             <div
                     v-show="poolClickView"
                     class="pool-float-window"
@@ -311,18 +318,22 @@
                 <div class="poolChick">
                     <div class="opear">
                         <div class="detail" @click="remarkViewChick">设置备注和标签</div>
-                        <div class="detail" style="border-bottom: 1px solid #e1e1e1">设置朋友权限</div>
+                        <div class="detail" style="border-bottom: 1px solid #e1e1e1" @click="recommend(friendMessage.friendId)">
+                            推荐<span v-if="friendMessage.gender===1">他</span><span v-else>她</span>给好友
+                        </div>
                         <div class="detail" style="border-bottom: 1px solid #e1e1e1">
                             <span v-if="friendMessage.isStar===0" @click.prevent="setFriendStar(1)">设置星标朋友</span>
                             <span v-if="friendMessage.isStar===1" @click.prevent="setFriendStar(0)">取消星标朋友</span>
                         </div>
                         <div class="detail" @click="addBlacklist(friendMessage.friendId)">加入黑名单</div>
-                        <div class="detail" style="border-bottom: 1px solid #e1e1e1" @click="complaints(friendMessage)">投诉</div>
+                        <div class="detail" style="border-bottom: 1px solid #e1e1e1" @click="complaints(friendMessage)">
+                            投诉
+                        </div>
                         <div class="detail" @click="delFriend(friendMessage.friendId)">删除联系人</div>
                     </div>
                 </div>
             </div>
-
+            <!--            设置备注和标签-->
             <div class="form">
                 <el-dialog
                         title="设置备注和标签"
@@ -376,6 +387,7 @@
             <audio ref="chaTone" src="@/assets/audio/chat-tone.mp3"></audio>
             <audio ref="chatGroupTone" src="@/assets/audio/chat-tone.mp3"></audio>
         </div>
+        <!--        //投诉-->
         <div class="complaints">
             <el-dialog
                     title="请填写投诉信息"
@@ -383,7 +395,18 @@
                     width="30%"
                     center
                     :before-close="complaintsHandleClose">
-                <Complaints ref="complaints"/>
+                <Complaints @complaintsFinish="complaintsFinish" ref="complaints"/>
+            </el-dialog>
+        </div>
+        <!--        好友推荐-->
+        <div>
+            <el-dialog
+                    title="选择推荐的好友"
+                    width="400px"
+                    :visible.sync="referFriendVisible"
+                    :before-close="referFriendClose"
+                    center>
+                <ReferFriend :recommendFriendId="recommendFriendId" @referFriendClose="referFriendClose" ref="referFriendChat"></ReferFriend>
             </el-dialog>
         </div>
     </div>
@@ -395,13 +418,19 @@
     import {socket} from "../../config/websocket/socket";
     import {asidefriend} from "../../listening/asidefriend";
     import Complaints from "./Complaints";
+    import ReferFriend from "./ReferFriend";
+    import Postcard from "./Postcard";
     export default {
-        components:{
-            Complaints
+        components: {
+            Postcard,
+            Complaints,
+            ReferFriend
         },
         data() {
             return {
-                complaintsVisible:false,
+                recommendFriendId:null,
+                referFriendVisible:false,
+                complaintsVisible: false,
                 labelOptions: [],
                 form: {
                     friendId: "",
@@ -643,6 +672,15 @@
                 this.flag = true;
                 this.remarkView = true
             },
+            recommend(friendMessage) {
+                this.recommendFriendId = Number(friendMessage);
+                this.poolClickView = false;
+                this.leftClickView = false;
+                this.referFriendVisible = true;
+                this.$nextTick(()=>{
+                    this.$refs.referFriendChat.init()
+                })
+            },
             hideFloatWindow(event) {
                 var lx = Number(event.clientX);
                 var ly = Number(event.clientY);
@@ -763,11 +801,11 @@
                     this.flag = false;
                 });
             },
-            complaints(friend){
+            complaints(friend) {
                 this.poolClickView = false;
                 this.leftClickView = false;
                 this.complaintsVisible = true;
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs.complaints.initData(friend)
                 })
 
@@ -924,14 +962,26 @@
                     .catch(_ => {
                     });
             },
-            complaintsHandleClose(){
+            complaintsHandleClose() {
                 this.$confirm('确认关闭投诉页？')
                     .then(_ => {
-                        this.complaintsVisible = false;
-                        done();
+                        this.$refs.complaints.clearCacheAndClose()
                     })
                     .catch(_ => {
                     });
+            },
+            referFriendClose(){
+                this.$confirm('确认关闭投诉页？')
+                    .then(_ => {
+                        this.$refs.referFriendChat.clearCacheAndClose()
+                        this.referFriendVisible = false;
+                    })
+                    .catch(_ => {
+
+                    });
+            },
+            complaintsFinish() {
+                this.complaintsVisible = false;
             },
             connectInit() {
                 if (this.searchUserId !== null && this.searchUserId !== "") {
@@ -989,7 +1039,6 @@
 
 <style scoped>
     .chat-content {
-        margin-top: 20px;
         width: 100%;
         /*padding: 20px;*/
     }
@@ -1085,6 +1134,9 @@
         font-size: 14px;
     }
 
+    .word-my .postcard{
+        padding: 0;
+    }
     .otherMessageHandler {
         position: absolute;
         right: -28px;
@@ -1116,6 +1168,7 @@
         word-wrap: break-word; /* 强制换行 */
         margin-top: 8px;
         background: #A3C3F6;
+        min-height: 1em;
         text-align: left;
     }
 

@@ -138,7 +138,7 @@ export const constRouter = [
                 }
             },
             {
-                path: '/Informationall',
+                path: '/informationall',
                 component: () => import('@/views/home/Informationall.vue'),
                 name: 'homeinformationall',
                 meta: {

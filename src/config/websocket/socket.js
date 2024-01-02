@@ -59,7 +59,6 @@ var socket = {
                 message: '当前浏览器与网站不兼容丫',
                 type: 'error',
             });
-            console.log('浏览器不支持WebSocket');
             return null
         }
 
@@ -98,10 +97,10 @@ var socket = {
 
         // 连接成功
         socket.websock.onopen = function () {
-            Message({
-                message: '连接成功',
-                type: 'success',
-            });
+            // Message({
+            //     message: '连接成功',
+            //     type: 'success',
+            // });
             header.getWebsocketStatus(socket.websock.readyState);
             let data = {
                 "action": 10002,
@@ -278,7 +277,6 @@ var socket = {
      * 重新连接
      */
     reconnect: () => {
-        console.log('发起重新连接', socket.reconnect_current)
         if (socket.websock && socket.socket_open) {
             socket.websock.close()
         }

@@ -48,7 +48,6 @@
                 }
             },
             handleClick(tab, event) {
-                // console.log(tab, event);
             },
             friendMenu(allFriendRequestList) {
                 this.allFriendRequestList = allFriendRequestList;

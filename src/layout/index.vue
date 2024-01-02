@@ -11,7 +11,7 @@
                 <el-main class="main-container">
                     <div class="main-container-views" :style="themeColor[themeIndex].container">
                         <transition name="nodebook" mode="out-in">
-                            <router-view />
+                            <router-view/>
                         </transition>
                     </div>
                     <div style="display: flex;justify-content: center;line-height: 30px">
@@ -42,7 +42,7 @@ let themeColor =[
     {
         aside: 'background-image: linear-gradient(#001529, #001529);',
         header: 'background-image: linear-gradient(to right,#ffffff, #ffffff);',
-        container: 'background-image: linear-gradient(to bottom right,#ffffff,#ffffff);'
+        container: 'background-image: linear-gradient(to bottom right,#f1f2f6,#f1f2f6);'
     },
     {
         aside: 'background-image: linear-gradient(#00BCFF, #00BCFF);',
@@ -132,7 +132,6 @@ export default {
     methods:{
         targetIcon(boole){
             this.switchMode = boole;
-            console.log(this.switchMode)
             setModeType(this.switchMode);
             if (!this.switchMode){
                 this.$router.push("/lobbychat")

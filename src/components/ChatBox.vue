@@ -224,7 +224,6 @@
 
     /deep/ .el-footer {
         width: 100%;
-        background-color: #f0f1f6;
         color: #333;
         height: 270px;
         padding: 30px 20px

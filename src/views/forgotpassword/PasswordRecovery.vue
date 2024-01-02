@@ -14,7 +14,7 @@
             }
         },methods:{
             goBac(){
-                console.log(11)
+
             }
         }
     }

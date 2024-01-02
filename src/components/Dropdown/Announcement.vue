@@ -1,15 +1,11 @@
 <template>
     <div class="drop">
-        <div class="drop-right">
-            <p>{{text}}</p>
-            <p>{{time}}</p>
+        <div class="drop-right" v-if="announcementList==null">
+            <p style="font-weight: 600">{{announcementList.title}}</p>
+            <p style="font-size: 13px" v-html="announcementList.content"></p>
         </div>
-        <div class="drop-left">
-            <el-link v-if="type == 'primary'"  class="drop-left-btns drop-left-btns-primary" type="primary" :underline="false">进行中</el-link>
-            <el-link v-if="type == 'success'"  class="drop-left-btns drop-left-btns-success" type="success" :underline="false">完成</el-link>
-            <el-link v-if="type == 'warning'"  class="drop-left-btns drop-left-btns-warning" type="warning" :underline="false">即将到期</el-link>
-            <el-link v-if="type == 'danger'"  class="drop-left-btns drop-left-btns-danger" type="danger" :underline="false">未完成</el-link>
-            <el-link v-if="type == 'info'" class="drop-left-btns drop-left-btns-info" type="info" :underline="false">未开始</el-link>
+        <div v-else style="font-size: 15px;margin: 0 auto;color: #999999">
+            <span>暂无公告</span>
         </div>
     </div>
 </template>
@@ -17,23 +13,10 @@
 <script>
 export default {
     props:{
-        text:{
-            type: String,
-            default: 'Zhuye',
-            required: true
-        },
-        time:{
-            type: String,
-            required: true
-        },
-        type:{
-            type: String,
-            default: 'info',
-            validator: function (value) {
-                // 这个值必须匹配下列字符串中的一个
-                return ['info', 'danger','warning','success','primary'].indexOf(value) !== -1
-            }
-        },
+        announcementList:{
+            type:Object,
+            default:null
+        }
     }
 }
 </script>
@@ -111,6 +94,9 @@ export default {
     display: flex;
     align-items: stretch;
     flex-wrap: wrap;
+}
+.drop-right p:nth-child(1){
+    text-align: center;
 }
 .drop-right p{
     width: 100%;

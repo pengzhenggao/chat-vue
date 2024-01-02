@@ -1,7 +1,7 @@
 <template>
     <div class="headers">
         <div class="headers-left">
-            <div class="headers-left-box" :class="switchMode === false ? 'headers-left-active' : ''"
+            <div class="headers-left-box headers-left-active"
                  @click="targetIcon">
                 <i class="el-icon-s-fold "></i>
             </div>
@@ -209,8 +209,6 @@
             },
             // 自定义 切换 侧边栏 事件
             targetIcon() {
-                // console.log(this.switchMode)
-                // this.$emit('targetIcon', !this.switchMode)
             },
             // 全屏
             buttoncli() {

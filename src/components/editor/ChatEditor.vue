@@ -53,10 +53,8 @@
             },
             handlePaste(event) {
                 event.preventDefault();
-                const pastedData = (event.clipboardData || window.clipboardData).getData('text/plain');
                 // 你可以在这里处理粘贴事件，例如提取粘贴的内容
-                console.log('粘贴事件被触发:', pastedData);
-                this.content = pastedData
+                this.content = (event.clipboardData || window.clipboardData).getData('text/plain');
             },
             submitMessage(){
                 this.$emit('submitMessage',this.content);
@@ -82,7 +80,7 @@
         max-height: 45px;
         min-height: 45px !important ;
         padding: 0 15px 15px 15px;
-        background-color: #f1f2f6;
+
         border-bottom: none;
 
     }
@@ -92,7 +90,6 @@
         border-left: none;
     }
     /deep/.quillWrapper .ql-snow.ql-toolbar{
-        background-color: #f1f2f6;
         padding-bottom:0
     }
     /deep/.ql-snow .ql-editor img{

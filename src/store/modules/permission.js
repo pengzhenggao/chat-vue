@@ -75,7 +75,6 @@ const actions = {
             if(roles.includes('admin')){
                 accessedRoutes = asyncRoutes || []
             }else{
-                // console.log(roles)
                 //  否则需要根据用户角色做过滤处理 jerry
                 accessedRoutes = filterAsyncRoutes(asyncRoutes,roles)
             }

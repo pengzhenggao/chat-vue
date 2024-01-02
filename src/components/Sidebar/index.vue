@@ -52,8 +52,6 @@
             }
         },
         mounted() {
-            // socket.init()
-            // console.log(this.permission_routes,12)
         }
     };
 </script>

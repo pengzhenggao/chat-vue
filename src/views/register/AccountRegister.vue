@@ -111,7 +111,6 @@
                         this.loading = true;
                         this.register()
                     } else {
-                        // console.log('error submit!!');
                         return false;
                     }
                 });

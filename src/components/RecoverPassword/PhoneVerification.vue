@@ -13,7 +13,7 @@
                 </el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="warning" @click="verification">立即验证</el-button>
+                <el-button type="primary" @click="verification">立即验证</el-button>
             </el-form-item>
         </el-form>
         <div class="illustrate">

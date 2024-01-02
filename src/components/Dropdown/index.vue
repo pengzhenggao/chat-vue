@@ -25,16 +25,9 @@
             <!-- <Empy type='News' text='你还没有新的消息' /> -->
         </el-tab-pane>
         <el-tab-pane name="third" style="padding:0">
-            <span slot="label">代办</span>
+            <span slot="label">公告</span>
             <div class="dropdowns-list-box">
-                <Matter type='info' text='小明给你发了一条消息' time='需要在下午五点前完成'/>
-                <Matter type='primary' text='小明给你发了一条消息' time='需要在下午五点前完成'/>
-                <Matter type='success' text='小明给你发了一条消息' time='需要在下午五点前完成'/>
-                <Matter type='warning' text='小明给你发了一条消息' time='需要在下午五点前完成'/>
-                <Matter type='danger' text='小明给你发了一条消息' time='需要在下午五点前完成'/>
-            </div>
-            <div class="dropdowns-foots">
-                清空通知
+                <Announcement :announcementList="announcementList"/>
             </div>
             <!-- <Empy type='Flag' text='你还没有新的代办事项' /> -->
         </el-tab-pane>
@@ -47,7 +40,7 @@
     // 消息 每一栏
     import NewsBox from './newsBox'
     // 代办 每一栏
-    import Matter from './matter'
+    import Announcement from './Announcement'
     // 清空图标
     import Clear from '@/assets/icon/clear.svg'
 
@@ -61,7 +54,8 @@
                 activeName: 'first',
                 dropOff: false,
                 notifyList:[],
-                messageList:[]
+                messageList:[],
+                announcementList:{}
             };
         },
         components: {
@@ -69,11 +63,10 @@
             Clear,
             NewsBox,
             Empy,
-            Matter
+            Announcement
         },
         methods: {
             handleClick(tab, event) {
-                // console.log(tab, event);
             },
             getNotify() {
                 service({
@@ -91,9 +84,18 @@
                     this.messageList = res.data
                 })
             },
+            getAnnouncement(){
+                service({
+                    method: "get",
+                    url: "user/announcement",
+                }).then(res => {
+                    this.announcementList = res.data
+                })
+            }
         },mounted() {
             this.getNotify();
-            this.getMessage()
+            this.getMessage();
+            this.getAnnouncement()
         }
     }
 </script>

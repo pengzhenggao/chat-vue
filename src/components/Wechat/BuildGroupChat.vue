@@ -98,7 +98,7 @@
         },
         methods: {
             init() {
-                service.get("/buildGroupChatShow", {
+                service.get("/getAllFriend", {
                     params: {
                         keyword: this.keyword
                     }

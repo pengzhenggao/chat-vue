@@ -138,7 +138,6 @@
                 this.sendMessage.receiverId = this.fromId;
                 this.sendMessage.extend = 7;
                 this.connectStatus = 6;
-                console.log(this.sendMessage)
                 socket.send(this.sendMessage);
             },
             closeVoice() {
@@ -203,7 +202,6 @@
                 socket.send(this.sendMessage)
             },
             handleCreateOfferError() {
-                console.log("错误")
             },
             doAnswer() {
                 if (this.peerConnection == null) {
@@ -220,7 +218,6 @@
                 // ws.value.send(JSON.stringify({type:"4",uid:uid.value,to:rid.value,message:sessionDescription}))
             },
             handleCreateAnswerError() {
-                console.log("错误")
             },
             initData() {
                 this.connectStatus = 0;

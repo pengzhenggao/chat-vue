@@ -1,128 +1,114 @@
 <template>
-    <div v-loading="loading">
-        <div style="margin: 5px 0 5px 0" v-if="emptyMessage && emptyMessage.length>0">
-            <p>{{emptyMessage}}</p>
-        </div>
-        <div :class="{'drop':keyword,'init':!keyword}">
-            <div @click="search" style="display: flex;flex-direction: row;align-items: center;justify-content: center"
-                 v-if="keyword">
-                <div class="search">
-                    <span class="el-icon-search"></span>
-                </div>
-                <div class="drop-right">
-                    <p><span>搜索:</span> <span>{{keyword}}</span></p>
-                </div>
-                <div class="drop-left">
-                    <el-link class="drop-left-btns drop-left-btns-primary" type="primary" :underline="false"><i
-                            class="el-icon-arrow-right"></i></el-link>
+    <div>
+        <div class="container" @click="clickPostCard">
+            <div style="display: flex;flex-direction: row;border-bottom: 1px solid #999999;padding-bottom: 5px">
+                <img :src="postcardMessage.avatar" style="width: 55px;height: 55px"/>
+                <div style="margin-left: 10px">
+                    <span>{{postcardMessage.userName || "未知"}}</span>&nbsp;
+                    <span v-if="postcardMessage.gender===1" class="el-icon-s-custom"></span>
+                    <span v-else class="el-icon-user-solid" style="color: red"></span>
                 </div>
             </div>
-            <div class="getSearch">
-                <el-dialog
-                        width="300px"
-                        :visible.sync="innerVisible"
-                        :before-close="clear"
-                        append-to-body>
-                    <div style="padding: 10px">
-                        <div class="personal">
-                            <el-image
-                                    v-if="searchResult.avatar"
-                                    style="width: 75px; height: 75px;border-radius: 10px"
-                                    :src="searchResult.avatar"
-                            ></el-image>
-                            <div class="base-content">
-                                <div style="display: flex;flex-direction: row">
-                                    <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
-                                                placement="bottom">
-                                        <p class="nick-name">{{searchResult.nickName}}</p>
-                                    </el-tooltip>
-                                    &nbsp;
-                                    <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
+            <div style="font-size: 12px">
+                <span>个人名片</span>
+            </div>
+        </div>
+
+        <div class="getSearch">
+            <el-dialog
+                    width="300px"
+                    :visible.sync="innerVisible"
+                    :before-close="clear"
+                    append-to-body>
+                <div style="padding: 10px">
+                    <div class="personal">
+                        <el-image
+                                v-if="postcardMessage.avatar"
+                                style="width: 75px; height: 75px;border-radius: 10px"
+                                :src="postcardMessage.avatar"
+                        ></el-image>
+                        <div class="base-content">
+                            <div style="display: flex;flex-direction: row">
+                                <el-tooltip class="item" effect="dark" :content="postcardMessage.userName"
+                                            placement="bottom">
+                                    <p class="nick-name">{{postcardMessage.userName}}</p>
+                                </el-tooltip>
+                                &nbsp;
+                                <span :class="{'man':postcardMessage.gender===1,'woman':postcardMessage.gender===0}">
                                     <i class="el-icon-s-custom"></i>
                                     </span>
-                                </div>
-                                <el-tooltip class="item" effect="dark" :content="searchResult.username"
-                                            placement="bottom">
-                                    <p class="login-name">
-                                        <span>登入名:</span> <span>{{searchResult.username}}
+                            </div>
+                            <el-tooltip class="item" effect="dark" :content="postcardMessage.userName"
+                                        placement="bottom">
+                                <p class="login-name">
+                                    <span>登入名:</span> <span>{{postcardMessage.userName}}
                                 </span>
-                                    </p>
-                                </el-tooltip>
-                            </div>
-                        </div>
-                        <div style="text-align: center;margin-top: 20px">
-                            <el-button v-if="searchResult.isFriend===0" type="info">正在申请</el-button>
-                            <el-button @click="sendMessageFunction(searchResult)"
-                                       v-else-if="searchResult.isFriend===1 || searchResult.isFriend===3" type="primary">发消息
-                            </el-button>
-                            <div v-else>
-                                <el-input size="mini" v-model="sendMessage.content"
-                                          class="custom-input"
-                                          maxlength="30"
-                                          placeholder="输入留言"></el-input>
-                                <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)" type="success">添加为好友
-                                </el-button>
-                            </div>
+                                </p>
+                            </el-tooltip>
                         </div>
                     </div>
-                </el-dialog>
-            </div>
+                    <div style="text-align: center;margin-top: 20px">
+                        <el-button v-if="postcardMessage.isFriend===0" type="info">正在申请</el-button>
+                        <el-button @click="sendMessageFunction(searchResult)"
+                                   v-else-if="postcardMessage.isFriend===1 || postcardMessage.isFriend===3"
+                                   type="primary">发消息
+                        </el-button>
+                        <div v-else>
+                            <el-input size="mini" v-model="sendMessage.content"
+                                      prefix-icon="el-icon-edit"
+                                      class="custom-input"
+                                      maxlength="30"
+                                      placeholder="输入留言"></el-input>
+                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
+                                       type="success">添加为好友
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
         </div>
     </div>
-
 </template>
 
 <script>
     import service from "../../http";
-    import {getToken} from "../../utils/auth";
     import {socket} from "../../config/websocket/socket";
+    import {getToken} from "../../utils/auth";
 
     export default {
-        name: "PrecisionSearch",
+        name: "Postcard",
         props: {
-            keyword: {
-                type: String,
+            userInfoId: {
+                type: Number,
                 default: null
             },
         },
         data() {
             return {
-                value: "",
-                options: [],
-                loading: false,
                 innerVisible: false,
-                searchResult: {},
-                emptyMessage: null,
                 sendMessage: {
                     action: 10004,       //聊天标识
                     token: getToken(),
                     receiverId: "",     //接收方
-                    extend:1,
+                    extend: 1,
                     content: "你好",         //聊天输入内容
+                },
+                postcardMessage: {
+                    isFriend: null,
+                    userName: null,
+                    avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
                 }
             }
         }, methods: {
-            search() {
-                this.searchUser();
-            },
-            searchUser() {
-                this.loading = true;
+            init() {
                 service({
                     method: "get",
-                    url: "/search/user",
+                    url: "/userInfo/getByIdPostcardUser",
                     params: {
-                        keyword: this.keyword
+                        userInfoId: this.userInfoId
                     }
                 }).then(res => {
-                    this.loading = false;
-                    if (res.data && res.data.userInfoId !== null) {
-                        this.innerVisible = true;
-                        this.searchResult = res.data
-                    } else {
-                        this.emptyMessage = "无法找到该用户，请检查你填写的账号是否正确"
-                    }
-                }).catch(() => {
-                    this.loading = false
+                    this.postcardMessage = res.data
                 })
             },
             addFriend(friendId) {
@@ -133,26 +119,42 @@
                 this.clear();
                 this.$message.success("已申请添加")
             },
+            clickPostCard() {
+                this.innerVisible = true;
+            },
             sendMessageFunction(searchResult) {
                 this.innerVisible = false;
                 this.$emit('precisionSearch', searchResult)
             },
-            clear(){
+            clear() {
                 this.innerVisible = false;
             }
         }, mounted() {
+            this.$nextTick(() => {
+                this.init()
+            })
 
-        },
-        watch: {
-            keyword(newVal, oldVal) {
-                this.emptyMessage = null
-                // 在这里执行你想要的操作
-            }
         }
     }
 </script>
 
 <style scoped>
+    .container {
+        cursor: pointer;
+        padding: 10px;
+        height: 70px;
+        width: 210px;
+        background-color: white;
+    }
+
+    .container .img {
+
+    }
+
+    .container img {
+        border-radius: 5px;
+    }
+
     .drop {
         position: relative;
         cursor: pointer;
@@ -329,11 +331,11 @@
         color: black;
         margin-left: 10px
     }
+
     /* 利用穿透，设置input边框隐藏 */
-    /deep/ .custom-input .el-input__inner{
+    /deep/ .custom-input .el-input__inner {
         border-radius: 0;
         border: 0;
         border-bottom: 1px solid #999999;
     }
-
 </style>

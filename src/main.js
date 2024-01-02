@@ -20,7 +20,7 @@ import scroll from 'vue-seamless-scroll'
 import VueParticles from 'vue-particles'
 // 全局路由守卫
 import './router/permission'
-
+import {  Message} from 'element-ui';
 // 全局注册指令
 import vPermission from './directive/permission'
 import VueFocus from 'v-focus';
@@ -37,7 +37,28 @@ Vue.config.productionTip = false;
 Vue.use(HappyScroll);
 Vue.use(scroll);
 Vue.use(VueParticles);
+// ****************防止message同样内容多次弹出**************************
+let messageInstance = null;
+const overrideMessage = (options) => {
+    if (messageInstance) {
+        messageInstance.close()
+    }
+    messageInstance = Message(options)};
+['error', 'success', 'info', 'warning'].forEach(type => {
+    Message[type] = options => {
+        if (typeof options === 'string') {
+            options = {
+                message: options,
+            }
+        }
+        options.type = type
+        return overrideMessage(options)
+    }
+})
 Vue.use(ElementUI);
+//挂载
+Vue.prototype.$message = overrideMessage;
+// ****************《《《《《《《《《《《《《《《**************************
 Vue.directive('permission', vPermission);
 
 new Vue({

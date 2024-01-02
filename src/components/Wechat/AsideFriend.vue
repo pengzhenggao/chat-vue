@@ -87,7 +87,7 @@
                                 <!-- latestNews,latestTime -->
                                 <span class="friend-latestNews">
                                         {{text(friend.latestNews)}}
-                                    </span>
+                                </span>
 
                             </div>
                             <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
@@ -202,7 +202,6 @@
                         }
                     });
                 }else if (type===0){
-                    console.log(id)
                 }
             },
             top(status) {

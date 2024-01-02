@@ -84,7 +84,6 @@
                         },700)
 
                     } else {
-                        // console.log('error submit!!');
                         return false;
                     }
                 });
