@@ -80,7 +80,11 @@
                             data:this.form
                         }).then(res=>{
                             if (res.code===20000){
-                                this.$message.success("修改密码成功");
+                                this.$notify({
+                                    title:"修改密码",
+                                    type:"success",
+                                    message:"修改密码成功"
+                                });
                                 this.$router.push("/login")
                             }
                         })

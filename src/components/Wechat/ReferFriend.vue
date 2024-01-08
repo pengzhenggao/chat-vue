@@ -89,12 +89,17 @@
                     service({
                         method:"post",
                         url:"/sendRecommend",
-                        // headers: {
-                        //     'Content-Type': 'text/plain'
-                        // },
                         data:form
                     }).then(res=>{
-                        console.log(res)
+                        if (res && res.code===20000){
+                            this.$notify({
+                                title:"好友推荐",
+                                type:"success",
+                                message:"推荐成功"
+                            })
+                            this.$emit("referFriendClose")
+                        }
+
                     })
                 }
             },

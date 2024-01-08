@@ -122,6 +122,7 @@
 
 <script>
     import service from "../../http";
+    import {asidefriend} from "../../listening/asidefriend";
 
     export default {
         name: "FriendGroup",

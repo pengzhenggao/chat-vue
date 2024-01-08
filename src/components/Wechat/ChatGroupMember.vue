@@ -108,9 +108,17 @@
                         if (res && res.code === 20000) {
                             asidefriend.initAsideFriend();
                             wechat.initContainer();
-                            this.$message.success(res.message)
+                            this.$notify({
+                                title:"退出群聊",
+                                type:"success",
+                                message:res.message
+                            })
                         } else {
-                            this.$message.error(res.message)
+                            this.$notify({
+                                title:"退出群聊",
+                                type:"error",
+                                message:res.message
+                            })
                         }
                     })
                 }).catch(() => {
@@ -162,9 +170,17 @@
                     service.delete(`groupChatStorage/clearGroupChatMessage/${this.item.friendshipId}`).then(res => {
                         if (res && res.code === 20000) {
                             chatcontent.initMessage();
-                            this.$message.success(res.message)
+                            this.$notify({
+                                title:"清空记录",
+                                type:"success",
+                                message:res.message
+                            });
                         } else {
-                            this.$message.error(res.message)
+                            this.$notify({
+                                title:"清空记录",
+                                type:"error",
+                                message:res.message
+                            });
                         }
                     })
                 }).catch(() => {

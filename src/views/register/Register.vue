@@ -1,23 +1,27 @@
 <template>
-    <div class="register">
-
-        <div class="register-box">
-            <div class="go-to-register">
-                <span @click.prevent="routerLogin">登入</span>
-            </div>
-            <div class="register-box-from">
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane label="账号注册" name="first">
-                        <!--账号密码登入-->
-                        <AccountRegister/>
-                    </el-tab-pane>
-                    <el-tab-pane label="短信注册" name="second">
-                        <SmsRegister/>
-                    </el-tab-pane>
-                </el-tabs>
+    <div class="main">
+       <Header :name="'注册'"/>
+        <div class="register">
+            <div class="register-box">
+                <div class="go-to-register">
+                    <span @click.prevent="routerLogin">登入</span>
+                </div>
+                <div class="register-box-from">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="账号注册" name="first">
+                            <!--账号密码登入-->
+                            <AccountRegister/>
+                        </el-tab-pane>
+                        <el-tab-pane label="短信注册" name="second">
+                            <SmsRegister/>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
             </div>
         </div>
+        <Footer/>
     </div>
+
 </template>
 
 <script>
@@ -26,13 +30,17 @@
     import github3 from '@/assets/icon/github3.svg'
     import AccountRegister from "./AccountRegister";
     import SmsRegister from "./SmsRegister";
+    import Header from "../../components/Common/Header";
+    import Footer from "../../components/Common/Footer";
     export default {
         components: {
             gitee,
             qq,
             github3,
             AccountRegister,
-            SmsRegister
+            SmsRegister,
+            Header,
+            Footer
         },
         data() {
             return {
@@ -52,17 +60,14 @@
 
 <style scoped>
     .register {
-        width: 100%;
-        height: 100%;
+
+        margin: 8% 0 10% 50%;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-image: url('../../assets/image/login.jpg');
         background-repeat: no-repeat;
         background-size: 100% 100%;
         color: #cccccc;
-
-        position: relative;
     }
 
     .register-bg {
@@ -72,32 +77,21 @@
     }
 
     .register-box {
+        position: relative;
         width: 450px;
         /* height: 287px; */
         background: hsl(0, 0%, 100%);
         border-radius: 5px;
         box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 15px;
         border: 1px solid #f7f7f7;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        margin-left: -225px;
-        margin-top: -200px;
-        padding-bottom: 4px;
+        padding-bottom: 20px;
     }
 
-    .register-box-title {
-        line-height: 50px;
-        font-size: 20px;
-        font-weight: 800;
-        color: #000000;
-        text-align: center;
-        border-bottom: 1px solid #ffffff;
-    }
+
 
     .register-box-from {
         width: 93%;
-        height: 449px;
+        height: 450px;
         margin: 0 auto;
         padding: 25px;
         box-sizing: border-box;
@@ -161,4 +155,14 @@
     /deep/ .el-tabs__nav-wrap::after {
         position: static !important;
     }
+    .main{
+        background-image: url("../../assets/image/login.jpg");
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+        background-size:cover;
+        height: 100%;
+        width: 100%;
+        position: relative;
+    }
+
 </style>

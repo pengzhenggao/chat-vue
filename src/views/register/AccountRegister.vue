@@ -2,12 +2,12 @@
     <div>
         <el-form :model="registerForm" :rules="rules" ref="loginForm" class="demo-ruleForm">
             <el-form-item prop="username">
-                <el-input v-model="registerForm.username"  placeholder="输入登入名" size="medium">
+                <el-input v-model="registerForm.username" placeholder="输入登入名" size="medium">
                     <el-button slot="prepend" icon="el-icon-user"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <el-input type="password"  v-model="registerForm.password" placeholder="输入登入密码" size="medium">
+                <el-input type="password" v-model="registerForm.password" placeholder="输入登入密码" size="medium">
                     <el-button slot="prepend" icon="el-icon-lock"></el-button>
                 </el-input>
             </el-form-item>
@@ -22,14 +22,17 @@
                 </el-input>
             </el-form-item>
             <el-form-item prop="code">
-                <el-input v-model="registerForm.code" :disabled="registerForm.email==='' || registerForm.email.length<=0" placeholder="输入验证码" size="medium">
-                    <el-button v-if="registerForm.email!=='' || registerForm.email.length>0" slot="append" style="width: 120px;">
+                <el-input v-model="registerForm.code"
+                          :disabled="registerForm.email==='' || registerForm.email.length<=0" placeholder="输入验证码"
+                          size="medium">
+                    <el-button v-if="registerForm.email!=='' || registerForm.email.length>0" slot="append"
+                               style="width: 120px;">
                         <span @click.prevent="sendCode" v-if="!isSend">{{sendmsg}}</span>
                         <span v-if="isSend">{{sendmsg}}</span>
                     </el-button>
                 </el-input>
             </el-form-item>
-            <el-form-item >
+            <el-form-item>
                 <el-button type="primary" size="medium" :loading="loading"
                            style="width:100%;padding: 12px 0 12px 0"
                            @click="submitForm('loginForm')">立即注册
@@ -44,7 +47,7 @@
 
     export default {
         name: "AccountRegister",
-        data(){
+        data() {
             var validatePass = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入密码'));
@@ -61,32 +64,32 @@
                     callback();
                 }
             };
-           var  validateEMail=(rule, value,callback)=> {
-               const reg = /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/;
-               if (value == '' || value == undefined || value == null) {
-                   callback();
-               } else {
-                   if (!reg.test(value)) {
-                       callback(new Error('请输入正确的邮箱'));
-                   } else {
-                       callback();
-                   }
-               }
-           }
-            return{
-                sendmsg:"发送验证码",
-                isSend:false,
-                loading:false,
+            var validateEMail = (rule, value, callback) => {
+                const reg = /^([a-zA-Z0-9]+[-_\.]?)+@[a-zA-Z0-9]+\.[a-z]+$/;
+                if (value == '' || value == undefined || value == null) {
+                    callback();
+                } else {
+                    if (!reg.test(value)) {
+                        callback(new Error('请输入正确的邮箱'));
+                    } else {
+                        callback();
+                    }
+                }
+            }
+            return {
+                sendmsg: "发送验证码",
+                isSend: false,
+                loading: false,
                 registerForm: {  // 登陆表单
                     username: '',
                     password: '',
-                    confirmPassword:"",
-                    email:"",
-                    code:'',
+                    confirmPassword: "",
+                    email: "",
+                    code: '',
                 },
                 rules: {  //登陆验证规则
                     username: [
-                        {required: true, message: '请输入用户名',  trigger: ['change']},
+                        {required: true, message: '请输入用户名', trigger: ['change']},
                         {min: 2, max: 18, message: '长度在 2 到 18 个字符', trigger: ['change']},
                     ],
                     password: [
@@ -97,14 +100,14 @@
                     confirmPassword: [
                         {required: true, message: '请再次输入登入密码', trigger: ['change']},
                         {min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: ['change']},
-                        {validator: validatePass2, trigger:'blur'}
+                        {validator: validatePass2, trigger: 'blur'}
                     ],
-                    email:[
+                    email: [
                         {validator: validateEMail, trigger: ['change']}
                     ]
                 }
             }
-        },methods:{
+        }, methods: {
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -115,22 +118,26 @@
                     }
                 });
             },
-            register(){
+            register() {
                 service({
-                    method:"post",
-                    url:"/userAuth/register/emailRegister",
-                    data:this.registerForm
-                }).then(res=>{
-                    if (res.code===20000){
-                        this.$message.success("注册成功");
+                    method: "post",
+                    url: "/userAuth/register/emailRegister",
+                    data: this.registerForm
+                }).then(res => {
+                    if (res.code === 20000) {
+                        this.$notify({
+                            title: "邮箱号注册",
+                            type: "success",
+                            message: "注册成功"
+                        });
                         this.$router.push("/login");
-                        this.loading=false
+                        this.loading = false
                     }
-                }).catch(()=>{
-                    this.loading=false
+                }).catch(() => {
+                    this.loading = false
                 })
             },
-            sendCode(){
+            sendCode() {
                 var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (regex.test(this.registerForm.email)) {
                     service({
@@ -139,9 +146,13 @@
                         params: {
                             account: this.registerForm.email
                         }
-                    }).then(res=>{
-                        if (res.code===20000){
-                            this.$message.success("发送成功");
+                    }).then(res => {
+                        if (res.code === 20000) {
+                            this.$notify({
+                                title:"获取验证码",
+                                type:"success",
+                                message:"发送成功"
+                            });
                             this.isSend = true;
                             let timer = 60;
                             this.sendmsg = timer + "s";
@@ -156,7 +167,7 @@
                             }, 1000);
                         }
                     })
-            }
+                }
             }
         }
     }
@@ -190,7 +201,7 @@
         color: #999;
     }
 
-    .el-form-item{
+    .el-form-item {
         margin-bottom: 20px;
     }
 </style>

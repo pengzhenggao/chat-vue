@@ -35,13 +35,13 @@
                                     <span class="friend-latestNews">
                                          {{text(friend.latestNews)}}
                                     </span>
-<!--                                    <span class="friend-latestNews"-->
-<!--                                          v-else-if="friend.latestNews && friend.messageType==1">-->
-<!--                                        图片-->
-<!--                                    </span>-->
-<!--                                    <span class="friend-latestNews" v-else>-->
-<!--                                        暂无消息-->
-<!--                                    </span>-->
+                                    <!--                                    <span class="friend-latestNews"-->
+                                    <!--                                          v-else-if="friend.latestNews && friend.messageType==1">-->
+                                    <!--                                        图片-->
+                                    <!--                                    </span>-->
+                                    <!--                                    <span class="friend-latestNews" v-else>-->
+                                    <!--                                        暂无消息-->
+                                    <!--                                    </span>-->
                                 </div>
                                 <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
                                     {{chatTime(friend.latestTime)}}
@@ -176,8 +176,8 @@
                 rightClickFriendId: null,
             };
         }, methods: {
-            rightClick(friendId, remark,type,id, event) {
-                if (type===1){
+            rightClick(friendId, remark, type, id, event) {
+                if (type === 1) {
                     service({
                         method: "get",
                         url: "/getSidewaysStatus",
@@ -201,7 +201,7 @@
                             })
                         }
                     });
-                }else if (type===0){
+                } else if (type === 0) {
                 }
             },
             top(status) {
@@ -229,9 +229,9 @@
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         if (this.rightClickFriendId.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
                             this.friendMenu[i].friendshipsDTOS[f].isTop = status;
-                                const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation - 1, 0, itemToMove);
-                                this.insertLocation = this.insertLocation - 1;
+                            const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
+                            this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation - 1, 0, itemToMove);
+                            this.insertLocation = this.insertLocation - 1;
                             break;
                         }
                     }
@@ -343,8 +343,8 @@
                 }
 
             },
-            getFriendshipsMenu(showRules,flag) {
-                if (!flag){
+            getFriendshipsMenu(showRules, flag) {
+                if (!flag) {
                     this.loading = true;
                 }
                 service({
@@ -389,17 +389,43 @@
                 var params = {
                     friendId: searchResult.userInfoId,
                     remark: searchResult.remark,
-                    type:1
+                    type: 1
                 };
                 this.getChat(params)
             },
+            // 获取聊天记录预处理
+            preGetChat(event) {
+                if (this.showRules !== '0' && this.friendMenu[0].friendshipsDTOS !== null) {
+                    this.friendMenu[0].friendshipsDTOS.forEach((item) => {
+                        if (item.friendId === event.detail.data) {
+                            this.activeIndex = item.id.toString();
+                            this.getChat(item)
+                        }
+                    })
+                } else {
+                    var i = 0;
+                    for (let i = 0; i < this.friendMenu.length; i++) {
+                        this.friendMenu[i].friendshipsDTOS.forEach((item) => {
+                            if (item.friendId === event.detail.data) {
+                                i = 1;
+                                this.activeIndex = item.id.toString();
+                                this.getChat(item)
+                            }
+                        })
+                        if (i === 1) {
+                            break
+                        }
+                    }
+                }
+            },
             getChat(event) {
+                console.log(event)
                 var from = {
                     friendshipId: event.type === 1 ? event.friendId : event.id,
                     remark: event.remark,
                     type: event.type,
                     groupChatCount: event.groupChatCount
-                }
+                };
                 this.$emit("currentFriend", from);
                 this.clearUnreadCount(event.friendId)
             },
@@ -461,7 +487,7 @@
                             this.friendMenu[i].friendshipsDTOS[f].latestNews = params.content;
                             this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
                             this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
-                            if ( this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
+                            if (this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
                                 const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                                 this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
                             }
@@ -501,9 +527,9 @@
                         return
                     }
                 }
-                if (!this.friendMenu[0]){
-                    this.getFriendshipsMenu(null,true)
-                }else{
+                if (!this.friendMenu[0]) {
+                    this.getFriendshipsMenu(null, true)
+                } else {
                     this.friendMenu[0].friendshipsDTOS.unshift(event.detail.data.message);
                 }
 
@@ -556,20 +582,20 @@
             },
             initAsideFriend() {
                 var showSwitching = localStorage.getItem("showSwitching");
-                if (showSwitching==='1'){
-                    this.getFriendshipsMenu(showSwitching,1)
+                if (showSwitching === '1') {
+                    this.getFriendshipsMenu(showSwitching, 1)
                 }
 
             },
             text(html) {
-                if (!html){
+                if (!html) {
                     return "暂无消息"
                 }
                 var text = html.replace(/<img[^>]*>/g, "[图片] ");
-                if (text.replace(/<[^<>]*>/g, '').replace("&lt;",'<').replace("&gt;",'>').length===0){
+                if (text.replace(/<[^<>]*>/g, '').replace("&lt;", '<').replace("&gt;", '>').length === 0) {
                     return "空白消息"
                 }
-                return text.replace(/<[^<>]*>/g, '').replaceAll("&lt;",'<').replaceAll("&gt;",'>');
+                return text.replace(/<[^<>]*>/g, '').replaceAll("&lt;", '<').replaceAll("&gt;", '>');
             }
         },
         created() {
@@ -582,6 +608,7 @@
             window.addEventListener('initAsideFriend', this.initAsideFriend);
             window.addEventListener('updateRemark', this.updateRemark);
             window.addEventListener('MessageUpdates', this.messageUpdates);
+            window.addEventListener('getChat', this.preGetChat);
             window.addEventListener('buddyListPopulation', this.buddyListPopulation);
             window.addEventListener('OnAndOffLineNotifications', this.onAndOffLineNotifications);
             document.body.addEventListener('contextmenu', e => {
@@ -631,6 +658,7 @@
     .float-window .opear .detail:hover {
         background-color: #e4e4e4;
     }
+
     .aside-friend-sidebar {
         height: calc(100vh - 19vh);
         background-color: #f5f7fa;
@@ -641,6 +669,7 @@
     .aside-friend-sidebar::-webkit-scrollbar {
         width: 5px; /* 设置滚动条宽度 */
     }
+
     .aside-friend-sidebar::-webkit-scrollbar-track {
         background: #ffffff; /* 设置轨道背景色 */
     }
@@ -649,6 +678,7 @@
         background: #c9c9c9; /* 设置滚动条颜色 */
         border-radius: 5px;
     }
+
     /deep/ .el-menu {
         background: #fff;
     }
@@ -662,9 +692,10 @@
     }
 
     }
-    /deep/ .el-menu-item.is-active:focus{
+    /deep/ .el-menu-item.is-active:focus {
         color: black;
     }
+
     /*.el-submenu {*/
     /*    background: #ecf5ff;*/
     /*}*/
@@ -684,14 +715,19 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    .friend-isStar1{
+
+    .friend-isStar1 {
         position: absolute;
         right: 35px;
         bottom: 2px
     }
-    .friend-isStar2{
-        position: absolute;right: 10px;bottom: 1px;
+
+    .friend-isStar2 {
+        position: absolute;
+        right: 10px;
+        bottom: 1px;
     }
+
     .friend-latestNews {
         margin-top: -25px;
         font-size: 12px;
@@ -733,7 +769,7 @@
         padding: 0;
     }
 
-    /deep/.el-scrollbar__wrap {
+    /deep/ .el-scrollbar__wrap {
         overflow-x: hidden;
     }
 

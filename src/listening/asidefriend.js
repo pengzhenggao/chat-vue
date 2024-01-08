@@ -28,5 +28,12 @@ var asidefriend={
     initAsideFriend(){
         window.dispatchEvent(new CustomEvent('initAsideFriend', {
         }))
+    },
+    getChat(event){
+        window.dispatchEvent(new CustomEvent('getChat', {
+            detail: {
+                data: event
+            }
+        }))
     }
 }

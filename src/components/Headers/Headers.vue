@@ -246,7 +246,11 @@
                                 this.$store.dispatch('user/resetToken');
                                 this.$router.replace('/login');
                             } else {
-                                this.$message.warning("退出失败")
+                                this.$notify({
+                                    title:"退出登入",
+                                    type:"warning",
+                                    message:"退出失败"
+                                });
                             }
                         });
                         break;

@@ -75,7 +75,11 @@
                             data:this.loginForm
                         }).then(res=>{
                             if (res.code===20000){
-                                this.$message.success("注册成功");
+                                this.$notify({
+                                    title:"手机注册",
+                                    type:"success",
+                                    message:"注册成功"
+                                });
                                 this.$router.push('/login');
                                 this.loading=false;
                             }
@@ -96,7 +100,11 @@
                         }
                     }).then(res=>{
                         if (res.code===20000){
-                            this.$message.success("发送成功");
+                            this.$notify({
+                                title:"获取验证码",
+                                type:"success",
+                                message:"发送成功"
+                            });
                             this.isSend = true;
                             let timer = 60;
                             this.sendmsg = timer + "s";

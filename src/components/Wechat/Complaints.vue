@@ -132,7 +132,11 @@
                 this.form.evidencePictures.push(res.message)
             },
             handleExceed() {
-                this.$message.warning("最多上传三张照片")
+                this.$notify({
+                    title:"图片上传",
+                    type:"warning",
+                    message:"最多上传三张照片"
+                });
             },
             handleRemove(file, fileList) {
                 this.form.evidencePictures = [];

@@ -9,15 +9,22 @@
         <div class="identity-title">找回密码</div>
         <div class="retrieve-password">
             <el-form ref="form" :model="form" label-width="0" class="content">
-                <div style="font-size: 16px;margin-bottom: 10px">登入名</div>
+                <div style="font-size: 16px;margin-bottom: 10px;">
+                    <span>登入名</span>
+                </div>
                 <el-form-item>
-                    <el-input placeholder="邮箱/手机号/用户名" style="width: 320px" v-model="form.username"></el-input>
+                    <el-input placeholder="邮箱/手机号/用户名" style="width: 320px;" v-model="form.username">
+                    </el-input>
                     <transition name="el-zoom-in-top">
                         <div v-if="check" class="transition-box"><i class="el-icon-error" style="color: #ff3c3c"></i>{{error}}</div>
                     </transition>
                 </el-form-item>
             </el-form>
             <el-button style="width: 320px;margin-top: 55px" type="primary" @click="findUserName">下一步: 验证身份</el-button>
+            <div style="text-align: center;margin-left: 250px;cursor: pointer;margin-top: 5px">
+                <router-link to="/forgot-account">
+                    <span style="font-size: 12px;color: #999999;">忘记登入名 ></span></router-link>
+            </div>
             <div style="margin-top: 100px;color: #999999">
 
                 <div class="illustrate">
@@ -164,7 +171,7 @@
     .retrieve-password {
         padding: 10px;
         text-align: center;
-        margin-top: 50px;
+        margin-top: 26px;
         background-color: #f8f8f8;
     }
 

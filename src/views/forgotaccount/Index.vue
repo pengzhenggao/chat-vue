@@ -2,7 +2,7 @@
     <div>
         <el-header>
             <div class="cMKEaF">
-                <el-page-header @back="goBack" content="登入">
+                <el-page-header @back="goBack" content="找回登入名">
                 </el-page-header>
             </div>
         </el-header>
@@ -20,12 +20,6 @@
                         <el-tab-pane label="邮箱" name="email">
                             <EmailRecover @isFindAccountE = "isFindAccountE"/>
                         </el-tab-pane>
-                   <!--     <el-tab-pane label="备案域名" name="third">
-                            角色管理
-                        </el-tab-pane>
-                        <el-tab-pane label="身份证" name="fourth">
-                            定时任务补偿
-                        </el-tab-pane>-->
                     </el-tabs>
                 </div>
             </div>
@@ -88,7 +82,11 @@
             },
             copyToClipboard(text) {
                 navigator.clipboard.writeText(text).then(() => {
-                    this.$message.success('复制成功')
+                    this.$notify({
+                        title:"复制内容",
+                        type:"success",
+                        message:"复制成功"
+                    });
                 })
             },
             goLogin(){

@@ -27,21 +27,21 @@ export const constRouter = [
         }
     },
     {
-        path: '/password-find',
-        name: "password-find",
-        component: () => import('@/views/forgotpassword/PasswordFind'),
+        path: '/account-find',
+        name: "account-find",
+        component: () => import('@/views/forgotpassword/AccountFind'),
         hidden: true, //导航菜单忽略选项
         meta: {
             title: '找回密码'
         }
     },
   {
-    path: '/forgot-password',
-    name: "forgot-password",
+    path: '/forgot-account',
+    name: "forgot-account",
     component: () => import('@/views/forgotaccount/Index'),
     hidden: true, //导航菜单忽略选项
     meta: {
-      title: '找回密码'
+      title: '找回登入名'
     }
   },
     {

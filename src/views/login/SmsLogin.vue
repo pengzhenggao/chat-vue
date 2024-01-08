@@ -16,8 +16,8 @@
             </el-form-item>
             <el-form-item style="margin-top: 26px">
                     <el-checkbox  v-model="termsService"><span class="terms-service">
-                        我已阅读并同意<a href="https://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201712130944_39600.html" target="_blank">服务条款</a>、
-                        <a href="http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html" target="_blank">隐私政策</a></span>
+                        我已阅读并同意<a href="#" target="_blank">服务条款</a>、
+                        <a href="#" target="_blank">隐私政策</a></span>
                     </el-checkbox>
                 <el-button
                         :disabled="loginForm.phone<=0 || loginForm.code<=0"
@@ -34,7 +34,10 @@
                     :visible.sync="validationVisible"
                     :before-close="validationHandleClose"
                     width="330px">
-                <SendCodeValidation @successValidation="successValidation"/>
+                <SendCodeValidation v-if="validationVisible" :xl="this.xl" :yl="this.yl"
+                                    :sliderName="this.sliderName" :username="this.loginForm.phone"
+                                    @validationHandleClose="validationHandleClose"
+                                    @successValidation="successValidation"/>
             </el-dialog>
         </div>
     </div>
@@ -42,7 +45,7 @@
 
 <script>
     import service from "../../http";
-    import SendCodeValidation from "../../components/SliderValidation/Validation";
+    import SendCodeValidation from "../../components/SliderValidation/SmsValidation";
     export default {
         name: "SmsLogin",
         components:{
@@ -67,6 +70,9 @@
                 }
             };
             return {
+                xl: 0,
+                yl: 0,
+                sliderName: null,
                 validationVisible:false,
                 termsService:false,
                 sendmsg: '发送验证码',
@@ -78,8 +84,8 @@
                 },
                 rules: {  //登陆验证规则
                     phone: [
-                        {required: true, message: '请输入手机号', trigger: ['blur','change']},
-                        {validator: phoneRule, trigger: 'blur'}
+                        {required: true, message: '请输入手机号', trigger: ['change']},
+                        {validator: phoneRule, trigger: 'change'}
                     ],
                     code: [
                         {validator: codeRule, trigger: 'change'}
@@ -151,7 +157,11 @@
                     }).then(res=>{
                         this.validationVisible=false
                         if (res.code===20000){
-                            this.$message.success("发送成功");
+                            this.$notify({
+                                title:"获取验证码",
+                                type:"success",
+                                message:"发送成功"
+                            });
                             this.isSend = true;
                             let timer = 60;
                             this.sendmsg = timer + "s";
@@ -171,12 +181,28 @@
                 }
             },
             sendCode() {
-               this.validationVisible=true
+                var regex = /^1[3456789]\d{9}$/;
+                if (regex.test(this.loginForm.phone)) {
+                    service({
+                        method: "get",
+                        url: "/sliderlocation",
+                        params:{
+                            type:"SmsLogin"
+                        }
+                    }).then(res => {
+                        this.xl = res.data.xl;
+                        this.yl = res.data.yl;
+                        this.sliderName = res.data.sliderName;
+                        this.validationVisible = true;
+                    }).catch(()=>{
+                        this.validationVisible = false;
+                    })
+                }
+
             },
             validationHandleClose(done) {
-                done();
+               this.validationVisible = false
                 this.loading = false;
-                this.$message.warning("验证关闭")
             }
         },
     }

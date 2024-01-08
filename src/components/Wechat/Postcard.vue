@@ -49,7 +49,7 @@
                     </div>
                     <div style="text-align: center;margin-top: 20px">
                         <el-button v-if="postcardMessage.isFriend===0" type="info">正在申请</el-button>
-                        <el-button @click="sendMessageFunction(searchResult)"
+                        <el-button @click="sendMessageFunction(postcardMessage)"
                                    v-else-if="postcardMessage.isFriend===1 || postcardMessage.isFriend===3"
                                    type="primary">发消息
                         </el-button>
@@ -59,7 +59,7 @@
                                       class="custom-input"
                                       maxlength="30"
                                       placeholder="输入留言"></el-input>
-                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
+                            <el-button style="margin-top: 10px" @click="addFriend(postcardMessage.id)"
                                        type="success">添加为好友
                             </el-button>
                         </div>
@@ -74,6 +74,7 @@
     import service from "../../http";
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
+    import {asidefriend} from "../../listening/asidefriend";
 
     export default {
         name: "Postcard",
@@ -114,17 +115,19 @@
             addFriend(friendId) {
                 this.sendMessage.receiverId = friendId;
                 this.sendMessage.action = 10004;
-
                 socket.send(this.sendMessage);
                 this.clear();
-                this.$message.success("已申请添加")
+                this.$message({
+                    type:"success",
+                    message:"已申请添加"
+                })
             },
             clickPostCard() {
                 this.innerVisible = true;
             },
-            sendMessageFunction(searchResult) {
+            sendMessageFunction(postcardMessage) {
                 this.innerVisible = false;
-                this.$emit('precisionSearch', searchResult)
+                asidefriend.getChat(postcardMessage.id)
             },
             clear() {
                 this.innerVisible = false;

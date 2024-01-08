@@ -119,14 +119,22 @@
                         userInfo.address = res.data.address;
                         userInfo.username = res.data.username;
                         this.$store.dispatch("user/updateUserInfo",userInfo);
-                        this.$message.success("修改成功")
+                        this.$notify({
+                            title:"个人信息",
+                            type:"success",
+                            message:"修改成功"
+                        });
                     }
                 })
             },
             oss_upload(file) {
                 const isJPG = file.type === 'image/jpeg';
                 if (!isJPG) {
-                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                    this.$notify({
+                        title:"上传头像图片",
+                        type:"error",
+                        message:"上传头像图片只能是 JPG 格式!"
+                    });
                 }
                 return isJPG ;
             },

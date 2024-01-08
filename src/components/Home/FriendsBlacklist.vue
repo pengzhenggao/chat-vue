@@ -105,9 +105,10 @@
                         }
                     })
                 }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消移出'
+                    this.$notify({
+                        title:"移出黑名单",
+                        type:"info",
+                        message:"已取消移出"
                     });
                 });
 

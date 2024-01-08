@@ -1,40 +1,49 @@
 <template>
-    <div class="login">
-        <!-- 登录面板 -->
-        <div class="login-box">
-            <div class="go-to-register">
-                <span @click.prevent="routerRegister">注册</span>
-            </div>
-            <div class="login-box-title">
-                后台聊天系统
-            </div>
-            <div class="login-box-from">
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane label="账号登入" name="first">
-                        <!--账号密码登入-->
-                        <AccountLogin/>
-                    </el-tab-pane>
-                    <el-tab-pane label="短信登入" name="second">
-                        <SmsLogin/>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-            <div style="display: flex;justify-content: center">
-                <span style="color: rgba(0,0,0,0.64);font-size: 13px;font-weight: 500">其他方式</span>
-            </div>
-            <div class="thirdParty">
-                <div class="flex-item">
-                    <gitee @click="otherLogin('gitee')" class="list-button-icon icon"></gitee>
-                    <github3 @click="otherLogin('github')" class="list-button-icon icon"></github3>
-                    <qq @click="otherLogin('qq')" class="list-button-icon icon"></qq>
-                    <weixin @click="otherLogin('weixin')" class="list-button-icon icon"></weixin>
+    <div class="main">
+        <Header :name="'登入'"/>
+        <div style="position: absolute;left: 5%;top: 30%">
+
+        </div>
+        <div class="login">
+            <!-- 登录面板 -->
+            <div class="login-box">
+                <div class="go-to-register">
+                    <span @click.prevent="routerRegister">注册</span>
+                </div>
+                <div class="login-box-title">
+                </div>
+                <div class="login-box-from">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="账号登入" name="first">
+                            <!--账号密码登入-->
+                            <AccountLogin/>
+                        </el-tab-pane>
+                        <el-tab-pane label="短信登入" name="second">
+                            <SmsLogin/>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+                <div style="display: flex;justify-content: center">
+                    <span style="color: rgba(0,0,0,0.64);font-size: 13px;font-weight: 500">其他方式</span>
+                </div>
+                <div class="thirdParty">
+                    <div class="flex-item">
+                        <gitee @click="otherLogin('gitee')" class="list-button-icon icon"></gitee>
+                        <github3 @click="otherLogin('github')" class="list-button-icon icon"></github3>
+                        <qq @click="otherLogin('qq')" class="list-button-icon icon"></qq>
+                        <weixin @click="otherLogin('weixin')" class="list-button-icon icon"></weixin>
+                    </div>
                 </div>
             </div>
         </div>
+        <Footer/>
     </div>
+
 </template>
 
 <script>
+    import Footer from "../../components/Common/Footer";
+    import Header from "../../components/Common/Header";
     import gitee from '@/assets/icon/gitee.svg'
     import qq from '@/assets/icon/qq.svg'
     import github3 from '@/assets/icon/github3.svg'
@@ -49,7 +58,9 @@
             github3,
             weixin,
             AccountLogin,
-            SmsLogin
+            SmsLogin,
+            Header,
+            Footer
         },
         data() {
             return {
@@ -76,8 +87,8 @@
                         break;
                     case 'weixin':
                         this.$notify({
-                            title:"待完善",
-                            message:"WeChat快捷登入",
+                            title:"WeChat快捷登入",
+                            message:"未完成",
                             type:"warning"
                         });
                         break;
@@ -92,17 +103,23 @@
 </script>
 
 <style scoped>
-    .login {
-        width: 100%;
+    .main{
         height: 100%;
+        width: 100%;
+        background-image: url("../../assets/image/login.jpg");
+        background-repeat:no-repeat;
+        background-attachment:fixed;
+        background-size:cover;
+        position: relative;
+    }
+    .login {
+        margin: 8% 0 10% 50%;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-image: url('../../assets/image/login.jpg');
         background-repeat: no-repeat;
         background-size: 100% 100%;
         color: #cccccc;
-        position: relative;
     }
 
     .login-bg {
@@ -112,29 +129,34 @@
     }
 
     .login-box {
+        position: relative;
         width: 450px;
         /* height: 287px; */
         background: hsl(0, 0%, 100%);
         border-radius: 5px;
         box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 15px;
         border: 1px solid #f7f7f7;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        margin-left: -225px;
-        margin-top: -200px;
         padding-bottom: 20px;
     }
 
     .login-box-title {
-        line-height: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: 67px;
         font-size: 20px;
         font-weight: 800;
         color: #000000;
         text-align: center;
         border-bottom: 1px solid #ffffff;
     }
-
+    .login-box-title img{
+         margin-right: 3px;
+      }
+    .login-box-title image{
+       width: 50px;
+    }
     .login-box-from {
         width: 93%;
         height: 320px;

@@ -21,12 +21,6 @@
                     <el-tab-pane label="邮箱验证" :lazy="true" name="email" v-else>
                         <EmailVerification  ref="emailVerification" :message="emailIdMsg"/>
                     </el-tab-pane>
-<!--                    <el-tab-pane label="扫脸验证" :lazy="true" name="sweepFace">-->
-<!--                        未开发-->
-<!--                    </el-tab-pane>-->
-<!--                    <el-tab-pane label="无法验证？提交申述" :lazy="true" name="fourth">-->
-<!--                        未开发-->
-<!--                    </el-tab-pane>-->
                 </el-tabs>
             </div>
         </div>

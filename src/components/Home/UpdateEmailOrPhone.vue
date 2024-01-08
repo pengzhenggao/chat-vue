@@ -118,7 +118,11 @@
                             data:this.updateForm
                         }).then(res=>{
                             if (res.code===20000){
-                                this.$message.success("绑定成功")
+                                this.$notify({
+                                    title:"绑定邮箱或手机",
+                                    type:"success",
+                                    message:"绑定成功"
+                                });
                                 this.visible = false;
                                 this.clear()
                             }
@@ -164,7 +168,11 @@
                     }
                 }).then(res => {
                     if (res.code === 20000) {
-                        this.$message.success("发送成功");
+                        this.$notify({
+                            title:"获取验证码",
+                            type:"success",
+                            message:"发送成功"
+                        });
                         this.isSend = true;
                         let timer = 60;
                         this.sendmsg = timer + "s";

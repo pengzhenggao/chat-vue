@@ -90,7 +90,11 @@
                         }
                     }).then(res=>{
                         if (res.code===20000){
-                            this.$message.success("发送成功");
+                            this.$notify({
+                                title:"获取验证码",
+                                type:"success",
+                                message:"发送成功"
+                            });
                             this.isSend = true;
                             let timer = 60;
                             this.sendmsg = timer + "s";
@@ -106,7 +110,11 @@
                         }
                     })
                 }else{
-                    this.$message.warning("邮箱格式不正确")
+                    this.$notify({
+                        title:"获取验证码",
+                        type:"warning",
+                        message:"邮箱格式不正确"
+                    });
                 }
             }
         }

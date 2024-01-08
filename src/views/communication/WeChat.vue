@@ -76,10 +76,14 @@
                     <ChatBox ref="chatBox"/>
                 </el-main>
             </el-container>
+<!--            初始LOGO-->
         <el-container v-if="this.item.friendshipId===null"
-                      style="display: flex;justify-content: center;align-items: center">
-            <div>
+                      style="display: flex;justify-content: center;align-items: center;">
+            <div style="text-align: center">
                 <WechatFriend/>
+                <div class="WeChatLOGO">
+                    即时聊天系统
+                </div>
             </div>
         </el-container>
         </el-container>
@@ -138,6 +142,7 @@
 </template>
 
 <script>
+    import Flag from "@/assets/icon/flag.svg"
     import WechatFriend from "@/assets/icon/wechat-friend.svg"
     import PopContent from "../../components/PopUps/PopContent";
     import AsideFriend from "../../components/Wechat/AsideFriend";
@@ -164,7 +169,8 @@
             PopContent,
             VideoCalls,
             VoiceCalls,
-            WechatFriend
+            WechatFriend,
+            Flag
         },
         data() {
             return {
@@ -442,12 +448,13 @@
             window.addEventListener("videoCallsResponse",this.videoCallsResponse);
             window.addEventListener("voiceCallsResponse",this.voiceCallsResponse);
             if (this.$route.query.friendId && this.$route.query.remark) {
+
                 const params = {
                     friendId: this.$route.query.friendId,
                     remark: this.$route.query.remark,
                     userInfoId: this.$route.query.userInfoId
                 };
-                this.$refs.asideFriend.clickAddSession(params)
+                    this.$refs.asideFriend.clickAddSession(params)
             }
         }
     }
@@ -576,5 +583,15 @@
 
     /deep/ .el-popover {
         padding: 0 !important;
+    }
+    .WeChatLOGO{
+        background-image:-webkit-linear-gradient(top, #bc8550, #d77f34,#de6912);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        font-size: 6em;
+        font-weight: bold;
+        height: 100%;
+        color: #dadada;
+        font-family: "PingFang SC",serif;
     }
 </style>

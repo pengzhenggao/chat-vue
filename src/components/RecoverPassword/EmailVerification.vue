@@ -13,7 +13,7 @@
                 </el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="warning" @click="verification">立即验证</el-button>
+                <el-button type="primary" @click="verification">立即验证</el-button>
             </el-form-item>
         </el-form>
         <div class="illustrate">
@@ -48,7 +48,11 @@
                         }
                     }).then(res => {
                         if (res.code === 20000) {
-                            this.$message.success("发送成功");
+                            this.$notify({
+                                title:"获取验证码",
+                                type:"success",
+                                message:"发送成功"
+                            });
                             this.isSend = true;
                             let timer = 60;
                             this.sendmsg = timer + "s";

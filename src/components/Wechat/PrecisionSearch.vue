@@ -131,7 +131,11 @@
 
                 socket.send(this.sendMessage);
                 this.clear();
-                this.$message.success("已申请添加")
+                this.$notify({
+                    title:"添加好友",
+                    type:"success",
+                    message:"已申请添加"
+                });
             },
             sendMessageFunction(searchResult) {
                 this.innerVisible = false;

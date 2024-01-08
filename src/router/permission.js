@@ -16,7 +16,7 @@ NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 
 
 const whiteList = ['/login','/register','/oauth/login/gitee','/oauth/login/github','/oauth/login/qq',
-    ,'/password-find','/authentication','/set-password','/forgot-password']; //排除的路径
+    '/account-find','/authentication','/set-password','/forgot-account']; //排除的路径
 
 router.beforeEach(async (to,from,next) => {
     NProgress.start();

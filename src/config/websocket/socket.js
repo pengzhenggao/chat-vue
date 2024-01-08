@@ -50,6 +50,9 @@ var socket = {
      * */
     reconnect_interval: 3000,
 
+      i : 0,
+
+     timer:null,
     /**
      * 初始化连接
      */
@@ -160,14 +163,18 @@ var socket = {
             try {
                 socket.websock.send(JSON.stringify(data));
             }catch (e) {
-                var i = 0;
-              var timer = setInterval(()=>{
+                if (socket.timer !=null){
+                    return
+                }
+                socket.timer = setInterval(()=>{
                    if (i>=6){
-                       clearInterval(timer);
+                       clearInterval(socket.timer);
+                       socket.timer = null;
+                       socket.i = 0;
                        return
                    }
                   socket.websock.send(JSON.stringify(data));
-                   i++;
+                    socket.i++;
                },2000)
             }
             if (callback) {

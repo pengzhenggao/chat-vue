@@ -6,9 +6,9 @@
              element-loading-spinner="el-icon-loading"
         ></div>
         <div v-show="endFlag || (recordContent.length<=0 && loading===false)"
-             style="text-align: center"><span
-                style="color: #999999;font-size: 13px">已经没有更多数据了</span>
+             style="text-align: center"><span style="color: #999999;font-size: 13px">已经没有更多数据了</span>
         </div>
+        <br>
         <!--单聊-->
         <div v-if="isSingleChat">
             <div v-for="(itemc,indexc) in recordContent" :key="indexc">
@@ -24,7 +24,8 @@
                                 <span>{{itemc.othersRemark}}</span>&nbsp;<span>{{chatTime(itemc.createTime)}}</span>
                             </p>
                             <div class="info-content">
-                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)" class="otherMessageHandler"
+                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)"
+                                     class="otherMessageHandler"
                                      @click="getContent(itemc.content)">
                                     <el-dropdown trigger="click" @visible-change="dropdownClose"
                                                  @command="handleCommand"
@@ -52,7 +53,8 @@
                                 <span>{{chatTime(itemc.createTime)}}</span>&nbsp;<span>{{itemc.myNickName}}</span>
                             </p>
                             <div class="info-content">
-                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)" class="messageHandler"
+                                <div v-if="messageHandlerFlag===itemc.id && (itemc.messageType===0 || itemc.messageType===1)"
+                                     class="messageHandler"
                                      @click="getContent(itemc.content)">
                                     <el-dropdown trigger="click" @visible-change="dropdownClose"
                                                  @command="handleCommand"
@@ -75,7 +77,8 @@
                               color: #ff004f">
                                     <span class="el-icon-warning"></span>
                                 </div>
-                                <div style="cursor: text" v-html="itemc.content" v-if="itemc.messageType==0 || itemc.messageType==1"></div>
+                                <div style="cursor: text" v-html="itemc.content"
+                                     v-if="itemc.messageType==0 || itemc.messageType==1"></div>
                                 <div v-else-if="itemc.messageType==3" class="postcard">
                                     <Postcard :userInfoId="itemc.recommendId"/>
                                 </div>
@@ -117,7 +120,7 @@
             </div>
         </div>
 
-       <!-- 群聊-->
+        <!-- 群聊-->
         <div v-else-if="!isSingleChat">
             <div v-for="(itemc,indexc) in recordContent" :key="indexc">
                 <div v-if="itemc.isRetract===0">
@@ -198,55 +201,6 @@
         </div>
 
         <div class="getSearch">
-            <el-dialog
-                    width="300px"
-                    :visible.sync="innerVisible"
-                    append-to-body>
-                <div style="padding: 10px">
-                    <div class="personal">
-                        <el-image
-                                v-if="searchResult.avatar"
-                                style="width: 75px; height: 75px;border-radius: 10px"
-                                :src="searchResult.avatar"
-                        ></el-image>
-                        <div class="base-content">
-                            <div style="display: flex;flex-direction: row">
-                                <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
-                                            placement="bottom">
-                                    <p class="nick-name">{{searchResult.nickName}}</p>
-                                </el-tooltip>
-                                &nbsp;
-                                <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
-                                    <i class="el-icon-s-custom"></i>
-                                    </span>
-                            </div>
-                            <el-tooltip class="item" effect="dark" :content="searchResult.username"
-                                        placement="bottom">
-                                <p class="login-name">
-                                    <span>登入名:</span> <span>{{searchResult.username}}
-                                </span>
-                                </p>
-                            </el-tooltip>
-                        </div>
-                    </div>
-                    <div style="text-align: center;margin-top: 20px">
-                        <el-button v-if="searchResult.isFriend===0 " type="info">正在申请</el-button>
-                        <el-button @click.prevent="innerVisible=false"
-                                   v-else-if="searchResult.isFriend===1 || searchResult.isFriend===3"
-                                   type="primary">发消息
-                        </el-button>
-                        <div v-else>
-                            <el-input size="mini" v-model="sendMessage.content"
-                                      class="custom-input"
-                                      maxlength="30"
-                                      placeholder="输入留言"></el-input>
-                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
-                                       type="success">添加为好友
-                            </el-button>
-                        </div>
-                    </div>
-                </div>
-            </el-dialog>
             <div
                     v-show="leftClickView"
                     class="float-window"
@@ -310,7 +264,7 @@
                     </div>
                 </div>
             </div>
-<!--            额外功能-->
+            <!--            额外功能-->
             <div
                     v-show="poolClickView"
                     class="pool-float-window"
@@ -318,7 +272,8 @@
                 <div class="poolChick">
                     <div class="opear">
                         <div class="detail" @click="remarkViewChick">设置备注和标签</div>
-                        <div class="detail" style="border-bottom: 1px solid #e1e1e1" @click="recommend(friendMessage.friendId)">
+                        <div class="detail" style="border-bottom: 1px solid #e1e1e1"
+                             @click="recommend(friendMessage.friendId)">
                             推荐<span v-if="friendMessage.gender===1">他</span><span v-else>她</span>给好友
                         </div>
                         <div class="detail" style="border-bottom: 1px solid #e1e1e1">
@@ -333,7 +288,7 @@
                     </div>
                 </div>
             </div>
-            <!--            设置备注和标签-->
+            <!--  设置备注和标签-->
             <div class="form">
                 <el-dialog
                         title="设置备注和标签"
@@ -406,7 +361,8 @@
                     :visible.sync="referFriendVisible"
                     :before-close="referFriendClose"
                     center>
-                <ReferFriend :recommendFriendId="recommendFriendId" @referFriendClose="referFriendClose" ref="referFriendChat"></ReferFriend>
+                <ReferFriend :recommendFriendId="recommendFriendId" @referFriendClose="referFriendClose"
+                             ref="referFriendChat"></ReferFriend>
             </el-dialog>
         </div>
     </div>
@@ -420,6 +376,7 @@
     import Complaints from "./Complaints";
     import ReferFriend from "./ReferFriend";
     import Postcard from "./Postcard";
+
     export default {
         components: {
             Postcard,
@@ -428,8 +385,8 @@
         },
         data() {
             return {
-                recommendFriendId:null,
-                referFriendVisible:false,
+                recommendFriendId: null,
+                referFriendVisible: false,
                 complaintsVisible: false,
                 labelOptions: [],
                 form: {
@@ -447,11 +404,9 @@
                 poolClickView: false,
                 leftClickView: false,
                 remarkView: false,
-                searchResult: {},
                 recordContent: [],
                 newMessage: '',
                 searchUserId: "",
-                innerVisible: false,
                 searchLoading: false,
                 loading: false,
                 endFlag: false,
@@ -511,7 +466,7 @@
             },
             userChatMessages(searchUserId) {
                 this.isSingleChat = true
-                if (this.searchUserId === searchUserId) {
+                if (this.searchUserId == searchUserId) {
                     return
                 }
                 this.recordContent = [];
@@ -677,7 +632,7 @@
                 this.poolClickView = false;
                 this.leftClickView = false;
                 this.referFriendVisible = true;
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs.referFriendChat.init()
                 })
             },
@@ -767,7 +722,11 @@
                         this.innerVisible = true;
                         this.searchResult = res.data
                     } else {
-                        this.$message.error("找不到该用户")
+                        this.$notify({
+                            title:"查找用户",
+                            type:"error",
+                            message:"找不到该用户"
+                        });
                     }
                 }).catch(() => {
                     loading.close();
@@ -794,7 +753,11 @@
                                     data: friendId
                                 }
                             }));
-                            this.$message.success("已加入黑名单")
+                            this.$notify({
+                                title:"加入黑名单",
+                                type:"success",
+                                message:"已加入黑名单"
+                            });
                         }
                     })
                 }).catch(() => {
@@ -812,13 +775,6 @@
             },
             cancelBlacklist() {
 
-            },
-            addFriend(friendId) {
-                this.sendMessage.receiverId = friendId;
-                this.sendMessage.action = 10004;
-                socket.send(this.sendMessage);
-                this.$message.success("已申请添加");
-                this.innerVisible = false
             },
             lazyUserChatMessages() {
                 var _this = this;
@@ -858,8 +814,8 @@
                 const userInfo = this.$store.getters.userLogin;
                 var params = event.detail.data.message;
                 //如果发送消息后返回的消息的发送者是当前用户，则再判断是否还在发消息时的用户聊天窗口，是则追加，不在则不追加
-                if (userInfo.id === params.myUserId) {
-                    if (this.searchUserId === params.othersUserId) {
+                if (userInfo.id == params.myUserId) {
+                    if (this.searchUserId ==params.othersUserId) {
                         params.isMyselfMsg = true;
                         this.recordContent.push(params);
                         this.scroll()
@@ -867,7 +823,7 @@
                 } else {
                     this.$refs.chaTone.play();
                     //判断接收方的聊天框是在发送者的聊天框中
-                    if (this.searchUserId === params.myUserId) {
+                    if (this.searchUserId == params.myUserId) {
                         params.isMyselfMsg = false;
                         params.othersUserId = params.myUserId;
                         this.recordContent.push(params);
@@ -970,15 +926,9 @@
                     .catch(_ => {
                     });
             },
-            referFriendClose(){
-                this.$confirm('确认关闭投诉页？')
-                    .then(_ => {
-                        this.$refs.referFriendChat.clearCacheAndClose()
-                        this.referFriendVisible = false;
-                    })
-                    .catch(_ => {
-
-                    });
+            referFriendClose() {
+                this.$refs.referFriendChat.clearCacheAndClose();
+                this.referFriendVisible = false;
             },
             complaintsFinish() {
                 this.complaintsVisible = false;
@@ -1039,12 +989,14 @@
 
 <style scoped>
     .chat-content {
+
         width: 100%;
         /*padding: 20px;*/
     }
 
     .word {
         display: flex;
+
         margin-bottom: 20px;
     }
 
@@ -1134,9 +1086,10 @@
         font-size: 14px;
     }
 
-    .word-my .postcard{
+    .word-my .postcard {
         padding: 0;
     }
+
     .otherMessageHandler {
         position: absolute;
         right: -28px;
