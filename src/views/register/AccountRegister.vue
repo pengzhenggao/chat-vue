@@ -2,28 +2,29 @@
     <div>
         <el-form :model="registerForm" :rules="rules" ref="loginForm" class="demo-ruleForm">
             <el-form-item prop="username">
-                <el-input v-model="registerForm.username" placeholder="输入登入名" size="medium">
+                <el-input v-model="registerForm.username" :placeholder="$t('system.enterLoginName')" size="medium">
                     <el-button slot="prepend" icon="el-icon-user"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <el-input type="password" v-model="registerForm.password" placeholder="输入登入密码" size="medium">
+                <el-input type="password" v-model="registerForm.password" :placeholder="$t('system.enterPassword')" size="medium">
                     <el-button slot="prepend" icon="el-icon-lock"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="confirmPassword">
-                <el-input type="password" v-model="registerForm.confirmPassword" placeholder="再次输入登入密码" size="medium">
+                <el-input type="password" v-model="registerForm.confirmPassword" :placeholder="$t('system.confirmPassword')" size="medium">
                     <el-button slot="prepend" icon="el-icon-lock"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="email">
-                <el-input v-model="registerForm.email" placeholder="输入邮箱" size="medium">
+                <el-input v-model="registerForm.email" :placeholder="$t('system.enterEmail')" size="medium">
                     <el-button slot="prepend" icon="el-icon-folder-checked"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="code">
                 <el-input v-model="registerForm.code"
-                          :disabled="registerForm.email==='' || registerForm.email.length<=0" placeholder="输入验证码"
+                          :disabled="registerForm.email==='' || registerForm.email.length<=0"
+                          :placeholder="$t('system.enterCode')"
                           size="medium">
                     <el-button v-if="registerForm.email!=='' || registerForm.email.length>0" slot="append"
                                style="width: 120px;">
@@ -35,7 +36,7 @@
             <el-form-item>
                 <el-button type="primary" size="medium" :loading="loading"
                            style="width:100%;padding: 12px 0 12px 0"
-                           @click="submitForm('loginForm')">立即注册
+                           @click="submitForm('loginForm')">{{$t('system.registerInNow')}}
                 </el-button>
             </el-form-item>
         </el-form>

@@ -1,18 +1,18 @@
 <template>
     <div class="main">
-       <Header :name="'注册'"/>
+       <Header :name="$t('system.registerName')"/>
         <div class="register">
             <div class="register-box">
                 <div class="go-to-register">
-                    <span @click.prevent="routerLogin">登入</span>
+                    <span @click.prevent="routerLogin">{{$t('system.login')}}</span>
                 </div>
                 <div class="register-box-from">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
-                        <el-tab-pane label="账号注册" name="first">
+                        <el-tab-pane :label="$t('system.accountRegister')" name="first">
                             <!--账号密码登入-->
                             <AccountRegister/>
                         </el-tab-pane>
-                        <el-tab-pane label="短信注册" name="second">
+                        <el-tab-pane :label="$t('system.SmsRegister')" name="second">
                             <SmsRegister/>
                         </el-tab-pane>
                     </el-tabs>

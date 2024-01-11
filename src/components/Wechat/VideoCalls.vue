@@ -9,7 +9,8 @@
                     <div></div>
                 </div>
             </div>
-            <el-button type="danger" @click="endEarly" style="margin-top: 10px"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
+            <el-button type="danger" @click="endEarly()" style="margin-top: 10px"><i class="el-icon-close"></i>&nbsp;挂断
+            </el-button>
         </div>
         <div v-show="connecting===1" class="connection">
             <div class="wait">
@@ -28,9 +29,9 @@
                 <video ref="remoteVideo" playsinline autoplay
                        :class="{'localVideo':!this.switch,'remoteVideo':this.switch}"></video>
             </div>
-            <el-button type="danger" icon="el-icon-close" @click="closeVideo">结束通话</el-button>
-            <el-button v-if="this.switch" @click="switchWindos" icon="el-icon-refresh">切换对方窗口</el-button>
-            <el-button v-else @click="switchWindos" icon="el-icon-refresh">切换自己窗口</el-button>
+            <el-button type="danger" icon="el-icon-close" @click="closeVideo()">结束通话</el-button>
+            <el-button v-if="this.switch" @click="switchWindos()" icon="el-icon-refresh">切换对方窗口</el-button>
+            <el-button v-else @click="switchWindos()" icon="el-icon-refresh">切换自己窗口</el-button>
         </div>
         <div v-show="connecting===4" style="width: 100%">
             <div style="margin: 0 auto;text-align: center">
@@ -42,8 +43,8 @@
                     <div></div>
                 </div>
                 <div>
-                    <el-button type="danger" @click="hangUp"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
-                    <el-button type="primary" @click="accept"><i class="el-icon-phone-outline"></i>&nbsp;接受</el-button>
+                    <el-button type="danger" @click="hangUp()"><i class="el-icon-close"></i>&nbsp;挂断</el-button>
+                    <el-button type="primary" @click="accept()"><i class="el-icon-phone-outline"></i>&nbsp;接受</el-button>
 
                 </div>
             </div>
@@ -111,10 +112,10 @@
             }
         },
         beforeDestroy() {
-            if (this.peerConnection!=null ){
+            if (this.peerConnection != null) {
                 this.peerConnection.close();
             }
-            if (this.localStream!=null){
+            if (this.localStream != null) {
                 this.localStream.getTracks().forEach(track => track.stop());
             }
             this.initData()
@@ -126,7 +127,7 @@
                 this.connecting = 5;
                 socket.send(this.sendMessage)
             },
-            endEarly(){
+            endEarly() {
                 this.fromId = this.friendItem.friendshipId;
                 this.hangUp()
             },
@@ -136,8 +137,8 @@
                 this.connecting = 6;
                 socket.send(this.sendMessage);
             },
-            closeVideo() {
-                this.sendMessage.receiverId = this.fromId;
+            closeVideo(fromId) {
+                this.sendMessage.receiverId = fromId ? fromId : this.fromId;
                 this.sendMessage.extend = 8;
                 this.connecting = 6;
                 socket.send(this.sendMessage);
@@ -181,7 +182,14 @@
                         resolve(true);
                     })
                         .catch(error => {
-                            console.error('Error accessing local media:', error);
+                            if (error.toString().indexOf("Device in use")){
+                                this.closeVideo();
+                                this.$notify({
+                                    title:"开启摄像头",
+                                    type:"error",
+                                    message:"摄像头已被占用"
+                                })
+                            }
                         });
                 })
             },
@@ -240,20 +248,20 @@
                         this.requestFrom.nickName = event.data.nickName;
                         break;
                     case 2:
-                        this.getLocalStream().then((res) => {
-                            this.fromId = event.data.from;
-                            this.sendMessage.receiverId = this.fromId;
-                            this.sendMessage.extend = 3;
-                            socket.send(this.sendMessage);
-                        });
+                            this.getLocalStream().then((res) => {
+                                this.fromId = event.data.from;
+                                this.sendMessage.receiverId = this.fromId;
+                                this.sendMessage.extend = 3;
+                                socket.send(this.sendMessage);
+                            });
                         break;
                     case 3:
-                        this.getLocalStream().then(res => {
-                            if (this.peerConnection == null) {
-                                this.initializePeerConnection();
-                            }
-                            this.peerConnection.createOffer(this.createOfferAndSendMessage, this.handleCreateOfferError)
-                        });
+                            this.getLocalStream().then(res => {
+                                if (this.peerConnection == null) {
+                                    this.initializePeerConnection();
+                                }
+                                this.peerConnection.createOffer(this.createOfferAndSendMessage, this.handleCreateOfferError)
+                            });
                         break;
                     case 4:
                         if (this.peerConnection == null) {
@@ -271,16 +279,17 @@
                             candidate: event.data.candidate
                         });
                         this.peerConnection.addIceCandidate(candidate);
+                        this.$emit("clearVideoTimer");
                         break;
                     case 7:
                         this.$emit('closeVideo', event.data);
                         this.initData();
                         break;
                     case 8:
-                        if (this.peerConnection!=null ){
+                        if (this.peerConnection != null) {
                             this.peerConnection.close();
                         }
-                        if (this.localStream!=null){
+                        if (this.localStream != null) {
                             this.localStream.getTracks().forEach(track => track.stop());
                         }
                         this.$emit('closeVideo', event.data);

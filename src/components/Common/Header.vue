@@ -2,16 +2,17 @@
     <div class="header">
         <div class="system-name">
             <img src="../../../public/logo.png" style="width: 25px"/>
-            <span class="logo-name">网页即时聊天系统</span><span style="margin-left: 20px">{{this.name}}</span>
+            <span class="logo-name">{{$t('system.logoName')}}</span><span style="margin-left: 20px">{{this.name}}</span>
             <div style="margin-left: auto;margin-right: 50px;font-size: 15px">
-                <el-dropdown trigger="click">
+                <el-dropdown trigger="click" @command="switchLanguages" v-model="selectedValue">
   <span class="el-dropdown-link languages">
-      中文
-      <span class="el-icon-arrow-down "></span>
+    <languages style="width: 18px;height: 18px;margin-right: 5px"/><span>{{this.languages}}</span> <span class="el-icon-arrow-down "></span>
   </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>中&emsp; 文</el-dropdown-item>
-                        <el-dropdown-item>English</el-dropdown-item>
+                        <el-dropdown-item v-for="item in options" :command="item.value"
+                                          :key="item.value" :label="item.label" :value="item.value"
+                        :class="{'dropdown-selected':selectedValue===item.value}">
+                            {{ item.label }}  </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -20,8 +21,12 @@
 </template>
 
 <script>
+    import languages from "../../assets/icon/languages.svg"
     export default {
         name: "Header",
+        components:{
+            languages
+        },
         props: {
             name: {
                 type: String,
@@ -29,11 +34,22 @@
             }
         },
         data() {
-            return {}
+            return {
+                selectedValue:sessionStorage.getItem("selectedValue")?sessionStorage.getItem("selectedValue"):"zh",
+                languages:sessionStorage.getItem("languages")?sessionStorage.getItem("languages"):"中文",
+                options: [
+                    { value: 'zh', label: '中文' },
+                    { value: 'en', label: 'English' },
+                ]
+            }
         },
         methods: {
-            switchLanguages() {
-
+            switchLanguages(command) {
+                this.selectedValue = command;
+                this.$i18n.locale = command;
+                this.languages = command ==="zh"?"中文":"English"
+                sessionStorage.setItem("languages",this.languages)
+                sessionStorage.setItem("selectedValue",this.selectedValue)
             }
         }
     }
@@ -70,7 +86,13 @@
     }
 
     .languages {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         margin-left: 2px;
         cursor: pointer;
+    }
+    .dropdown-selected{
+        background-color: #d6fcff;
     }
 </style>

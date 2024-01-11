@@ -25,7 +25,7 @@
                     </div>
                     <Loading2 v-if="play"/>
                     <Loading3 v-if="!play"/>
-                    <el-button type="danger" style="margin-top: 10px" @click="closeVoice"><i class="el-icon-close"></i>挂断</el-button>
+                    <el-button type="danger" style="margin-top: 10px" @click="closeVoice()"><i class="el-icon-close"></i>挂断</el-button>
                 </div>
             </div>
 
@@ -134,14 +134,13 @@
                 this.hangUp()
             },
             hangUp() {
-
                 this.sendMessage.receiverId = this.fromId;
                 this.sendMessage.extend = 7;
                 this.connectStatus = 6;
                 socket.send(this.sendMessage);
             },
-            closeVoice() {
-                this.sendMessage.receiverId = this.fromId;
+            closeVoice(fromId) {
+                this.sendMessage.receiverId = fromId?fromId:this.fromId;
                 this.sendMessage.extend = 8;
                 this.connectStatus = 6;
                 socket.send(this.sendMessage);
@@ -279,6 +278,7 @@
                             candidate: event.data.candidate
                         });
                         this.peerConnection.addIceCandidate(candidate);
+                        this.$emit("clearVoiceTimer")
                         break;
                     case 7:
                         this.$emit('closeVoice', event.data);

@@ -419,7 +419,6 @@
                 }
             },
             getChat(event) {
-                console.log(event)
                 var from = {
                     friendshipId: event.type === 1 ? event.friendId : event.id,
                     remark: event.remark,

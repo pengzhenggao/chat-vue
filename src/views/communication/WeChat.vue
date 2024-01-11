@@ -117,25 +117,25 @@
         </div>
 
         <PopContent
-                v-show="dialogVisibleVideo"
+                v-if="dialogVisibleVideo"
                 :pop-width="700"
                 :full-screen-icon="true"
                 :btn-show="false"
                 title="视频通话"
                 @closePop="dialogVisibleVideo = false">
             <div>
-                <VideoCalls @closeVideo="closeVideo" :friendItem="this.item" ref="videoCalls"/>
+                <VideoCalls @clearVideoTimer="clearVideoTimer" @closeVideo="closeVideo" :friendItem="this.item" ref="videoCalls"/>
             </div>
         </PopContent>
         <PopContent
-                v-show="dialogVisibleVoice"
+                v-if="dialogVisibleVoice"
                 :pop-width="700"
                 :full-screen-icon="false"
                 :btn-show="false"
                 title="语音通话"
                 @closePop="dialogVisibleVoice = false">
             <div>
-                <VoiceCalls @closeVoice="closeVoice" :friendItem="this.item" ref="voiceCalls"/>
+                <VoiceCalls @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.item" ref="voiceCalls"/>
             </div>
         </PopContent>
     </div>
@@ -174,6 +174,8 @@
         },
         data() {
             return {
+                videoCountdownTimer:null,
+                voiceCountdownTimer:null,
                 dialogVisibleVoice:false,
                 dialogVisibleVideo:false,
                 showSwitching: '0',
@@ -284,6 +286,7 @@
 
             },
             closeVideo(message){
+                this.clearVideoTimer();
                 this.dialogVisibleVideo = false;
                 this.$notify({
                     title:"视频通话",
@@ -291,13 +294,26 @@
                     message: message
                 });
             },
+            clearVideoTimer(){
+                if (this.videoCountdownTimer!==null){
+                    clearTimeout(this.videoCountdownTimer);
+                    this.videoCountdownTimer = null;
+                }
+            },
             closeVoice(message){
+                this.clearVoiceTimer();
                 this.dialogVisibleVoice = false;
                 this.$notify({
                     title:"视频通话",
                     type:"warning",
                     message: message
                 });
+            },
+            clearVoiceTimer(){
+                if (this.voiceCountdownTimer!==null){
+                    clearTimeout(this.voiceCountdownTimer);
+                    this.voiceCountdownTimer = null;
+                }
             },
             operationCommand(command){
                 switch (command) {
@@ -326,6 +342,10 @@
                                         this.sendMessage.receiverId = this.item.friendshipId;
                                         socket.send(this.sendMessage);
                                         this.dialogVisibleVideo = true;
+                                        var _this = this;
+                                        _this.videoCountdownTimer = setTimeout(function () {
+                                            _this.$refs.videoCalls.closeVideo(_this.sendMessage.receiverId)
+                                        },10*1000)
                                     }else{
                                         this.$notify({
                                             title:"视屏通话",
@@ -360,6 +380,10 @@
                                         this.sendMessage.receiverId = this.item.friendshipId;
                                         socket.send(this.sendMessage);
                                         this.dialogVisibleVoice = true;
+                                        var _this = this;
+                                        _this.voiceCountdownTimer = setTimeout(function () {
+                                            _this.$refs.voiceCalls.closeVoice(_this.sendMessage.receiverId)
+                                        },10*1000)
                                     }else{
                                         this.$notify({
                                             title:"语音通话",
@@ -424,11 +448,18 @@
             },
             videoCallsResponse(event){
                 this.dialogVisibleVideo = true;
-                this.$refs.videoCalls.VCResponse(event.detail.data)
+                var _this = this
+                _this.$nextTick(()=>{
+                    _this.$refs.videoCalls.VCResponse(event.detail.data);
+                })
+
             },
             voiceCallsResponse(event){
                 this.dialogVisibleVoice = true;
-                this.$refs.voiceCalls.voiceResponse(event.detail.data)
+                var _this = this;
+                _this.$nextTick(()=>{
+                    _this.$refs.voiceCalls.voiceResponse(event.detail.data);
+                })
             },
             initContainer() {
                 this.item = {

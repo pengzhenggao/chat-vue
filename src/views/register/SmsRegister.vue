@@ -2,12 +2,13 @@
     <div>
         <el-form :model="loginForm" :rules="rules" ref="loginForm" class="demo-ruleForm">
             <el-form-item prop="phone">
-                <el-input v-model="loginForm.phone" placeholder="输入手机号" size="medium">
+                <el-input v-model="loginForm.phone" :placeholder="$t('system.loginPhone')" size="medium">
                     <el-button slot="prepend" icon="el-icon-phone"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="code">
-                <el-input v-model="loginForm.code" :disabled="loginForm.phone.length<=0" placeholder="输入验证码" size="medium">
+                <el-input v-model="loginForm.code" :disabled="loginForm.phone.length<=0"
+                          :placeholder="$t('system.enterCode')" size="medium">
                     <el-button slot="append" style="width: 120px;" v-if="loginForm.phone.length>0">
                         <span @click.prevent="sendCode" v-if="!isSend">{{sendmsg}}</span>
                         <span v-if="isSend">{{sendmsg}}</span>
@@ -16,13 +17,13 @@
             </el-form-item>
             <el-form-item style="margin-top: 40px">
                     <el-checkbox  v-model="termsService"><span class="terms-service">
-                        我已阅读并同意<a href="https://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201712130944_39600.html" target="_blank">服务条款</a>、
-                        <a href="http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html" target="_blank">隐私政策</a></span>
+                        {{$t('system.termsOfAccessPrefix1')}}<a href="#" target="_blank">{{$t('system.termsOfAccessPrefix2')}}</a>、
+                        <a href="#" target="_blank">{{$t('system.termsOfAccessPrefix3')}}</a></span>
                     </el-checkbox>
                 <el-button type="primary" size="medium" :loading="loading"
                            :disabled="loginForm.phone<=0"
                            style="width:100%;padding: 12px 0 12px 0"
-                           @click="submitForm('loginForm')">立即注册
+                           @click="submitForm('loginForm')">{{$t('system.registerInNow')}}
                 </el-button>
             </el-form-item>
         </el-form>

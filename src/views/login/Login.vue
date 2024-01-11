@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <Header :name="'登入'"/>
+        <Header :name="$t('system.loginName')"/>
         <div style="position: absolute;left: 5%;top: 30%">
 
         </div>
@@ -8,23 +8,23 @@
             <!-- 登录面板 -->
             <div class="login-box">
                 <div class="go-to-register">
-                    <span @click.prevent="routerRegister">注册</span>
+                    <span @click.prevent="routerRegister">{{$t('system.register')}}</span>
                 </div>
                 <div class="login-box-title">
                 </div>
                 <div class="login-box-from">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
-                        <el-tab-pane label="账号登入" name="first">
+                        <el-tab-pane :label="$t('system.accountLogin')" name="first">
                             <!--账号密码登入-->
                             <AccountLogin/>
                         </el-tab-pane>
-                        <el-tab-pane label="短信登入" name="second">
+                        <el-tab-pane :label="$t('system.SmsLogin')" name="second">
                             <SmsLogin/>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
                 <div style="display: flex;justify-content: center">
-                    <span style="color: rgba(0,0,0,0.64);font-size: 13px;font-weight: 500">其他方式</span>
+                    <span style="color: rgba(0,0,0,0.64);font-size: 13px;font-weight: 500">{{$t('system.otherWays')}}</span>
                 </div>
                 <div class="thirdParty">
                     <div class="flex-item">

@@ -2,28 +2,29 @@
     <div>
         <el-form :model="loginForm" :rules="rules" ref="loginForm" class="demo-ruleForm">
             <el-form-item prop="username">
-                <el-input v-model="loginForm.username" name="username" autocomplete="off" placeholder="输入用户名/邮箱/手机号"
+                <el-input v-model="loginForm.username" name="username" autocomplete="off"
+                          :placeholder="$t('system.LARequirements')"
                           size="medium">
                     <el-button slot="prepend" icon="el-icon-user"></el-button>
                 </el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <el-input v-model="loginForm.password" @keyup.enter.native="submitForm('loginForm')" name="password"
-                          type="password" placeholder="请输入登入密码" size="medium">
+                          type="password" :placeholder="$t('system.loginPassword')" size="medium">
                     <el-button slot="prepend" icon="el-icon-key"></el-button>
                 </el-input>
 
             </el-form-item>
-            <el-checkbox v-model="isRememberMe"><span style="color: #999999">请记住我</span></el-checkbox>
+            <el-checkbox v-model="isRememberMe"><span style="color: #999999">{{$t('system.rememberMe')}}</span></el-checkbox>
             <el-form-item style="margin-top: 15px">
                 <el-button type="primary" size="medium" :loading="loading"
                            style="width:100%;padding: 12px 0 12px 0"
-                           @click="submitForm('loginForm')"><span>立即登陆</span>
+                           @click="submitForm('loginForm')"><span>{{$t('system.logInNow')}}</span>
                 </el-button>
             </el-form-item>
             <div class="login-blocks login-links">
-                <span class="forgotPassword" @click.prevent="forgotAccount()">忘记账号名</span>
-                <span class="forgotPassword" @click.prevent="forgotPassword()">忘记密码</span>
+                <span class="forgotPassword" @click.prevent="forgotAccount()">{{$t('system.forgotAccount')}}</span>
+                <span class="forgotPassword" @click.prevent="forgotPassword()">{{$t('system.forgotPassword')}}</span>
             </div>
         </el-form>
         <div>

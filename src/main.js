@@ -2,8 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
+import i18n from './lang/index'
 import ElementUI from 'element-ui';
+import locale from 'element-ui/lib/locale/lang/en'
 import 'element-ui/lib/theme-chalk/index.css';
 // 引入进度条样式
 import 'nprogress/nprogress.css'
@@ -55,14 +56,14 @@ const overrideMessage = (options) => {
         return overrideMessage(options)
     }
 })
-Vue.use(ElementUI);
+Vue.use(ElementUI,{locale});
 //挂载
 Vue.prototype.$message = overrideMessage;
 // ****************《《《《《《《《《《《《《《《**************************
 Vue.directive('permission', vPermission);
-
 new Vue({
     router,
     store,
+    i18n,
     render: h => h(App)
 }).$mount('#app');
