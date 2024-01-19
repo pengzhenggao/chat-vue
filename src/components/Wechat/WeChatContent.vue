@@ -199,7 +199,58 @@
                 </div>
             </div>
         </div>
-
+<!--        请求添加好友-->
+        <div>
+            <el-dialog
+                    width="300px"
+                    :visible.sync="innerVisible"
+                    append-to-body>
+                <div style="padding: 10px">
+                    <div class="personal">
+                        <el-image
+                                v-if="searchResult.avatar"
+                                style="width: 75px; height: 75px;border-radius: 10px"
+                                :src="searchResult.avatar"
+                        ></el-image>
+                        <div class="base-content">
+                            <div style="display: flex;flex-direction: row">
+                                <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
+                                            placement="bottom">
+                                    <p class="nick-name">{{searchResult.nickName}}</p>
+                                </el-tooltip>
+                                &nbsp;
+                                <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
+                                    <i class="el-icon-s-custom"></i>
+                                    </span>
+                            </div>
+                            <el-tooltip class="item" effect="dark" :content="searchResult.username"
+                                        placement="bottom">
+                                <p class="login-name">
+                                    <span>登入名:</span> <span>{{searchResult.username}}
+                                </span>
+                                </p>
+                            </el-tooltip>
+                        </div>
+                    </div>
+                    <div style="text-align: center;margin-top: 20px">
+                        <el-button v-if="searchResult.isFriend==0 " type="info">正在申请</el-button>
+                        <el-button @click.prevent="innerVisible=false"
+                                   v-else-if="searchResult.isFriend==1 || searchResult.isFriend==3"
+                                   type="primary">发消息
+                        </el-button>
+                        <div v-else>
+                            <el-input size="mini" v-model="sendMessage.content"
+                                      class="custom-input"
+                                      maxlength="30"
+                                      placeholder="输入留言"></el-input>
+                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
+                                       type="success">添加为好友
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
+        </div>
         <div class="getSearch">
             <div
                     v-show="leftClickView"
@@ -404,6 +455,8 @@
                 poolClickView: false,
                 leftClickView: false,
                 remarkView: false,
+                searchResult: {},
+                innerVisible: false,
                 recordContent: [],
                 newMessage: '',
                 searchUserId: "",
@@ -465,7 +518,7 @@
                 })
             },
             userChatMessages(searchUserId) {
-                this.isSingleChat = true
+                this.isSingleChat = true;
                 if (this.searchUserId == searchUserId) {
                     return
                 }
@@ -671,6 +724,17 @@
                     this.remarkView = false;
                     this.flag = false;
                 })
+            },
+            addFriend(friendId) {
+                this.sendMessage.receiverId = friendId;
+                this.sendMessage.action = 10004;
+                socket.send(this.sendMessage);
+                this.$notify({
+                    type:"success",
+                    title:"添加好友",
+                    message:"已申请添加"
+                });
+                this.innerVisible = false
             },
             //设置星标
             setFriendStar(isStar) {
@@ -989,7 +1053,7 @@
 
 <style scoped>
     .chat-content {
-
+        position: relative;
         width: 100%;
         /*padding: 20px;*/
     }

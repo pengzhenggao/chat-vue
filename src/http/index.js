@@ -17,6 +17,9 @@ service.interceptors.request.use(
             // 设置令牌请求头
             config.headers['authorization'] = getToken()?getToken():null;
         // }
+        if (config.method==="post"){
+            console.log(config)
+        }
         return config
     },
     error => {

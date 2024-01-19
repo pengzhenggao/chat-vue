@@ -132,7 +132,7 @@
                 }
                 this.chatType = data.type;
                 this.chatType === 1 ? this.$refs.weChatContent.userChatMessages(this.sendMessage.receiverId) :
-                    this.$refs.weChatContent.userGroupChatMessages(this.sendGroupChatMessage.groupChatId)
+                    this.$refs.weChatContent.userGroupChatMessages(this.sendGroupChatMessage.groupChatId);
                 this.$refs.chatEditor.editorFocus()
             },
             oss_upload(file) {

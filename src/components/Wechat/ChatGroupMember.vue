@@ -14,15 +14,11 @@
                             <span>{{item.customizeRemark?item.customizeRemark:item.username}}</span>
                         </div>
                     </div>
-                    <!-- <div style="display: flex;flex-direction: column;margin-left: 5px">
-                         <span style="font-size: 11px;color: #b5b5b5;margin-top: 5px">最近发言：{{chatTime(item.leaveMessageTime)}}</span>
-                     </div>-->
                 </div>
                 <div class="pull-group-chat">
                     <div class="pull-icon">
                         <span style="font-size: 18px"><i class="el-icon-plus"></i></span>
                     </div>
-                    <div>添加</div>
                 </div>
             </div>
             <div class="load">
@@ -219,6 +215,7 @@
 
     .member-username {
         font-weight: 700;
+        text-align: center;
         white-space: nowrap; /* 防止文字换行 */
         overflow: hidden; /* 隐藏超出容器宽度的内容 */
         text-overflow: ellipsis; /* 当内容超出容器宽度时显示省略号 */
@@ -237,7 +234,7 @@
         width: 40px;
         height: 36px;
         border: 1px solid #cccccc;
-        margin: 2px 7px 2px 7px;
+        margin: 3px 7px 3px 7px;
         display: flex;
         justify-content: center;
         align-items: center;

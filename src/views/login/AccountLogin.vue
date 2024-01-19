@@ -36,6 +36,7 @@
                     width="330px">
                 <LoginValidation :xl="this.xl" :yl="this.yl" :sliderName="this.sliderName" :username="this.loginForm.username"
                                  v-if="validationVisible"
+                                 @closeValidation="closeValidation"
                                  @successValidation="successValidation"/>
             </el-dialog>
         </div>
@@ -138,6 +139,10 @@
                     this.loading = false;
                 })
             },
+            closeValidation(){
+                console.log(666)
+                this.validationHandleClose()
+            },
             forgotPassword() {
                 this.$router.push("/account-find")
             },
@@ -152,9 +157,9 @@
                     this.isRememberMe = true;
                 }
             },
-            validationHandleClose(done) {
-                done();
+            validationHandleClose() {
                 this.loading = false;
+                this.validationVisible = false;
                 this.$notify({
                     title: "登入验证",
                     type: "warning",

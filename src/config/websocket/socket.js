@@ -29,6 +29,7 @@ var socket = {
      * 心跳发送频率
      * */
     hearbeat_interval: 5000,
+
     /**
      * 是否开启重连
      * */

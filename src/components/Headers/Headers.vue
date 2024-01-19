@@ -198,7 +198,17 @@
                         socket.init();
                         break;
                     case 'offline':
-                        socket.close();
+                       if (socket.websock!==null){
+                           this.$confirm('离线后将无法实时接收到任何信息?', '提示', {
+                               confirmButtonText: '确定',
+                               cancelButtonText: '取消',
+                               type: 'warning'
+                           }).then(() => {
+                               socket.close();
+                           }).catch(() => {
+                           });
+                       }
+
                         break;
                 }
             },

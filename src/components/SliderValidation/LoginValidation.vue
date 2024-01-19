@@ -12,7 +12,6 @@
                     :imgs="images"
                     slider-text="向右滑动"
                     @sureEndMove="sureEndMove"
-                    @success="onSuccess"
                     @fail="onFail"
                     @refresh="onRefresh"
                     @fulfilled="onRefreshComplete"
@@ -78,9 +77,9 @@
                         setTimeout(() => {
                             _this.$refs.slideRef.reset();
                         }, 500)
-                    }else{
-                        this.onFail()
                     }
+                }).catch(()=>{
+                    this.$emit("closeValidation")
                 })
 
             },
@@ -113,7 +112,6 @@
                  * 在这里执行请求
                  * 这里为模拟判断, 可根据需求在此处进行请求, 获取状态, 判断是否执行 成功/失败 方法
                  * */
-                console.log('位置', client);
                 if (client >= this.xl - 5 && client <= this.xl + 5) {
                     this.onSuccess(client)
                 } else {

@@ -79,7 +79,7 @@
 <!--            初始LOGO-->
         <el-container v-if="this.item.friendshipId===null"
                       style="display: flex;justify-content: center;align-items: center;">
-            <div style="text-align: center">
+            <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
                 <WechatFriend/>
                 <div class="WeChatLOGO">
                     即时聊天系统
@@ -624,5 +624,20 @@
         height: 100%;
         color: #dadada;
         font-family: "PingFang SC",serif;
+    }
+
+
+    .transition-box {
+        margin-bottom: 10px;
+        width: 200px;
+        height: 100px;
+        border-radius: 4px;
+        background-color: white;
+        text-align: center;
+        z-index: 100000000!important;
+        color: #fff;
+        padding: 40px 20px;
+        box-sizing: border-box;
+        margin-right: 20px;
     }
 </style>
