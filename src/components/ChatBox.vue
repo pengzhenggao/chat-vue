@@ -149,7 +149,7 @@
             getGroupChatStatus(groupChatId) {
                 service({
                     method: "get",
-                    url: "groupChat/getGroupChatStatus",
+                    url: "users/groupChat/getGroupChatStatus",
                     params: {
                         groupChatId: groupChatId
                     }

@@ -81,7 +81,7 @@
                 var _this = this;
                 service({
                     method:"GET",
-                    url:"/getLoginAccount",
+                    url:"users/getLoginAccount",
                     params:{
                     loginAccount:_this.form.username
                     }

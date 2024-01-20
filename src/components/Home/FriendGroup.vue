@@ -150,7 +150,7 @@
                 this.loading = true
                 service({
                     method: "get",
-                    url: "/getFriendGroup"
+                    url: "users/getFriendGroup"
                 }).then(res => {
                     this.tableData = res.data;
                     this.groupList = res.data;
@@ -164,7 +164,7 @@
                 if (this.form.id === null) {
                     service({
                         method: "post",
-                        url: "/addFriendGroup",
+                        url: "users/addFriendGroup",
                         data: this.form
                     }).then(res => {
                         if (res.code === 20000) {
@@ -178,7 +178,7 @@
                 } else { //更新
                     service({
                         method: "put",
-                        url: "/updateFriendGroup",
+                        url: "users/updateFriendGroup",
                         params: {
                             groupId: this.form.id,
                             groupName: this.form.groupName,
@@ -201,7 +201,7 @@
             openUpdate(groupId) {
                 service({
                     method: "get",
-                    url: "/getByIdGroup",
+                    url: "users/getByIdGroup",
                     params: {
                         groupId: groupId
                     }
@@ -223,7 +223,7 @@
             updateGroup(friendId) {
                 service({
                     method: "get",
-                    url: "/getBelongsGroup",
+                    url: "users/getBelongsGroup",
                     params: {
                         friendId: friendId
                     }
@@ -244,7 +244,7 @@
             confirmMoveFriendGroup() {
                 service({
                     method: "post",
-                    url: "moveFriendGroup",
+                    url: "users/moveFriendGroup",
                     data: this.updateFriendGroup
                 }).then(res => {
                     if (res && res.code === 20000) {

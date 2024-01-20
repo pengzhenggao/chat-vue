@@ -78,7 +78,7 @@
                 }
                 service({
                     method: "get",
-                    url: "/groupChat",
+                    url: "users/groupChat",
                     params: {
                         currentPage: this.currentPage,
                         size: this.size,
@@ -100,7 +100,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    service.put(`leaveGroupChat/${this.item.friendshipId}`).then(res => {
+                    service.put(`users/leaveGroupChat/${this.item.friendshipId}`).then(res => {
                         if (res && res.code === 20000) {
                             asidefriend.initAsideFriend();
                             wechat.initContainer();
@@ -128,7 +128,7 @@
                 }).then(() => {
                     service({
                         method: "put",
-                        url: `/groupChat/disbandGroupChat/${this.item.friendshipId}`
+                        url: `users/groupChat/disbandGroupChat/${this.item.friendshipId}`
                     }).then(res => {
                         if (res && res.code === 20000) {
                             asidefriend.initAsideFriend();
@@ -147,7 +147,7 @@
             getIsGroupLeader(groupChatId) {
                 service({
                     method: "get",
-                    url: "groupChat/isGroupLeader",
+                    url: "users/groupChat/isGroupLeader",
                     params: {
                         groupChatId: groupChatId
                     }
@@ -163,7 +163,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    service.delete(`groupChatStorage/clearGroupChatMessage/${this.item.friendshipId}`).then(res => {
+                    service.delete(`users/groupChatStorage/clearGroupChatMessage/${this.item.friendshipId}`).then(res => {
                         if (res && res.code === 20000) {
                             chatcontent.initMessage();
                             this.$notify({

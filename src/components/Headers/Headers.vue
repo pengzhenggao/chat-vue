@@ -79,7 +79,7 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item command="github">项目仓库</el-dropdown-item>
-                        <el-dropdown-item command="person">个人设置</el-dropdown-item>
+                        <el-dropdown-item command="person">个人中心</el-dropdown-item>
                         <el-dropdown-item divided command="quit">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -213,7 +213,7 @@
                 }
             },
             friendApplicationCount() {
-                service.get("get/applyFriendCount").then(res => {
+                service.get("users/get/applyFriendCount").then(res => {
                     this.friendCount = res.data
                 })
             },
@@ -251,7 +251,7 @@
                         window.open('https://gitee.com/pengzhenggao/graduation-project-chat-vue');
                         break;
                     case 'quit':
-                        service.post("userAuth/logout").then(res => {
+                        service.post("users/userAuth/logout").then(res => {
                             if (res.code === 20000) {
                                 this.$store.dispatch('user/resetToken');
                                 this.$router.replace('/login');

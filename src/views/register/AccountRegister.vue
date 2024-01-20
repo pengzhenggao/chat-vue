@@ -122,7 +122,7 @@
             register() {
                 service({
                     method: "post",
-                    url: "/userAuth/register/emailRegister",
+                    url: "users/userAuth/register/emailRegister",
                     data: this.registerForm
                 }).then(res => {
                     if (res.code === 20000) {
@@ -143,7 +143,7 @@
                 if (regex.test(this.registerForm.email)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/emailRSC",
+                        url: "users/userAuth/sendCode/emailRSC",
                         params: {
                             account: this.registerForm.email
                         }

@@ -331,7 +331,7 @@
                             videoLoading.close();
                             service({
                                 method:"get",
-                                url:"/userInfo/userOnlineStatus",
+                                url:"users/userInfo/userOnlineStatus",
                                 params:{
                                     userInfo: this.item.friendshipId
                                 }
@@ -369,7 +369,7 @@
                             voiceLoading.close();
                             service({
                                 method:"get",
-                                url:"/userInfo/userOnlineStatus",
+                                url:"users/userInfo/userOnlineStatus",
                                 params:{
                                     userInfo: this.item.friendshipId
                                 }
@@ -403,7 +403,7 @@
                     friendId: friendId,
                     content: ""
                 };
-                service.post("/notify/friend/online", params).then(res => {
+                service.post("users/notify/friend/online", params).then(res => {
                     if (res.code === 20000) {
                         this.$notify({
                             type: "success",

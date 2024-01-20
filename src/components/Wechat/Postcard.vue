@@ -104,7 +104,7 @@
             init() {
                 service({
                     method: "get",
-                    url: "/userInfo/getByIdPostcardUser",
+                    url: "users/userInfo/getByIdPostcardUser",
                     params: {
                         userInfoId: this.userInfoId
                     }

@@ -200,57 +200,7 @@
             </div>
         </div>
 <!--        请求添加好友-->
-        <div>
-            <el-dialog
-                    width="300px"
-                    :visible.sync="innerVisible"
-                    append-to-body>
-                <div style="padding: 10px">
-                    <div class="personal">
-                        <el-image
-                                v-if="searchResult.avatar"
-                                style="width: 75px; height: 75px;border-radius: 10px"
-                                :src="searchResult.avatar"
-                        ></el-image>
-                        <div class="base-content">
-                            <div style="display: flex;flex-direction: row">
-                                <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
-                                            placement="bottom">
-                                    <p class="nick-name">{{searchResult.nickName}}</p>
-                                </el-tooltip>
-                                &nbsp;
-                                <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
-                                    <i class="el-icon-s-custom"></i>
-                                    </span>
-                            </div>
-                            <el-tooltip class="item" effect="dark" :content="searchResult.username"
-                                        placement="bottom">
-                                <p class="login-name">
-                                    <span>登入名:</span> <span>{{searchResult.username}}
-                                </span>
-                                </p>
-                            </el-tooltip>
-                        </div>
-                    </div>
-                    <div style="text-align: center;margin-top: 20px">
-                        <el-button v-if="searchResult.isFriend==0 " type="info">正在申请</el-button>
-                        <el-button @click.prevent="innerVisible=false"
-                                   v-else-if="searchResult.isFriend==1 || searchResult.isFriend==3"
-                                   type="primary">发消息
-                        </el-button>
-                        <div v-else>
-                            <el-input size="mini" v-model="sendMessage.content"
-                                      class="custom-input"
-                                      maxlength="30"
-                                      placeholder="输入留言"></el-input>
-                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
-                                       type="success">添加为好友
-                            </el-button>
-                        </div>
-                    </div>
-                </div>
-            </el-dialog>
-        </div>
+
         <div class="getSearch">
             <div
                     v-show="leftClickView"
@@ -503,7 +453,7 @@
                 this.init();
                 service({
                     method: "get",
-                    url: "/groupChatStorage",
+                    url: "users/groupChatStorage",
                     params: {
                         page: this.page,
                         size: this.size,
@@ -528,7 +478,7 @@
                 this.init();
                 service({
                     method: "get",
-                    url: "/getChatStorage",
+                    url: "users/getChatStorage",
                     params: {
                         friendId: this.searchUserId,
                         page: this.page,
@@ -552,7 +502,7 @@
             detail(othersUserId, event) {
                 service({
                     method: "get",
-                    url: "/getFriendById",
+                    url: "users/getFriendById",
                     params: {
                         friendId: othersUserId
                     }
@@ -664,7 +614,7 @@
             remarkViewChick() {
                 service({
                     method: "get",
-                    url: "/getUserLabelList"
+                    url: "users/getUserLabelList"
                 }).then(res => {
                     this.labelOptions = res.data
                 });
@@ -692,6 +642,7 @@
             hideFloatWindow(event) {
                 var lx = Number(event.clientX);
                 var ly = Number(event.clientY);
+                console.log(lx,"-------",ly);
                 if (this.flag === false) {
                     if ((lx - this.px > 151 || lx < this.px) || (ly - this.py > 164 || ly < this.py)) {
                         this.poolClickView = false
@@ -711,7 +662,7 @@
                 }
                 service({
                     method: "post",
-                    url: "/updateFriendDetail",
+                    url: "users/updateFriendDetail",
                     data: this.form
                 }).then(res => {
                     if (res.code === 20000) {
@@ -740,7 +691,7 @@
             setFriendStar(isStar) {
                 service({
                     method: "put",
-                    url: "/updateStar",
+                    url: "users/updateStar",
                     params: {
                         twoUserId: this.searchUserId,
                         isStar: isStar
@@ -779,7 +730,7 @@
                 });
                 service({
                     method: "get",
-                    url: `/getUserById/${this.searchUserId}`,
+                    url: `users/getUserById/${this.searchUserId}`,
                 }).then(res => {
                     loading.close();
                     if (res.data && res.data.userInfoId !== null) {
@@ -806,7 +757,7 @@
                 }).then(() => {
                     service({
                         method: "put",
-                        url: `/addBlacklist/${friendId}`
+                        url: `users/addBlacklist/${friendId}`
                     }).then(res => {
                         if (res.code === 20000) {
                             this.flag = false;
@@ -852,7 +803,7 @@
                 _this.page++;
                 service({
                     method: "get",
-                    url: "/getChatStorage",
+                    url: "users/getChatStorage",
                     params: {
                         friendId: _this.searchUserId,
                         currentPage: _this.page,
@@ -916,7 +867,7 @@
                 }).then(() => {
                     service({
                         method: "delete",
-                        url: "delete/friend",
+                        url: "users/delete/friend",
                         params: {
                             friendId: friendId
                         }
@@ -1053,14 +1004,13 @@
 
 <style scoped>
     .chat-content {
-        position: relative;
+
         width: 100%;
         /*padding: 20px;*/
     }
 
     .word {
         display: flex;
-
         margin-bottom: 20px;
     }
 
@@ -1284,7 +1234,6 @@
         flex-direction: column;
         margin-left: 10px
     }
-
     .base .text {
         font-size: 13px;
         color: #999999;

@@ -55,7 +55,7 @@
             },
             getAllFriendRequest() {
                 service({
-                    url: "/get/allFriendRequest",
+                    url: "users/get/allFriendRequest",
                     method: "get",
                     params: {
                         currentPage: 1,

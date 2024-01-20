@@ -109,7 +109,7 @@
                 this.loading = true;
                 service({
                     method: "get",
-                    url: "/search/user",
+                    url: "users/search/user",
                     params: {
                         keyword: this.keyword
                     }

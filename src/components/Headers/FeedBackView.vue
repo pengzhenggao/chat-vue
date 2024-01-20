@@ -69,7 +69,7 @@
             }
         }, methods: {
             async initFeedBackData() {
-                const response = await service.get('/feedbackType');
+                const response = await service.get('users/feedbackType');
                 this.feedbackTypeList = response.data
             },
             cancelFeedBack() {
@@ -81,7 +81,7 @@
                     if (valid) {
                         service({
                             method: "post",
-                            url: "/feedback",
+                            url: "users/feedback",
                             data: this.form
                         }).then(res => {
                             if (res && res.code === 20000) {

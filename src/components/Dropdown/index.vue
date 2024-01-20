@@ -71,7 +71,7 @@
             getNotify() {
                 service({
                     method: "get",
-                    url: "/user/notify",
+                    url: "/users/notify",
                 }).then(res => {
                     this.notifyList = res.data
                 })
@@ -79,7 +79,7 @@
             getMessage(){
                 service({
                     method: "get",
-                    url: "/user/getMessage",
+                    url: "/users/getMessage",
                 }).then(res => {
                     this.messageList = res.data
                 })
@@ -87,7 +87,7 @@
             getAnnouncement(){
                 service({
                     method: "get",
-                    url: "user/announcement",
+                    url: "users/announcement",
                 }).then(res => {
                     this.announcementList = res.data
                 })

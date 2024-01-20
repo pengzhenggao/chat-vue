@@ -180,7 +180,7 @@
                 if (type === 1) {
                     service({
                         method: "get",
-                        url: "/getSidewaysStatus",
+                        url: "users/getSidewaysStatus",
                         params: {
                             friendId: friendId
                         }
@@ -218,7 +218,7 @@
                 }
                 service({
                     method: "put",
-                    url: `/isTop/${status}`,
+                    url: `users/isTop/${status}`,
                     params: {
                         friendId: this.rightClickFriendId
                     }
@@ -238,7 +238,7 @@
                 }
                 service({
                     method: "put",
-                    url: `/isTop/${status}`,
+                    url: `users/isTop/${status}`,
                     params: {
                         friendId: this.rightClickFriendId
                     }
@@ -266,7 +266,7 @@
                 }).then(() => {
                     service({
                         method: "delete",
-                        url: "/chatStorage",
+                        url: "users/chatStorage",
                         params: {
                             friendId: this.rightClickFriendId
                         }
@@ -293,7 +293,7 @@
                 }).then(() => {
                     service({
                         method: "delete",
-                        url: "delete/friend",
+                        url: "users/delete/friend",
                         params: {
                             friendId: this.rightClickFriendId
                         }
@@ -349,7 +349,7 @@
                 }
                 service({
                     method: "get",
-                    url: `get/friendships/${showRules ? showRules : this.showRules}`,
+                    url: `users/get/friendships/${showRules ? showRules : this.showRules}`,
                     params: {
                         remark: this.remark,
                         username: this.username
@@ -457,7 +457,7 @@
             },
             remoteSearchFriend(keyword) {
                 service({
-                    url: "/remote/friendships",
+                    url: "users/remote/friendships",
                     method: "get",
                     params: {
                         keyword: keyword
@@ -469,7 +469,7 @@
             getInsertLocation() {
                 service({
                     method: "get",
-                    url: `/getInsertLocation`
+                    url: `users/getInsertLocation`
                 }).then(res => {
                     this.insertLocation = res.data
                 })
@@ -544,7 +544,7 @@
                 }
             },
             addUnreadCount(friendId) {
-                service.put(`/addUnreadCount/${friendId}`)
+                service.put(`users/addUnreadCount/${friendId}`)
             },
             clearUnreadCount(friendId) {
                 if (!friendId) {
@@ -555,7 +555,7 @@
                         if (friendId === this.friendMenu[i].friendshipsDTOS[f].friendId) {
                             //接收方在另一个好友聊天界面（非面对面）
                             this.friendMenu[i].friendshipsDTOS[f].unreadCount = 0;
-                            service.put(`/clearUnreadCount/${friendId}`);
+                            service.put(`users/clearUnreadCount/${friendId}`);
                             return;
                         }
                     }

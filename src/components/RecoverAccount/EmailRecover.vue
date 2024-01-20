@@ -72,7 +72,7 @@
                     if (valid) {
                         service({
                             method:"post",
-                            url:"/find/account/emailRecoverAccount/",
+                            url:"users/find/account/emailRecoverAccount/",
                             data:this.form
                         }).then(res=>{
                             this.$emit("isFindAccountE",res.data);
@@ -84,7 +84,7 @@
                 if (regex.test(this.form.email) || value.endsWith(".com")) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/emailARSendCode",
+                        url: "users/userAuth/sendCode/emailARSendCode",
                         params: {
                             account: this.form.email
                         }

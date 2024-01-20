@@ -68,7 +68,7 @@
                 if (id) {
                     service({
                         method: "get",
-                        url: "/getUserAuthId",
+                        url: "/users/getUserAuthId",
                         params: {
                             id: id
                         }

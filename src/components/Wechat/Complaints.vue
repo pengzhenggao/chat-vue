@@ -80,7 +80,7 @@
             getComplaintType() {
                 service({
                     method: "get",
-                    url: "/complaintsCause"
+                    url: "users/complaintsCause"
                 }).then(res => {
                     this.complaintsCause = res.data
                 })
@@ -96,7 +96,7 @@
                             this.form.evidencePictures = this.form.evidencePictures.toString()
                             service({
                                 method: "post",
-                                url: "/userComplaints",
+                                url: "users/userComplaints",
                                 data: this.form
                             }).then(res => {
                                 if (res && res.code === 20000) {

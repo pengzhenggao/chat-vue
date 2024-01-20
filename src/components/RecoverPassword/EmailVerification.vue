@@ -42,7 +42,7 @@
                 if (regex.test(this.message.email)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/emailPRSendCode",
+                        url: "users/userAuth/sendCode/emailPRSendCode",
                         params: {
                             account: this.message.email
                         }
@@ -75,7 +75,7 @@
                 this.emailVerificationList.id = this.message.id;
                 service({
                     method:"post",
-                    url:"/authentication/emailPasswordRecovery",
+                    url:"users/authentication/emailPasswordRecovery",
                     data:this.emailVerificationList
                 }).then(res=>{
                     if (res.code===20000){

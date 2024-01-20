@@ -107,7 +107,7 @@
                                 this.loading=true;
                                 service({
                                     method:"post",
-                                    url:"/userAuth/verificationLogin/phone",
+                                    url:"users/userAuth/verificationLogin/phone",
                                     data:this.loginForm
                                 }).then(res=>{
                                     if (res.code===20000){
@@ -128,12 +128,12 @@
                             this.loading=true;
                             service({
                                 method:"post",
-                                url:"/userAuth/verificationLogin/phone",
+                                url:"users/userAuth/verificationLogin/phone",
                                 data:this.loginForm
                             }).then(res=>{
                                 if (res.code===20000){
                                     this.$store.dispatch('user/saveUserLogin', res.data).then(res=>{
-                                        this.$router.push('/index')
+                                        this.$router.push('/')
                                     }).catch(()=>{
                                         this.loading=false;
                                     })
@@ -151,7 +151,7 @@
                 if (regex.test(this.loginForm.phone)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/phoneLogin",
+                        url: "users/userAuth/sendCode/phoneLogin",
                         params: {
                             account: this.loginForm.phone
                         }
@@ -186,7 +186,7 @@
                 if (regex.test(this.loginForm.phone)) {
                     service({
                         method: "get",
-                        url: "/sliderlocation",
+                        url: "/users/sliderlocation",
                         params:{
                             type:"SmsLogin"
                         }

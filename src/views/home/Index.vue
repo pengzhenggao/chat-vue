@@ -107,7 +107,7 @@
                 this.personalForm.dateBirth=new Date(this.personalForm.dateBirth)
                 service({
                     method: "post",
-                    url: "/save/userInfo",
+                    url: "users/save/userInfo",
                     data: this.personalForm
                 }).then(res => {
                     var userInfo = this.$store.getters.userLogin;
@@ -145,7 +145,7 @@
                 this.getUserInfo()
             },
             getUserInfo() {
-                service.get("/userInfo/personal").then(res => {
+                service.get("users/userInfo/personal").then(res => {
                     this.personalForm = res.data;
                 })
             },

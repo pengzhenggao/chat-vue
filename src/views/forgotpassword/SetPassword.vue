@@ -76,7 +76,7 @@
                     if (valid) {
                         service({
                             method:"post",
-                            url:"/forgot/updatePassword",
+                            url:"users/forgot/updatePassword",
                             data:this.form
                         }).then(res=>{
                             if (res.code===20000){

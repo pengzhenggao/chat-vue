@@ -93,7 +93,7 @@
                 this.$router.push("/login")
             },
             goAccountRegister(){
-                window.open("http://localhost:8001/forgot-password")
+                window.open("/forgot-password")
             }
         }, mounted() {
 

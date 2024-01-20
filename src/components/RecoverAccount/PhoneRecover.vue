@@ -73,7 +73,7 @@
                     if (valid) {
                         service({
                             method:"post",
-                            url:"/find/account/phoneRecoverAccount",
+                            url:"users/find/account/phoneRecoverAccount",
                             data:this.form
                         }).then(res=>{
                             this.findAccount = res.data;
@@ -86,7 +86,7 @@
                 if (regex.test(this.form.phone)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/phoneARSendCode",
+                        url: "users/userAuth/sendCode/phoneARSendCode",
                         params: {
                             account: this.form.phone
                         }

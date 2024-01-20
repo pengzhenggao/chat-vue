@@ -116,7 +116,7 @@
             getBlacklist(){
                 service({
                     methods: "get",
-                    url:"/getBlacklistFriend",
+                    url:"users/getBlacklistFriend",
                     params:{
                         currentPage:this.currentPage,
                         size:this.size

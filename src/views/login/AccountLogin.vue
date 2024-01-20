@@ -103,7 +103,7 @@
             login() {
                 service({
                     method: "get",
-                    url: "/sliderlocation",
+                    url: "users/sliderlocation",
                     params:{
                         type:"accountLogin"
                     }
@@ -140,7 +140,6 @@
                 })
             },
             closeValidation(){
-                console.log(666)
                 this.validationHandleClose()
             },
             forgotPassword() {

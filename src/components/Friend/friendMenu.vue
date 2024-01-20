@@ -90,7 +90,7 @@
             reject(friendId){
                 this.isDisabled = true;
                 service({
-                    url: "/reject",
+                    url: "users/reject",
                     method: "delete",
                     params: {
                         friendId: friendId
@@ -106,7 +106,7 @@
             },
             notifyFlush(){
                 service({
-                    url: "/get/allFriendRequest",
+                    url: "users/get/allFriendRequest",
                     method: "get",
                     params: {
                         currentPage: 1,

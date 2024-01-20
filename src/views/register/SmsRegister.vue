@@ -72,7 +72,7 @@
                         this.loading=true;
                         service({
                             method:"post",
-                            url:"/userAuth/register/phoneRegister",
+                            url:"users/userAuth/register/phoneRegister",
                             data:this.loginForm
                         }).then(res=>{
                             if (res.code===20000){
@@ -95,7 +95,7 @@
                 if (regex.test(this.loginForm.phone)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/phoneRSC",
+                        url: "users/userAuth/sendCode/phoneRSC",
                         params: {
                             account: this.loginForm.phone
                         }

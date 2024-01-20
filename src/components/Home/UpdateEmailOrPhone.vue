@@ -31,7 +31,7 @@
 
             <span slot="footer" class="dialog-footer">
     <el-button @click="cancel">取 消</el-button>
-    <el-button type="primary" @click="submitForm('updateForm')">确 定</el-button>
+    <el-button type="primary" @click="submitForm()">确 定</el-button>
   </span>
         </el-dialog>
     </div>
@@ -48,6 +48,7 @@
                     userInfoId:null,
                     phone: null,
                     email: null,
+                    code:null,
                     type:null
                 },
                 isType: null,
@@ -82,6 +83,9 @@
                         },
                         trigger: "blur"
                     }],
+                    code:[{ required: true,
+                        message: "验证码不能为空",
+                        trigger: "change"}]
                 }
             }
         }, methods: {
@@ -98,6 +102,7 @@
                 };
                 this.isSend = false;
                 this.sendmsg = "获取验证码";
+                this.$refs.updateForm.clearValidate()
             },
             handleClose(done) {
                 this.$confirm('确认关闭？')
@@ -109,12 +114,12 @@
 
                     });
             },
-            submitForm(updateForm) {
-                this.$refs[updateForm].validate((valid) => {
+            submitForm() {
+                this.$refs.updateForm.validate((valid) => {
                     if (valid) {
                         service({
                             method:"post",
-                            url:"/update/EmailOrPhone",
+                            url:"users/update/EmailOrPhone",
                             data:this.updateForm
                         }).then(res=>{
                             if (res.code===20000){
@@ -147,7 +152,7 @@
             getUpdateView(id, type) {
                 service({
                     method: "get",
-                    url: `userInfo/updateEmailAndPhoneView/${type}`,
+                    url: `users/userInfo/updateEmailAndPhoneView/${type}`,
                     params: {
                         userId: id
                     }
@@ -162,7 +167,7 @@
             sendCode() {
                 service({
                     method: "get",
-                    url: `/userAuth/sendCode/${this.updateForm.type==='phone'?'phoneUpdateBind':'emailUpdateBind'}`,
+                    url: `users/userAuth/sendCode/${this.updateForm.type==='phone'?'phoneUpdateBind':'emailUpdateBind'}`,
                     params: {
                         account: this.updateForm.type==='phone'?this.updateForm.phone:this.updateForm.email
                     }

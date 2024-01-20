@@ -68,7 +68,7 @@
             }
         }, methods: {
             init() {
-                service.get("/getRecommendFriends", {
+                service.get("users/getRecommendFriends", {
                     params: {
                         userInfoId: this.recommendFriendId,
                         keyword: this.keyword
@@ -88,7 +88,7 @@
                     form.recommendFriendId = this.recommendFriendId
                     service({
                         method:"post",
-                        url:"/sendRecommend",
+                        url:"users/sendRecommend",
                         data:form
                     }).then(res=>{
                         if (res && res.code===20000){

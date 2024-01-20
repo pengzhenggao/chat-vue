@@ -98,7 +98,7 @@
         },
         methods: {
             init() {
-                service.get("/getAllFriend", {
+                service.get("users/getAllFriend", {
                     params: {
                         keyword: this.keyword
                     }
@@ -113,7 +113,7 @@
                     userInfoIds:newSet,
                     avatar:this.ruleForm.imageUrl
                 };
-                service.post("/groupChat",params).then(res=>{
+                service.post("users/groupChat",params).then(res=>{
                     if (res.code===20000){
                         this.$notify({
                             type:"success",

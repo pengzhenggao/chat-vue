@@ -44,7 +44,7 @@
                 if (regex.test(this.message.phone)) {
                     service({
                         method: "get",
-                        url: "/userAuth/sendCode/phonePRSendCode",
+                        url: "users/userAuth/sendCode/phonePRSendCode",
                         params: {
                             account: this.message.phone
                         }
@@ -77,7 +77,7 @@
                 this.phoneVerificationList.id = this.message.id;
                 service({
                     method:"post",
-                    url:"/authentication/phoneRecoverPassword",
+                    url:"users/authentication/phoneRecoverPassword",
                     data:this.phoneVerificationList
                 }).then(res=>{
                     if (res.code===20000){
