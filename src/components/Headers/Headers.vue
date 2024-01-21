@@ -1,10 +1,9 @@
 <template>
     <div class="headers">
         <div class="headers-left">
-            <div class="headers-left-box headers-left-active"
-                 @click="targetIcon">
-                <i class="el-icon-s-fold "></i>
-            </div>
+            <router-link to="/wechat">
+                <img src="@/assets/image/logo.png" style="width: 20px;margin-right: 5px" >
+            </router-link>
             <Breadcrumb/>
         </div>
         <div class="headers-right">
@@ -125,7 +124,6 @@
 <script>
     // 全屏组件
     import screenfull from 'screenfull'
-
     // 面包屑
     import Breadcrumb from '../Breadcrumb/Breadcrumb2'
 
@@ -179,7 +177,7 @@
             screen,
             reduction,
             feedback,
-            FeedBackView
+            FeedBackView,
         },
         methods: {
             initData(){
@@ -217,7 +215,6 @@
                     this.friendCount = res.data
                 })
             },
-            // 自定义 切换 侧边栏 事件
             targetIcon() {
             },
             // 全屏
@@ -251,7 +248,7 @@
                         window.open('https://gitee.com/pengzhenggao/graduation-project-chat-vue');
                         break;
                     case 'quit':
-                        service.post("users/userAuth/logout").then(res => {
+                        service.post("/userAuth/logout").then(res => {
                             if (res.code === 20000) {
                                 this.$store.dispatch('user/resetToken');
                                 this.$router.replace('/login');
@@ -365,6 +362,8 @@
     }
 
     .headers-left {
+        flex-direction: row;
+        align-items: center;
         display: flex;
         justify-content: flex-start;
     }

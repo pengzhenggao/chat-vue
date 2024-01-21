@@ -2,16 +2,6 @@
     <div class="Informationall">
         <!-- <div class="Informationall-box"> -->
         <el-tabs v-model="activeName" @tab-click="handleClick" class="Informationall-box">
-<!--            <el-tab-pane label="通知" name="first">-->
-<!--                <div class="Informationall-list">-->
-<!--                    <InformationList/>-->
-<!--                </div>-->
-<!--            </el-tab-pane>-->
-<!--            <el-tab-pane label="消息" name="second">-->
-<!--                <div class="Informationall-list">-->
-<!--                    <InformationList/>-->
-<!--                </div>-->
-<!--            </el-tab-pane>-->
             <el-tab-pane label="好友分组" name="group">
                 <div class="Informationall-list">
                     <FriendGroup/>
@@ -28,9 +18,9 @@
 </template>
 
 <script>
-    import InformationList from '../../components/Home/InformationList'
-    import FriendsBlacklist from "../../components/Home/FriendsBlacklist";
-    import FriendGroup from "../../components/Home/FriendGroup";
+    import InformationList from '../../components/Setting/InformationList'
+    import FriendsBlacklist from "../../components/Setting/FriendsBlacklist";
+    import FriendGroup from "../../components/Setting/FriendGroup";
 
     export default {
         data() {

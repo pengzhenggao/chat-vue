@@ -3,10 +3,15 @@
         <div class="container" @click="clickPostCard">
             <div style="display: flex;flex-direction: row;border-bottom: 1px solid #999999;padding-bottom: 5px">
                 <img :src="postcardMessage.avatar" style="width: 55px;height: 55px"/>
-                <div style="margin-left: 10px">
-                    <span>{{postcardMessage.userName || "未知"}}</span>&nbsp;
-                    <span v-if="postcardMessage.gender===1" class="el-icon-s-custom"></span>
-                    <span v-else class="el-icon-user-solid" style="color: red"></span>
+                <div style="margin-left: 10px;display: flex;flex-direction: column">
+                    <div>
+                        <span>{{postcardMessage.userName || "未知"}}</span>&nbsp;
+                        <span v-if="postcardMessage.gender===1" class="el-icon-s-custom"></span>
+                        <span v-else class="el-icon-user-solid" style="color: red"></span>
+                    </div>
+                    <div class="intro">
+                        <span>{{postcardMessage.intro || "本人很懒~ 什么都没留下"}}</span>
+                    </div>
                 </div>
             </div>
             <div style="font-size: 12px">
@@ -118,8 +123,8 @@
                 socket.send(this.sendMessage);
                 this.clear();
                 this.$message({
-                    type:"success",
-                    message:"已申请添加"
+                    type: "success",
+                    message: "已申请添加"
                 })
             },
             clickPostCard() {
@@ -340,5 +345,12 @@
         border-radius: 0;
         border: 0;
         border-bottom: 1px solid #999999;
+    }
+
+    .intro {
+        overflow-wrap: break-word;
+        width: 100%;
+        font-size: 12px;
+        color: #999999
     }
 </style>

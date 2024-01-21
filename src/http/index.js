@@ -2,6 +2,7 @@ import Axios from "axios";
 import {MessageBox, Message} from 'element-ui'
 import store from '../store/index'
 import {getToken} from '@/utils/auth';
+import {socket} from "../config/websocket/socket";
 
 // 创建axios实例
 const service = Axios.create({
@@ -17,9 +18,6 @@ service.interceptors.request.use(
             // 设置令牌请求头
             config.headers['authorization'] = getToken()?getToken():null;
         // }
-        if (config.method==="post"){
-            console.log(config)
-        }
         return config
     },
     error => {
@@ -27,7 +25,7 @@ service.interceptors.request.use(
     }
 );
 
-
+let confirmStatus = null;
 
 // 相应拦截
 service.interceptors.response.use(
@@ -36,32 +34,39 @@ service.interceptors.response.use(
         const res = response.data;
         // code 不为0 则判断为一个错误
         if (res.code !== 20000) {
-            Message({
-                message: res.message || "Error",
-                type: 'error',
-                duration: 5 * 1000
-            });
-            // 假设 10008 非法令牌  10012 其他客户端已经登陆
-            if (res.code === 40001 || res.code === 10012) {
+            if ((res.code === 40001 || res.code === 10012) && confirmStatus==null) {
+                confirmStatus = 1;
                 // 重新登陆
                 MessageBox.confirm(
                     '登陆状态异常,请重新登陆',
-                    "确认登陆信息",
+                    "重新登入",
                     {
                         confirmButtonText: '重新登陆',
                         cancelButtonText: '取消',
+                        center: true,
+                        closeOnClickModal:false,
+                        closeOnPressEscape:false,
+                        showClose:false,
+                        showCancelButton:false,
+                        closeOnHashChange:false,
                         type: 'warning'
                     }
                 ).then(() => {
+                    confirmStatus = null;
+                    socket.close()
                     store.dispatch('user/resetToken')
                         .then(() => {
                             location.reload()
                         })
-                })
+                }).catch(()=>{
+                    confirmStatus = null
+                });
+            }else if (confirmStatus == null){
+                console.log(res)
+                Message.error(res.message);
+                // 假设 10008 非法令牌  10012 其他客户端已经登陆
+                return Promise.reject(new Error(res.message || 'Error'));
             }
-
-            return Promise.reject(new Error(res.message || 'Error'));
-
         } else {
             return res;
         }

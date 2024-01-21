@@ -642,7 +642,6 @@
             hideFloatWindow(event) {
                 var lx = Number(event.clientX);
                 var ly = Number(event.clientY);
-                console.log(lx,"-------",ly);
                 if (this.flag === false) {
                     if ((lx - this.px > 151 || lx < this.px) || (ly - this.py > 164 || ly < this.py)) {
                         this.poolClickView = false

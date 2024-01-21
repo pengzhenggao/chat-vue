@@ -1,15 +1,18 @@
 // 导出socket对象
 import {getToken} from '@/utils/auth';
+import VueRouter from 'vue-router'
+import store from '../../store/index'
 export {
     socket
 }
-import { Message } from 'element-ui'
+import { Message,MessageBox } from 'element-ui'
 import {header} from "../../listening/header";
 import {asidefriend} from "../../listening/asidefriend";
 import {chatbox} from "../../listening/chatbox";
 import {chatcontent} from "../../listening/chatcontent";
 import {videocalls} from "../../listening/videocalls";
 import {voicecalls} from "../../listening/voicecalls";
+
 // socket主要对象
 var socket = {
     websock: null,
@@ -21,6 +24,11 @@ var socket = {
      * 开启标识
      * */
     socket_open: false,
+
+    /**
+     * 下线标识
+     */
+    offLineFlag : null,
     /**
      * 心跳timer
      * */
@@ -211,6 +219,9 @@ var socket = {
                 asidefriend.OnAndOffLineNotificationsImpl(recData);
                 break;
             case 30001:  //单人聊天
+                if (VueRouter.path  != "/wechat"){
+                    header.updateIsDot();
+                }
                 chatbox.receiverMessage(recData);
                 break;
             case 30002:  //发送添加请求
@@ -223,6 +234,10 @@ var socket = {
                 chatcontent.retractMessage(recData);
                 break;
             case 30005:   //发送群聊信息
+                if (VueRouter.path  != "/wechat"){
+                   header.updateIsDot();
+
+                }
                 chatbox.groupChatMessage(recData);
                 break;
             case 30006:   //初始化好友栏
@@ -236,11 +251,43 @@ var socket = {
                 break;
             case 30009:  //解散群聊通知操作
                 chatbox.disbandGroupChat(recData)
+                break
+            case 40002:  //被迫下线通知
+                socket.offLine(recData)
 
         }
         // 自行扩展其他业务处理...
     },
+    offLine:(data) =>{
+        console.log(data);
+        if (socket.offLineFlag==null){
+            MessageBox.confirm(
+                data.message || '登陆状态异常,请重新登陆',
+                "重新登入",
+                {
+                    confirmButtonText: '重新登陆',
+                    cancelButtonText: '取消',
+                    center: true,
+                    closeOnClickModal:false,
+                    closeOnPressEscape:false,
+                    showClose:false,
+                    showCancelButton:false,
+                    closeOnHashChange:false,
+                    type: 'warning'
+                }
+            ).then(() => {
+                socket.offLineFlag = null;
+                socket.close();
+                store.dispatch('user/resetToken')
+                    .then(() => {
+                        location.reload()
+                    })
+            }).catch(()=>{
+                socket.offLineFlag = null
+            });
+        }
 
+    },
     /**
      * 心跳
      */

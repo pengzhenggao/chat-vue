@@ -3,7 +3,7 @@
         <transition-group name="breadcrumb"  mode="out-in">
             <el-breadcrumb-item v-for="(item,index)  in levelList" :key="item.path" v-if='item.meta.title'>
                 <span v-if='item.redirect==="wechat"||index===levelList.length-1' class="no-redirect">{{item.meta.title}}</span>
-                <router-link v-else :to="item.redirect||item.path">{{item.meta.title}}</router-link>
+                <router-link v-else :to="item.redirect||item.path"><el-badge :is-dot="isDot" class="item">{{item.meta.title}}</el-badge></router-link>
             </el-breadcrumb-item>
         </transition-group>
     </el-breadcrumb>
@@ -16,6 +16,7 @@
       },
       data() {
         return {
+          isDot:false,
           levelList: null
         }
       },
@@ -35,8 +36,16 @@
             matched = [{ path: '/wechat', meta: { title: '主页' }}].concat(matched)
           }
           this.levelList = matched
+        },
+          updateIsDot(){
+            if (this.isDot != true){
+                this.isDot = true
+            }
+
+          },
+      },mounted() {
+          window.addEventListener("updateIsDot",this.updateIsDot)
         }
-      }
     }
 </script>
 
@@ -73,5 +82,8 @@
     }
     .breadcrumb-leave-active{
         position: absolute;;
+    }
+    /deep/.el-badge__content.is-fixed{
+        top: 13px;
     }
 </style>

@@ -148,6 +148,7 @@
 <script>
     import service from "../../http";
     import FriendSearch from "./FriendSearch";
+    import store from "../../store";
 
     export default {
         name: "AsideFriend",

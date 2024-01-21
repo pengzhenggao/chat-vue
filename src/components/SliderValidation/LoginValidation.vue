@@ -66,7 +66,7 @@
             onSuccess(client) {
                 service({
                     method:"post",
-                    url:"users/verifysliderlocation",
+                    url:"/verifysliderlocation",
                     data:{sliderName:this.sliderName,account:this.username,currentLocation:client,type:"accountLogin"}
                 }).then(res=>{
                     if (res && res.code===20000){

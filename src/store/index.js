@@ -15,12 +15,12 @@ export default new Vuex.Store({
   modules: {
     permission,
     user,
-    tagsView
+    tagsView,
   },
   // 定义全局getters 方便访问user 模块的roles
   getters:{
     userLogin: state => state.user.userLogin,
     roles: state => state.user.roles,
-    permission_routes: state => state.permission.routes
+    permission_routes: state => state.permission.routes,
   }
 })

@@ -60,7 +60,6 @@ const mutations = {
         // routes 用户可以访问的权限
         state.addRoutes = routes
         // 完整的路由表
-
         state.routes = constRouter.concat(routes)
 
     }

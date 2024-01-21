@@ -128,10 +128,10 @@ export const constRouter = [
             },
             {
                 path: 'settings',
-                component: () => import('@/views/home/Index.vue'),
+                component: () => import('@/views/setting/PersonalCenter.vue'),
                 name: 'settings',
                 meta: {
-                    title: "个人设置",
+                    title: "个人中心",
                     icon: 'el-icon-user-solid',
                     hidden: false,
                     roles: ['admin', 'user']
@@ -139,10 +139,10 @@ export const constRouter = [
             },
             {
                 path: '/informationall',
-                component: () => import('@/views/home/Informationall.vue'),
+                component: () => import('@/views/setting/Informationall.vue'),
                 name: 'homeinformationall',
                 meta: {
-                    title: "个人隐私",
+                    title: "设置中心",
                     icon: 'el-icon-message-solid',
                     hidden: false,
                     roles: ['admin', 'user']

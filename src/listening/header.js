@@ -17,5 +17,8 @@ var header={
                 data: event
             }
         }))
+    },
+    updateIsDot:()=>{
+        window.dispatchEvent(new CustomEvent('updateIsDot'))
     }
 }

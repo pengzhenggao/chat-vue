@@ -103,7 +103,7 @@
             login() {
                 service({
                     method: "get",
-                    url: "users/sliderlocation",
+                    url: "/sliderlocation",
                     params:{
                         type:"accountLogin"
                     }

@@ -23,7 +23,7 @@
                             <el-button><span style="font-weight: bold" class="el-icon-setting"></span></el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item command="addFriend" icon="el-icon-s-custom">添加好友</el-dropdown-item>
-                                <el-dropdown-item command="addGroup" icon="el-icon-notebook-2">添加分组</el-dropdown-item>
+                                <el-dropdown-item command="addGroup" icon="el-icon-s-tools">设置中心</el-dropdown-item>
                                 <el-dropdown-item command="buildGroupChat" icon="el-icon-s-promotion">发起群聊
                                 </el-dropdown-item>
                                 <el-dropdown-item command="tagFriends" icon="el-icon-refresh">
