@@ -301,6 +301,18 @@
             },
         }, mounted() {
 
+        },
+        watch:{
+            connectStatus: {
+                handler(newName, oldName) {
+                    if (newName==6){
+                        setTimeout(()=>{
+                            this.$emit('closeVideo')
+                        },1000)
+                    }
+                },
+                immediate: true
+            }
         }
     }
 </script>

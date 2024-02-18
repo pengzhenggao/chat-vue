@@ -80,7 +80,6 @@
         max-height: 45px;
         min-height: 45px !important ;
         padding: 0 15px 15px 15px;
-
         border-bottom: none;
 
     }

@@ -9,7 +9,7 @@
             </el-tab-pane>
             <el-tab-pane label="黑名单" name="blacklist">
                 <div class="Informationall-list">
-                    <FriendsBlacklist/>
+                    <FriendsBlacklist :remark="remark"/>
                 </div>
             </el-tab-pane>
         </el-tabs>
@@ -25,7 +25,17 @@
     export default {
         data() {
             return {
-                activeName: 'group'
+                activeName: 'group',
+                remark:"",
+            }
+        },
+        created() {
+            if (this.$route.query.activeName){
+                this.activeName = this.$route.query.activeName
+            }
+
+            if (this.$route.query.remark){
+                this.remark = this.$route.query.remark
             }
         },
         methods: {

@@ -124,7 +124,7 @@
                     respondent: null,
                     complaintsDesc: null,
                     causeId: null,
-                    evidencePictures: null,
+                    evidencePictures: [],
                 }
                 this.$refs.form.resetFields()
             },

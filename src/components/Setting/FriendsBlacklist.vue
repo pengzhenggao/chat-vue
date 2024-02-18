@@ -1,5 +1,12 @@
 <template>
     <div>
+        <div class="container">
+            <el-input v-model="keyword" clearable
+                      style="width: 200px;margin-right: 20px" size="small"
+                      placeholder="输入用户名"></el-input>
+            <el-button size="small" type="primary" @click="search">搜索</el-button>
+        </div>
+
         <div class="Information-table">
             <el-table
                     ref="multipleTable"
@@ -72,8 +79,15 @@
 
     export default {
         name: "FriendsBlacklist",
+        props:{
+            remark:{
+              type:String,
+              default:""
+          }
+        },
         data(){
             return{
+                keyword:"",
                 tableKey:0,
                 friendIds:null,
                 tableData:[],
@@ -88,7 +102,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    service.delete(`/cancelBlacklistFriend/${friendIds.toString()}`).then(res=>{
+                    service.delete(`/users/cancelBlacklistFriend/${friendIds.toString()}`).then(res=>{
                         if (res.code===20000){
                             this.$notify({
                                 title:"移出成功",
@@ -113,13 +127,18 @@
                 });
 
             },
+            search(){
+                this.currentPage = 1;
+                this.getBlacklist()
+            },
             getBlacklist(){
                 service({
                     methods: "get",
                     url:"users/getBlacklistFriend",
                     params:{
                         currentPage:this.currentPage,
-                        size:this.size
+                        size:this.size,
+                        remark:this.keyword
                     }
                 }).then(res=>{
                     this.total = res.total;
@@ -144,10 +163,14 @@
             },
         },mounted() {
             this.getBlacklist()
+            this.keyword = this.remark
         }
     }
 </script>
 
 <style scoped>
-
+.container{
+    text-align: right;
+    margin: 0 0 10px 0;
+}
 </style>

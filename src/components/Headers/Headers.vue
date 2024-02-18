@@ -2,9 +2,12 @@
     <div class="headers">
         <div class="headers-left">
             <router-link to="/wechat">
-                <img src="@/assets/image/logo.png" style="width: 20px;margin-right: 5px" >
+                <img src="@/assets/image/logo.png" style="width: 20px;margin-right: 5px">
             </router-link>
             <Breadcrumb/>
+        </div>
+        <div class="headers-middle">
+            <Notice ref="notice" v-if="this.noticeData.length>0 && refresh===true" :noticeData="noticeData"/>
         </div>
         <div class="headers-right">
             <div class="headers-right-left">
@@ -23,7 +26,7 @@
                     <i class="el-icon-picture-outline-round" @click="theme = true"></i>
                 </el-tooltip>
                 <el-badge is-dot class="item" style="margin: 0 20px 0 0; color: #171700">
-                    <i class="el-icon-bell head-news-icon" @mouseover.self="dropShowBtn"
+                    <i class="el-icon-message" @mouseover.self="dropShowBtn"
                        @mouseout.self="dropHideBtn"></i>
                 </el-badge>
                 <el-badge v-if="friendCount !== 0 && friendCount !== null" :value="friendCount" :max="10"
@@ -77,7 +80,7 @@
                         {{$store.getters.userLogin.nickName}}<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="github">项目仓库</el-dropdown-item>
+                        <el-dropdown-item command="updatePassword">修改密码</el-dropdown-item>
                         <el-dropdown-item command="person">个人中心</el-dropdown-item>
                         <el-dropdown-item divided command="quit">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
@@ -117,6 +120,39 @@
 
             </div>
         </el-dialog>
+        <el-dialog
+                title="修改密码"
+                :visible.sync="updatePasswordView"
+                :before-close="updatePasswordClose"
+                width="30%"
+                center>
+            <el-form ref="updatePasswordForm" :rules="rules" :model="updatePasswordForm" label-width="80px">
+                <el-form-item label="原密码" prop="oldPassword">
+                    <el-input size="small" v-model="updatePasswordForm.oldPassword"
+                              placeholder="输入原密码"
+                              prefix-icon="el-icon-key"
+                              style="width: 250px"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="newPassword">
+                    <el-input type="password" show-password
+                              prefix-icon="el-icon-lock"
+                              placeholder="输入新密码"
+                              v-model="updatePasswordForm.newPassword"
+                              size="small" style="width: 250px"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword">
+                    <el-input type="password" show-password
+                              prefix-icon="el-icon-lock"
+                              placeholder="再次输入新密码"
+                              v-model="updatePasswordForm.confirmPassword"
+                              size="small" style="width: 250px"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="updatePasswordClose">取 消</el-button>
+    <el-button type="primary" @click="update('updatePasswordForm')">确 定</el-button>
+  </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -139,6 +175,7 @@
     import FeedBackView from "./FeedBackView";
     import service from "../../http"; //还原
     import {socket} from "../../config/websocket/socket"
+    import Notice from "../Notice";
 
     export default {
         props: {
@@ -155,9 +192,37 @@
                 default: true
             }
         },
+
         data() {
+            var validatePass = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入密码'));
+                } else {
+                    if (this.updatePasswordForm.confirmPassword !== '') {
+                        this.$refs.updatePasswordForm.validateField('confirmPassword');
+                    }
+                    callback();
+                }
+            };
+            var validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.updatePasswordForm.newPassword) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
             return {
+                updatePasswordForm: {
+                    oldPassword: null,
+                    newPassword: null,
+                    confirmPassword: null
+                },
+                refresh: true,
+                noticeData: [],
                 feedbackShow: false,
+                updatePasswordView: false,
                 isOnline: true,
                 squareUrl: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png",
                 isFullscreen: false,
@@ -167,9 +232,19 @@
                 friendSetTime: null,
                 theme: false, // 主题 开关
                 friendCount: 0,
+                rules: {
+                    oldPassword: [{type: 'string', required: true, message: "旧密码不能为空", trigger: 'blur'}],
+                    newPassword: [
+                        { validator: validatePass, trigger: 'blur' }
+                    ],
+                    confirmPassword: [
+                        { validator: validatePass2, trigger: 'blur' }
+                    ],
+                }
             }
         },
         components: {
+            Notice,
             Breadcrumb,
             Dropdowns,
             Friends,
@@ -180,15 +255,25 @@
             FeedBackView,
         },
         methods: {
-            initData(){
-                this.$nextTick(()=>{
+            initData() {
+                this.$nextTick(() => {
                     this.$refs.feedBackView.initFeedBackData()
                 })
             },
-            closeFeedback(){
-                this.$nextTick(()=>{
-                  this.feedbackShow = false
+            closeFeedback() {
+                this.$nextTick(() => {
+                    this.feedbackShow = false
                 })
+            },
+            updatePasswordClose() {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        this.$refs.updatePasswordForm.resetFields();
+                        this.updatePasswordView = false
+                    })
+                    .catch(_ => {
+                    });
+
             },
             handle(command) {
                 switch (command) {
@@ -196,16 +281,16 @@
                         socket.init();
                         break;
                     case 'offline':
-                       if (socket.websock!==null){
-                           this.$confirm('离线后将无法实时接收到任何信息?', '提示', {
-                               confirmButtonText: '确定',
-                               cancelButtonText: '取消',
-                               type: 'warning'
-                           }).then(() => {
-                               socket.close();
-                           }).catch(() => {
-                           });
-                       }
+                        if (socket.websock !== null) {
+                            this.$confirm('离线后将无法实时接收到任何信息?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                socket.close();
+                            }).catch(() => {
+                            });
+                        }
 
                         break;
                 }
@@ -219,13 +304,6 @@
             },
             // 全屏
             buttoncli() {
-                // if (!screenfull.enabled) { // 如果不允许进入全屏，发出不允许提示
-                //     this.$message({
-                //         message: '不支持全屏',
-                //         type: 'warning'
-                //     })
-                //     return false
-                // }
                 screenfull.toggle();
                 this.checkFull()
             },
@@ -244,8 +322,8 @@
             // 用户名 下拉菜单
             handleCommand(command) {
                 switch (command) {
-                    case 'github':
-                        window.open('https://gitee.com/pengzhenggao/graduation-project-chat-vue');
+                    case 'updatePassword':
+                        this.updatePasswordView = true
                         break;
                     case 'quit':
                         service.post("/userAuth/logout").then(res => {
@@ -254,9 +332,9 @@
                                 this.$router.replace('/login');
                             } else {
                                 this.$notify({
-                                    title:"退出登入",
-                                    type:"warning",
-                                    message:"退出失败"
+                                    title: "退出登入",
+                                    type: "warning",
+                                    message: "退出失败"
                                 });
                             }
                         });
@@ -269,6 +347,31 @@
             // 退出登陆
             quits() {
                 this.$store.dispatch('user/resetToken')
+            },
+            update(updatePasswordForm) {
+                this.$refs[updatePasswordForm].validate((valid) => {
+                    if (valid) {
+                        service({
+                            method:"post",
+                            url:"/update/password",
+                            data:this.updatePasswordForm
+                        }).then(res=>{
+                            if (res.code===20000){
+                                this.updatePasswordView = false;
+                                this.$store.dispatch('user/resetToken');
+                                this.$router.replace('/login');
+                                this.$notify({
+                                    title:"密码修改",
+                                    type:"success",
+                                    message:"修改成功，请重新登入"
+                                })
+                            }
+
+                        })
+                    } else {
+
+                    }
+                });
             },
             // 展开通知
             dropShowBtn() {
@@ -337,17 +440,46 @@
             feedback() {
                 this.feedbackShow = true;
             },
-            handleClose(done){
+            handleClose(done) {
                 this.$refs.feedBackView.dataClear()
                 done();
             },
+            broadcastContent() {
+                service.get("/users/config/notice").then(res => {
+                    if (res.code === 20000) {
+                        if (res.message != null) {
+                            this.setNoticeData(res.message)
+                        }
+                    }
+                })
+            },
+            setNoticeData(notice) {
+                if (this.noticeData != null && this.noticeData.length !== 0) {
+                    this.noticeData[0] = notice
+                } else {
+                    this.noticeData = [];
+                    this.noticeData.push(notice)
+                }
+            },
+            announcementNotice(event) {
+                var notice = event.detail.data.data;
+                this.noticeData = [];
+                this.noticeData.push(notice);
+                this.refresh = false;
+                this.$nextTick(() => {
+                    // 重新渲染组件
+                    this.refresh = true;
+                });
+            }
         },
         mounted() {
             // 浏览器窗口改变事件
             window.addEventListener('socketStatus', this.getSocketStatus);
             window.addEventListener('addFriendNotice', this.addFriendNotice);
-            this.isFullscreen = document.body.scrollHeight === window.screen.height
-            this.friendApplicationCount()
+            window.addEventListener('announcementNotice', this.announcementNotice);
+            this.isFullscreen = document.body.scrollHeight === window.screen.height;
+            this.friendApplicationCount();
+            this.broadcastContent();
             socket.init()
         }
     }
@@ -598,5 +730,12 @@
         font-size: 13px;
         color: #9f9f9f;
         margin-right: 60px;
+    }
+
+    .headers-middle {
+        position: absolute;
+        left: 300px;
+        top: 10px;
+        width: 45%;
     }
 </style>

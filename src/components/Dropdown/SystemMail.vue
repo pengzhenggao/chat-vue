@@ -1,5 +1,5 @@
 <template>
-    <div class="drop">
+    <div class="drop" @click="routerMailView(id)">
         <div class="drop-left" :style="{background: iconBgColor}">
             <Email v-if="type === 'Email'" class="drop-left-icon" :style="{color: iconColor}" />
             <Zhuye v-if="type === 'Zhuye'" class="drop-left-icon" :style="{color: iconColor}" />
@@ -31,6 +31,9 @@ export default {
                 // 这个值必须匹配下列字符串中的一个
                 return ['Zhuye', 'Email','Friend','Approval','Refuse','Favorite'].indexOf(value) !== -1
             }
+        },
+        id:{
+            type:Number
         },
         text:{
             type: String,
@@ -67,10 +70,7 @@ export default {
                 if(colorHtml.test(value)){
                     return true
                 }
-                 if(colorRgba.test(value)){
-                    return true
-                }
-                return false;
+                 return colorRgba.test(value);
             }
         }
     },
@@ -81,6 +81,11 @@ export default {
         Approval,
         Refuse,
         Favorite
+    },methods:{
+        routerMailView(id){
+            console.log(id)
+            // this.$router.push("/mail-view")
+        }
     }
 }
 </script>

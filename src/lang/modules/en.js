@@ -1,7 +1,7 @@
 export default {
     router: {},
     system: {
-        logoName: "WebChatSystem",
+        logoName: "HarmonyTalk",
         loginName: "LOGIN",
         registerName: "REGISTER",
         accountLogin:"ACCOUNTLOGIN",

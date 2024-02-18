@@ -37,7 +37,7 @@
             qq(code){
                 service({
                     method:"get",
-                    url:"/QQAccessToken/getAccessToken",
+                    url:"/users/QQAccessToken/getAccessToken",
                     params:{
                         code:code
                     }
@@ -52,7 +52,7 @@
             github(code){
                 service({
                     method:"get",
-                    url:"/gitHubAccessToken/getAccessToken",
+                    url:"/users/gitHubAccessToken/getAccessToken",
                     params:{
                         code:code
                     }
@@ -67,7 +67,7 @@
             gitee(code){
                 service({
                     method:"get",
-                    url:"/giteeAccessToken/getAccessToken",
+                    url:"/users/giteeAccessToken/getAccessToken",
                     params:{
                         code:code
                     }
@@ -89,7 +89,7 @@
                 }).then(res=>{
                     if (res.code===20000){
                         this.$store.dispatch('user/saveUserLogin', res.data).then(res=>{
-                            this.$router.push('/index')
+                            this.$router.push('/')
                         })
                     }else{
                         this.$router.push("/login")

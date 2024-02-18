@@ -1,7 +1,14 @@
 <template>
     <div class="WeChat">
         <el-container style="height: 100%; border: 1px solid #eee">
-            <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
+            <div class="toolbar">
+                <div @click="switchTool(1)" :class="{'toolFocus':select===1,'tool':select!==1}" style="margin-top: 70px">
+                    <span class="el-icon-chat-line-square"></span></div>
+                <div @click="switchTool(2)" :class="{'toolFocus':select===2,'tool':select!==2}" style="margin-top: 30px">
+                    <span class="el-icon-user"></span>
+                </div>
+            </div>
+            <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7" >
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
                     }">
                     <div class="header-R">
@@ -38,10 +45,14 @@
                         </el-dropdown>
                     </div>
                 </el-header>
-                <AsideFriend @currentFriend="currentFriend" @completeSearch="completeSearch" ref="asideFriend"/>
+<!--                好友消息-->
+                <AsideFriend v-show="select===1" v-if="chatFlag"  @currentFriend="currentFriend" @completeSearch="completeSearch" ref="asideFriend"/>
+<!--                好友详情-->
+                <AsideFriendDetail ref="asideFriendDetail" v-show="select===2" v-if="friendFlag" @friendMessage="friendMessage" />
             </el-aside>
-            <el-container v-show="this.item.friendshipId">
+            <el-container v-show="(this.item.friendshipId && this.select===1) || (this.friendDetailId!==null && this.select===2)">
                 <el-header  class="my-header"
+                            v-show="this.select===1"
                            style="background-color:#ffffff;border-bottom: 1px solid #e1e1e1">
                     <div style="display: flex;flex-direction: row;align-items: center;position: relative">
                         <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
@@ -51,9 +62,9 @@
                                 <el-dropdown trigger="click" @command="operationCommand">
                                     <span class="bell"><i class="el-icon-s-operation"></i></span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item icon="el-icon-message-solid" command="notifyOnline">通知上线</el-dropdown-item>
-                                        <el-dropdown-item icon="el-icon-video-camera-solid" command="videoCalls">视频通话</el-dropdown-item>
-                                        <el-dropdown-item icon="el-icon-phone" command="voiceCalls">语音通话</el-dropdown-item>
+                                        <el-dropdown-item icon="el-icon-bell" command="notifyOnline">通知上线</el-dropdown-item>
+                                        <el-dropdown-item icon="el-icon-video-camera" command="videoCalls">视频通话</el-dropdown-item>
+                                        <el-dropdown-item icon="el-icon-phone-outline" command="voiceCalls">语音通话</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </el-tooltip>
@@ -73,16 +84,17 @@
                     </div>
                 </el-header>
                 <el-main>
-                    <ChatBox ref="chatBox"/>
+                    <ChatBox ref="chatBox"  v-show="this.select===1"/>
+                    <FriendDetail ref="friendDetail" @initFriendDetailId="initFriendDetailId" @chatView="chatView" :select="select"  v-show="this.select===2"/>
                 </el-main>
             </el-container>
 <!--            初始LOGO-->
-        <el-container v-if="this.item.friendshipId===null"
+        <el-container v-if="(this.item.friendshipId===null && this.select===1) || (this.friendDetailId===null && this.select===2)"
                       style="display: flex;justify-content: center;align-items: center;">
             <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
                 <WechatFriend/>
                 <div class="WeChatLOGO">
-                    即时聊天系统
+                    和语聊天系统
                 </div>
             </div>
         </el-container>
@@ -143,6 +155,8 @@
 
 <script>
     import Flag from "@/assets/icon/flag.svg"
+    import AsideFriendDetail from "../../components/Wechat/AsideFriendDetail";
+    import FriendDetail from "../../components/Wechat/FriendDetail";
     import WechatFriend from "@/assets/icon/wechat-friend.svg"
     import PopContent from "../../components/PopUps/PopContent";
     import AsideFriend from "../../components/Wechat/AsideFriend";
@@ -170,10 +184,14 @@
             VideoCalls,
             VoiceCalls,
             WechatFriend,
-            Flag
+            Flag,
+            AsideFriendDetail,
+            FriendDetail
         },
         data() {
             return {
+                chatFlag:true,
+                friendFlag:true,
                 videoCountdownTimer:null,
                 voiceCountdownTimer:null,
                 dialogVisibleVoice:false,
@@ -191,7 +209,9 @@
                 loadingMore: false,
                 loadFlag: true,
                 total: 0,
+                friendDetailId:null,
                 groupMemberList: [],
+                select:1,
                 sendMessage: {
                     action: 0,
                     token: getToken(),
@@ -242,6 +262,17 @@
                     this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId)
                 }
                 this.$refs.chatBox.chatBox(this.item);
+            },
+            friendMessage(event){
+                if (event.type===1){
+                    this.friendDetailId = event.friendId;
+                    this.$refs.friendDetail.friendMessageItem(this.friendDetailId)
+                }else if (event.type ===0){
+                    this.select = 1;
+                    this.$store.commit('updateToolbarSelectState', this.select);
+                    this.$refs.asideFriend.getChat(event)
+                }
+
             },
             completeSearch() {
                 this.cancelFocus()
@@ -304,7 +335,7 @@
                 this.clearVoiceTimer();
                 this.dialogVisibleVoice = false;
                 this.$notify({
-                    title:"视频通话",
+                    title:"语音通话",
                     type:"warning",
                     message: message
                 });
@@ -420,6 +451,7 @@
                 })
             },
             switchShow(showSwitching) {
+                this.select = 1;
                 this.showSwitching = showSwitching;
                 localStorage.setItem("showSwitching", showSwitching);
                 this.$refs.asideFriend.getFriendshipsMenu(showSwitching)
@@ -429,7 +461,31 @@
                 this.$refs.asideFriend.clickAddSession(searchResult);
             },
             initFriendshipId() {
-                this.item.friendshipId = null
+                if (this.select === 1){
+                    this.friendFlag = false;
+                    this.$nextTick(()=>{
+                        this.friendFlag = true;
+                    })
+                    this.item.friendshipId = null
+                }else {
+                    this.chatFlag = false;
+                    this.$nextTick(()=>{
+                        this.chatFlag = true;
+                    })
+                    this.friendDetailId = null;
+                }
+
+            },
+            initFriendDetailId(){
+                this.friendDetailId = null;
+            },
+            chatView(friendItem){
+                this.select = 1;
+                this.$refs.asideFriend.getChat(friendItem)
+            },
+            switchTool(type){
+                this.select = type;
+                this.$store.commit('updateToolbarSelectState', this.select);
             },
             chatTime(time) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/; // 验证YYYY-MM-DD格式
@@ -447,19 +503,25 @@
                 }
             },
             videoCallsResponse(event){
-                this.dialogVisibleVideo = true;
-                var _this = this
-                _this.$nextTick(()=>{
-                    _this.$refs.videoCalls.VCResponse(event.detail.data);
-                })
+                if (this.select===1){
+                    this.dialogVisibleVideo = true;
+                    var _this = this
+                    _this.$nextTick(()=>{
+                        _this.$refs.videoCalls.VCResponse(event.detail.data);
+                    })
+                }
+
 
             },
             voiceCallsResponse(event){
-                this.dialogVisibleVoice = true;
-                var _this = this;
-                _this.$nextTick(()=>{
-                    _this.$refs.voiceCalls.voiceResponse(event.detail.data);
-                })
+                if (this.select===1){
+                    this.dialogVisibleVoice = true;
+                    var _this = this;
+                    _this.$nextTick(()=>{
+                        _this.$refs.voiceCalls.voiceResponse(event.detail.data);
+                    })
+                }
+
             },
             initContainer() {
                 this.item = {
@@ -468,7 +530,7 @@
                 }
             }
         }, created() {
-
+            this.select = this.$store.getters.toolbarSelect
         },
         mounted() {
             if (localStorage.getItem("showSwitching") !== null) {
@@ -639,5 +701,32 @@
         padding: 40px 20px;
         box-sizing: border-box;
         margin-right: 20px;
+    }
+
+    .toolbar{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 25px;
+        min-width: 50px;
+
+        background-color: #525252;
+    }
+    .toolbar .tool,.toolFocus{
+        font-size: 25px;
+        cursor: pointer;
+    }
+    .toolbar .tool{
+        color: #bfbfbf;
+        margin-top: 70px;
+    }
+    .toolbar .toolFocus{
+        color: #0badf9;
+    }
+    .toolbar .tool:hover{
+        color: #d8d8d8;
+    }
+    .toolbar .toolFocus:hover{
+        color: #15c2ff;
     }
 </style>

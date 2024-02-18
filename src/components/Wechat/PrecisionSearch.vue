@@ -53,7 +53,10 @@
                         <div style="text-align: center;margin-top: 20px">
                             <el-button v-if="searchResult.isFriend===0" type="info">正在申请</el-button>
                             <el-button @click="sendMessageFunction(searchResult)"
-                                       v-else-if="searchResult.isFriend===1 || searchResult.isFriend===3" type="primary">发消息
+                                       v-else-if="searchResult.isFriend===1" type="primary">发消息
+                            </el-button>
+                            <el-button v-else-if="searchResult.isFriend===3" type="danger" @click="unblockBlacklist">
+                                    取消黑名单
                             </el-button>
                             <div v-else>
                                 <el-input size="mini" v-model="sendMessage.content"
@@ -140,6 +143,15 @@
             sendMessageFunction(searchResult) {
                 this.innerVisible = false;
                 this.$emit('precisionSearch', searchResult)
+            },
+            unblockBlacklist(){
+                this.$router.push({
+                    path:'/informationall',
+                    query:{
+                        activeName:'blacklist',
+                        remark:this.searchResult.remark
+                    }
+                })
             },
             clear(){
                 this.innerVisible = false;

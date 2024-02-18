@@ -20,6 +20,11 @@
     });
     export default {
         name: "ChatHistoryAnalysis",
+        props:{
+            chatHistoryData:{
+                type:Array,
+            }
+        },
         data() {
             return {
                 chartInstance: null,
@@ -28,36 +33,24 @@
             this.initEcharts()
         },
         methods: {
-            dateList(data) {
-                data.map(function (item) {
-                    return item[0];
-                })
-            },
-            valueList(data) {
-                data.map(function (item) {
-                    return item[1];
-                });
-            },
             initEcharts() {
+                const dateList = this.chatHistoryData.map(function (item) {
+                    return item.chatHistoryDate;
+                });
+                const valueList = this.chatHistoryData.map(function (item) {
+                    return item.chatHistoryValue;
+                });
                 this.chartInstance = this.$echarts.init(this.$refs.mains);
                 const option = {
                     // Make gradient line here
                     visualMap: [
                         {
-                            show: false,
+                            show: true,
                             type: 'continuous',
                             seriesIndex: 0,
                             min: 0,
-                            max: 400
+                            max: 100
                         },
-                        {
-                            show: false,
-                            type: 'continuous',
-                            seriesIndex: 1,
-                            dimension: 0,
-                            min: 0,
-                            max: dateList.length-1
-                        }
                     ],
                     title: [
 

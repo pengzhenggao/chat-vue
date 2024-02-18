@@ -4,107 +4,29 @@
          element-loading-text="拼命加载中"
          element-loading-spinner="el-icon-loading">
         <el-main>
-            <el-menu :default-active="activeIndex" class="el-menu-vertical-demo" @select="handleSelect" mode="vertical">
+            <el-menu  :default-active="activeIndex" class="el-menu-vertical-demo" @select="handleSelect" mode="vertical">
                 <div v-for="(group,index) in friendMenu" v-show="!isSearch" :key="index">
                     <!--                    分组展示-->
-                    <div v-if="showRules==='0'">
-                        <el-submenu :index="index.toString()">
-                            <template slot="title">
-                                <span style="font-weight: bold;font-size: 16px">{{group.groupName}}</span>
-                                <span style="font-size: 16px" v-if="group.friendshipsDTOS"> ({{group.friendshipsDTOS.length}})</span>
-                                <span style="font-size: 16px" v-else> (0)</span>
-                            </template>
+                    <div>
+                        <el-menu-item-group>
+                            <span slot="title">{{group.groupName || '好友'}}</span>
                             <el-menu-item v-for="friend in group.friendshipsDTOS"
                                           :key="friend.id"
                                           :index="friend.id.toString()"
-                                          @click="getChat(friend)"
+                                          @click="getFriendMessage(friend)"
                                           style="display: flex;flex-direction: row;align-items: center;padding: 30px 0 30px 10px">
                                 <div>
-                                    <el-badge :ref="friend.friendId" is-dot
-                                              :class="{ 'badge-online': isOnline(friend.isActive), 'badge-off': !isOnline(friend.isActive) }">
                                         <img v-if="friend.avatar" :src="friend.avatar"
                                              style="width: 40px;height: 40px;border-radius: 3px"
                                              alt=""
                                              onerror="this.src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';this.onerror=null;"/>
-                                    </el-badge>
                                 </div>
-                                <div @contextmenu.prevent="rightClick(friend.friendId,friend.remark,friend.type,friend.id,$event)"
+                                <div
                                      style="margin-left: 14px;display: flex;flex-direction: column;">
                                     <span class="friend-remark">{{friend.remark}}</span>
-                                    <!-- latestNews,latestTime -->
-                                    <span class="friend-latestNews">
-                                         {{text(friend.latestNews)}}
-                                    </span>
-                                    <!--                                    <span class="friend-latestNews"-->
-                                    <!--                                          v-else-if="friend.latestNews && friend.messageType==1">-->
-                                    <!--                                        图片-->
-                                    <!--                                    </span>-->
-                                    <!--                                    <span class="friend-latestNews" v-else>-->
-                                    <!--                                        暂无消息-->
-                                    <!--                                    </span>-->
-                                </div>
-                                <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
-                                    {{chatTime(friend.latestTime)}}
-                                </div>
-                                <div style="position: absolute;right: 25px;bottom: -3px" v-if="friend.isStar===1">
-                                    <span style="color: #dab74d" class="el-icon-star-on"></span>
-                                </div>
-                                <div style="position: absolute;left: 52px;top:-16px" v-if="friend.unreadCount>0">
-                                    <el-badge :value="friend.unreadCount" :max="99" class="item">
-                                        <span></span>
-                                    </el-badge>
                                 </div>
                             </el-menu-item>
-                        </el-submenu>
-                    </div>
-
-                    <!--                    不分组展示-->
-                    <div v-if="showRules==='1'">
-                        <el-menu-item v-for="friend in group.friendshipsDTOS"
-                                      :key="friend.id"
-                                      :index="friend.id.toString()"
-                                      @click="getChat(friend)"
-                                      style="display: flex;flex-direction: row;align-items: center;padding: 30px 0 30px 10px">
-                            <div v-if="friend.type===1">
-                                <el-badge :ref="friend.friendId" is-dot
-
-                                          :class="{ 'badge-online': isOnline(friend.isActive), 'badge-off': !isOnline(friend.isActive) }">
-                                    <img v-if="friend.avatar" :src="friend.avatar"
-                                         style="width: 40px;height: 40px;border-radius: 3px"
-                                         alt=""
-                                         onerror="this.src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';this.onerror=null;"/>
-                                </el-badge>
-                            </div>
-                            <div v-else>
-                                <img v-if="friend.avatar" :src="friend.avatar"
-                                     style="width: 40px;height: 40px;border-radius: 3px"
-                                     alt=""
-                                     onerror="this.src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';this.onerror=null;"/>
-                            </div>
-                            <div @contextmenu.prevent="rightClick(friend.friendId,friend.remark,friend.type,friend.id,$event)"
-                                 style="margin-left: 14px;display: flex;flex-direction: column;">
-                                <span class="friend-remark">{{friend.remark}}</span>
-                                <!-- latestNews,latestTime -->
-                                <span class="friend-latestNews">
-                                        {{text(friend.latestNews)}}
-                                </span>
-
-                            </div>
-                            <div style="position: absolute;color: #868686;top:-16px;right: 10px;font-size: 13px;text-align: center">
-                                {{chatTime(friend.latestTime)}}
-                            </div>
-                            <div :class="[friend.isTop===1?'friend-isStar1':'friend-isStar2']" v-if="friend.isStar===1">
-                                <span style="color: #dab74d" class="el-icon-star-on"></span>
-                            </div>
-                            <div style="position: absolute;left: 52px;top:-16px" v-if="friend.unreadCount>0">
-                                <el-badge :value="friend.unreadCount" :max="99" class="item">
-                                    <span></span>
-                                </el-badge>
-                            </div>
-                            <div style="position: absolute;right: 10px;bottom: 1px;" v-if="friend.isTop===1">
-                                <span style="font-size: 12px;color: #a4a4a4;background-color: #ebebeb;padding: 2px">置顶</span>
-                            </div>
-                        </el-menu-item>
+                        </el-menu-item-group>
                     </div>
                 </div>
             </el-menu>
@@ -114,32 +36,6 @@
             <div style="text-align: center;margin-top: 280px" v-if="(friendMenu.length<=0 && !isSearch)">
                 <span style="color: #b6b6b6;font-size: 20px;">暂无好友</span>
             </div>
-            <div
-                    v-show="rightClickView"
-                    class="float-window"
-                    :style="{ left: `${x}px`, top: `${y}px` }">
-                <div class="opear">
-                    <div style="border-bottom: 1px solid #e1e1e1">
-                        <div class="detail" @click.prevent="top(1)" v-if="this.sidewaysStatus.isTop===0">
-                            <span>置顶</span>
-                        </div>
-                        <div class="detail" @click="cancelTop(0)" v-else>
-                            <span>取消置顶</span>
-                        </div>
-                        <div class="detail" @click="markUnread"
-                             v-if="this.sidewaysStatus.isUnreadCount<=0 || this.sidewaysStatus.isUnreadCount===null">
-                            <span>标记为未读</span>
-                        </div>
-                        <div class="detail" @click="clearUnreadCount(rightClickFriendId)" v-else>
-                            <span>取消未读</span>
-                        </div>
-                        <div class="detail" @click="clearChatHistory">清空记录</div>
-                    </div>
-                    <div style="border-bottom: 1px solid #e1e1e1">
-                        <div class="detail" @click="delFriend">删除好友</div>
-                    </div>
-                </div>
-            </div>
         </el-main>
     </div>
 </template>
@@ -147,9 +43,10 @@
 <script>
     import service from "../../http";
     import FriendSearch from "./FriendSearch";
+    import store from "../../store";
 
     export default {
-        name: "AsideFriend",
+        name: "FriendDetail",
         components: {
             FriendSearch
         },
@@ -160,7 +57,6 @@
                 x: 0, // 浮动窗口的X坐标
                 y: 0, // 浮动窗口的Y坐标
                 isSearch: false,
-                showRules: '1',
                 keyword: "",
                 friendMenu: [],
                 insertLocation: 0,
@@ -169,6 +65,7 @@
                     isUnreadCount: 0,
                 },
                 remark: null,
+
                 username: null,
                 activeIndex: '0',
                 rightClickRemark: null,
@@ -210,7 +107,7 @@
                             this.friendMenu[i].friendshipsDTOS[f].isTop = status;
                             const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
                             this.friendMenu[i].friendshipsDTOS.unshift(itemToMove);
-                            this.insertLocation = this.insertLocation + 1
+                            this.insertLocation = this.insertLocation + 1;
                             break;
                         }
                     }
@@ -327,7 +224,7 @@
                 } else {
                     for (let i = 0; i < this.friendMenu.length; i++) {
                         for (var f in this.friendMenu[i].friendshipsDTOS) {
-                            if (friendId.detail.data.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
+                            if (this.friendMenu[i].friendshipsDTOS[f].friendId!=null && friendId.detail.data.toString() === this.friendMenu[i].friendshipsDTOS[f].friendId.toString()) {
                                 this.friendMenu[i].friendshipsDTOS.splice(f, 1);
                                 break
                             }
@@ -348,7 +245,7 @@
                 }
                 service({
                     method: "get",
-                    url: `users/get/friendships/${showRules ? showRules : this.showRules}`,
+                    url: `users/get/friendships/3`,
                     params: {
                         remark: this.remark,
                         username: this.username
@@ -357,13 +254,6 @@
                     // this.map = new Map(Object.entries(res.data));
                     if (res && res.code === 20000) {
                         this.friendMenu = res.data;
-
-                        if (showRules === '1' && res.data[0].friendshipsDTOS.length <= 0) {
-                            this.friendMenu = []
-                        }
-                        if (showRules) {
-                            this.showRules = showRules
-                        }
                     }
                     this.loading = false
                 }).catch(() => {
@@ -384,8 +274,8 @@
              * @param searchResult
              */
             clickAddSession(searchResult) {
+                this.activeIndex = searchResult.friendId.toString();
                 var params = {
-                    id:searchResult.friendId,
                     friendId: searchResult.userInfoId,
                     remark: searchResult.remark,
                     type: 1
@@ -417,16 +307,8 @@
                     }
                 }
             },
-            getChat(event) {
-                this.activeIndex = event.id.toString();
-                var from = {
-                    friendshipId: event.type === 1 ? event.friendId : event.id,
-                    remark: event.remark,
-                    type: event.type,
-                    groupChatCount: event.groupChatCount
-                };
-                this.$emit("currentFriend", from);
-                this.clearUnreadCount(event.friendId)
+            getFriendMessage(event) {
+                    this.$emit("friendMessage", event);
             },
             isOnline(active) {
                 return active === 1;
@@ -472,38 +354,6 @@
             isSearchStatus(status) {
                 this.isSearch = status
             },
-            messageUpdates(event) {
-                var params = event.detail.data;
-                for (let i = 0; i < this.friendMenu.length; i++) {
-                    for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
-                        //双方都在面对面聊天
-                        if (params.othersUserId === this.friendMenu[i].friendshipsDTOS[f].friendId) {
-                            this.friendMenu[i].friendshipsDTOS[f].latestNews = params.content;
-                            this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
-                            this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
-                            if (this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
-                                const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
-                            }
-                            return;
-                        } else if (params.myUserId === this.friendMenu[i].friendshipsDTOS[f].friendId) {
-                            //接收方在另一个好友聊天界面（非面对面）
-                            this.friendMenu[i].friendshipsDTOS[f].latestNews = params.content;
-                            this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
-                            this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
-                            this.friendMenu[i].friendshipsDTOS[f].unreadCount = this.friendMenu[i].friendshipsDTOS[f].unreadCount + 1
-                            if (this.showRules !== '0' && this.friendMenu[i].friendshipsDTOS[f].isTop !== 1) {
-                                const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
-                                this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
-                            }
-                            //异步刷新
-                            this.addUnreadCount(params.myUserId);
-                            return;
-                        }
-                    }
-
-                }
-            },
             listeningStar(event) {
                 for (let i = 0; i < this.friendMenu.length; i++) {
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
@@ -541,21 +391,6 @@
             addUnreadCount(friendId) {
                 service.put(`users/addUnreadCount/${friendId}`)
             },
-            clearUnreadCount(friendId) {
-                if (!friendId) {
-                    return;
-                }
-                for (let i = 0; i < this.friendMenu.length; i++) {
-                    for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
-                        if (friendId === this.friendMenu[i].friendshipsDTOS[f].friendId) {
-                            //接收方在另一个好友聊天界面（非面对面）
-                            this.friendMenu[i].friendshipsDTOS[f].unreadCount = 0;
-                            service.put(`users/clearUnreadCount/${friendId}`);
-                            return;
-                        }
-                    }
-                }
-            },
             chatTime(time) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/; // 验证YYYY-MM-DD格式
                 if (regex.test(time)) {
@@ -574,14 +409,6 @@
             handleSelect(event) {
                 this.activeIndex = event.toString();
             },
-            initAsideFriend() {
-                var showSwitching = localStorage.getItem("showSwitching");
-                if (showSwitching === '1') {
-                    this.getFriendshipsMenu(showSwitching, 1)
-                }else {
-                    // this.getFriendshipsMenu(showSwitching, 0)
-                }
-            },
             text(html) {
                 if (!html) {
                     return "暂无消息"
@@ -597,12 +424,10 @@
             this.getInsertLocation();
         },
         mounted() {
-            this.getFriendshipsMenu(localStorage.getItem("showSwitching"));
+            this.getFriendshipsMenu();
             window.addEventListener('listeningStar', this.listeningStar);
             window.addEventListener('delFriendNotice', this.delFriendNotice);
-            window.addEventListener('initAsideFriend', this.initAsideFriend);
             window.addEventListener('updateRemark', this.updateRemark);
-            window.addEventListener('MessageUpdates', this.messageUpdates);
             window.addEventListener('getChat', this.preGetChat);
             window.addEventListener('buddyListPopulation', this.buddyListPopulation);
             window.addEventListener('OnAndOffLineNotifications', this.onAndOffLineNotifications);
@@ -616,7 +441,6 @@
             window.removeEventListener('listeningStar', this.listeningStar);
             window.removeEventListener('delFriendNotice', this.delFriendNotice);
             window.removeEventListener('updateRemark', this.updateRemark);
-            window.removeEventListener('initAsideFriend', this.initAsideFriend);
             window.removeEventListener('MessageUpdates', this.messageUpdates);
             window.removeEventListener('buddyListPopulation', this.buddyListPopulation);
             window.removeEventListener('OnAndOffLineNotifications', this.onAndOffLineNotifications);

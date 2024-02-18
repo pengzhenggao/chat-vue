@@ -200,7 +200,57 @@
             </div>
         </div>
 <!--        请求添加好友-->
-
+        <div>
+            <el-dialog
+                    width="300px"
+                    :visible.sync="innerVisible"
+                    append-to-body>
+                <div style="padding: 10px">
+                    <div class="personal">
+                        <el-image
+                                v-if="searchResult.avatar"
+                                style="width: 75px; height: 75px;border-radius: 10px"
+                                :src="searchResult.avatar"
+                        ></el-image>
+                        <div class="base-content">
+                            <div style="display: flex;flex-direction: row">
+                                <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
+                                            placement="bottom">
+                                    <p class="nick-name">{{searchResult.nickName}}</p>
+                                </el-tooltip>
+                                &nbsp;
+                                <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
+                                    <i class="el-icon-s-custom"></i>
+                                    </span>
+                            </div>
+                            <el-tooltip class="item" effect="dark" :content="searchResult.username"
+                                        placement="bottom">
+                                <p class="login-name">
+                                    <span>登入名:</span> <span>{{searchResult.username}}
+                                </span>
+                                </p>
+                            </el-tooltip>
+                        </div>
+                    </div>
+                    <div style="text-align: center;margin-top: 20px">
+                        <el-button v-if="searchResult.isFriend==0 " type="info">正在申请</el-button>
+                        <el-button @click.prevent="innerVisible=false"
+                                   v-else-if="searchResult.isFriend==1 || searchResult.isFriend==3"
+                                   type="primary">发消息
+                        </el-button>
+                        <div v-else>
+                            <el-input size="mini" v-model="sendMessage.content"
+                                      class="custom-input"
+                                      maxlength="30"
+                                      placeholder="输入留言"></el-input>
+                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
+                                       type="success">添加为好友
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
+        </div>
         <div class="getSearch">
             <div
                     v-show="leftClickView"
@@ -275,7 +325,7 @@
                         <div class="detail" @click="remarkViewChick">设置备注和标签</div>
                         <div class="detail" style="border-bottom: 1px solid #e1e1e1"
                              @click="recommend(friendMessage.friendId)">
-                            推荐<span v-if="friendMessage.gender===1">他</span><span v-else>她</span>给好友
+                            分享<span v-if="friendMessage.gender===1">他</span><span v-else>她</span>的名片
                         </div>
                         <div class="detail" style="border-bottom: 1px solid #e1e1e1">
                             <span v-if="friendMessage.isStar===0" @click.prevent="setFriendStar(1)">设置星标朋友</span>
@@ -377,7 +427,6 @@
     import Complaints from "./Complaints";
     import ReferFriend from "./ReferFriend";
     import Postcard from "./Postcard";
-
     export default {
         components: {
             Postcard,
@@ -580,7 +629,7 @@
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                         }).then(() => {
-                            service.delete(`/deleteChatStorage/${messageStorageId}`)
+                            service.delete(`users/deleteChatStorage/${messageStorageId}`)
                                 .then(res => {
                                     var flag = 0;
                                     if (res.code === 20000) {

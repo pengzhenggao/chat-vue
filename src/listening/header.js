@@ -20,5 +20,13 @@ var header={
     },
     updateIsDot:()=>{
         window.dispatchEvent(new CustomEvent('updateIsDot'))
-    }
+    },
+
+    announcementNotice:(event)=>{
+        window.dispatchEvent(new CustomEvent('announcementNotice', {
+            detail: {
+                data: event
+            }
+        }))
+    },
 }

@@ -4,7 +4,6 @@ import VueRouter from 'vue-router'
 import Layout from '@/layout'
 import {getModeType} from "../utils/mode-type"; //布局页
 
-
 Vue.use(VueRouter)
 
 // 通用页面, 这里的配置不需要权限
@@ -14,6 +13,7 @@ export const constRouter = [
         component: () => import('@/views/login/Login'),
         hidden: true, //导航菜单忽略选项
         meta: {
+            keepAlive:false,
             title: '登入界面'
         }
     },
@@ -23,6 +23,7 @@ export const constRouter = [
         component: () => import('@/views/register/Register'),
         hidden: true, //导航菜单忽略选项
         meta: {
+            keepAlive:false,
             title: '注册页面'
         }
     },
@@ -100,17 +101,8 @@ export const constRouter = [
                 component: () => import('@/views/communication/WeChat.vue'),
                 name: 'wechat',
                 meta: {
+                    keepAlive:true,
                     title: "主页",
-                    icon: 'el-icon-s-home',
-                    roles: ['user']
-                }
-            },
-            {
-                path: '/lobbychat',
-                component: () => import('@/views/communication/LobbyChat.vue'),
-                name: 'lobbychat',
-                meta: {
-                    title: "大厅",
                     icon: 'el-icon-s-home',
                     roles: ['user']
                 }
@@ -132,6 +124,7 @@ export const constRouter = [
                 name: 'settings',
                 meta: {
                     title: "个人中心",
+                    keepAlive:true,
                     icon: 'el-icon-user-solid',
                     hidden: false,
                     roles: ['admin', 'user']
@@ -143,8 +136,21 @@ export const constRouter = [
                 name: 'homeinformationall',
                 meta: {
                     title: "设置中心",
+                    keepAlive:true,
                     icon: 'el-icon-message-solid',
                     hidden: false,
+                    roles: ['admin', 'user']
+                }
+            },
+            {
+                path: '/mail-view',
+                component: () => import('@/views/mail/MailView.vue'),
+                name: '查看邮件',
+                meta: {
+                    title: "查看邮件",
+                    keepAlive:true,
+                    icon: 'el-icon-message',
+                    hidden: true,
                     roles: ['admin', 'user']
                 }
             },
@@ -153,17 +159,6 @@ export const constRouter = [
 ]
 // 动态路由 communication
 export const asyncRoutes = [
-/*    {
-        path: 'communication',
-        component: () => import('@/views/communication/Index.vue'),
-        name: 'communicationindex',
-        meta: {
-            title: "邮件",
-            icon: 'el-icon-message',
-            hidden: false,
-            roles: ['admin', 'user']
-        }
-    },*/
     {
         path: '/404',
         name: 'NotFound',

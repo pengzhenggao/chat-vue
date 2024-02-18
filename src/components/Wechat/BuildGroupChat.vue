@@ -12,6 +12,7 @@
                             class="avatar-uploader"
                             action="http://localhost:8001/api/upload/oss"
                             :show-file-list="false"
+                            :headers="headers"
                             :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload">
                         <el-image class="avatar" v-if="ruleForm.imageUrl!=null"
@@ -77,11 +78,13 @@
 <script>
     import service from "../../http";
     import {asidefriend} from "../../listening/asidefriend";
+    import store from "../../store";
 
     export default {
         name: "BuildGroupChat",
         data() {
             return {
+                headers:{Authorization: store.getters.token},
                 ruleForm:{
                     groupChatName:null,
                     imageUrl:null

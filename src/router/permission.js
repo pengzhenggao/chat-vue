@@ -40,8 +40,8 @@ router.beforeEach(async (to,from,next) => {
                     //先请求获取用户角色
                     const { roles } = await store.dispatch('user/getInfo');
                     // 根据当前用户角色动态生成路由
-                    const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-
+                    const accessRoutes = await store.dispatch('permission/generateRoutes', roles);
+                    console.log(accessRoutes)
                     // 添加这些路由至路由器
                     router.addRoutes(accessRoutes)
 

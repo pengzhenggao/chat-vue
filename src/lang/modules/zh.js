@@ -1,7 +1,7 @@
 export default {
     router: {},
     system: {
-        logoName:"网页即时聊天系统",
+        logoName:"和语聊天系统",
         loginName:"登入",
         registerName: "注册",
         accountLogin:"账号登入",

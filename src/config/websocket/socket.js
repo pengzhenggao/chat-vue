@@ -219,7 +219,7 @@ var socket = {
                 asidefriend.OnAndOffLineNotificationsImpl(recData);
                 break;
             case 30001:  //单人聊天
-                if (VueRouter.path  != "/wechat"){
+                if (VueRouter.path  !== "/wechat"){
                     header.updateIsDot();
                 }
                 chatbox.receiverMessage(recData);
@@ -234,7 +234,7 @@ var socket = {
                 chatcontent.retractMessage(recData);
                 break;
             case 30005:   //发送群聊信息
-                if (VueRouter.path  != "/wechat"){
+                if (VueRouter.path  !== "/wechat"){
                    header.updateIsDot();
 
                 }
@@ -250,8 +250,11 @@ var socket = {
                 voicecalls.voiceCallsResponse(recData);
                 break;
             case 30009:  //解散群聊通知操作
-                chatbox.disbandGroupChat(recData)
-                break
+                chatbox.disbandGroupChat(recData);
+                break;
+            case 50001:
+                header.announcementNotice(recData);  //公告发布实时更新
+                break;
             case 40002:  //被迫下线通知
                 socket.offLine(recData)
 
@@ -259,7 +262,6 @@ var socket = {
         // 自行扩展其他业务处理...
     },
     offLine:(data) =>{
-        console.log(data);
         if (socket.offLineFlag==null){
             MessageBox.confirm(
                 data.message || '登陆状态异常,请重新登陆',

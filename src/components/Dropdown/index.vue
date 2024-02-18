@@ -1,33 +1,38 @@
 <template>
     <el-tabs class="dropdowns" v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="通知" name="first" style="padding:0; " class="dropdowns-dropBox">
+        <el-tab-pane label="系统邮件" name="first" style="padding:0; " class="dropdowns-dropBox">
 
             <div class="dropdowns-list-box">
-                <Drop v-for="item in notifyList" :type='item.icon'  iconColor='#ffffff' iconBgColor='#3593FE'
-                      :text='item.notifyTitle'
-                      :time='item.createTime'
-                      style="background: #AFFCDD"/>
+                <SystemMail v-for="item in notifyList"  :type='item.icon' iconColor='#ffffff' iconBgColor='#3593FE'
+                            :key="item.id"
+                            :id="item.id"
+                            :text='item.notifyTitle'
+                            :time='item.createTime'
+                            style="background: #AFFCDD"/>
                 <el-button class="dropdowns-more" :loading="false" type="text">加载更多</el-button>
             </div>
             <div class="dropdowns-foots">
                 <!-- <Clear class="dropdowns-foots-iconsClear"  /> -->
-                清空通知
+                清空邮件
             </div>
             <!-- <Empy type='Horn' text='你还没有新的通知' /> -->
         </el-tab-pane>
-        <el-tab-pane label="消息" name="second" style="padding:0" class="dropdowns-dropBox">
+        <el-tab-pane label="消息邮件" name="second" style="padding:0" class="dropdowns-dropBox">
             <div class="dropdowns-list-box">
-                <NewsBox v-for="item in messageList" :text='item.messageTitle' :time='item.createTime'/>
+                <MessageMail v-for="item in messageList" :text='item.messageTitle' :time='item.createTime'/>
             </div>
             <div class="dropdowns-foots">
-                清空通知
+                清空邮件
             </div>
             <!-- <Empy type='News' text='你还没有新的消息' /> -->
         </el-tab-pane>
         <el-tab-pane name="third" style="padding:0">
-            <span slot="label">公告</span>
+            <span slot="label">公告邮件</span>
             <div class="dropdowns-list-box">
                 <Announcement :announcementList="announcementList"/>
+            </div>
+            <div class="dropdowns-foots">
+                清空邮件
             </div>
             <!-- <Empy type='Flag' text='你还没有新的代办事项' /> -->
         </el-tab-pane>
@@ -36,9 +41,9 @@
 
 <script>
     // 通知 每一栏
-    import Drop from './drop'
+    import SystemMail from './SystemMail'
     // 消息 每一栏
-    import NewsBox from './newsBox'
+    import MessageMail from './MessageMail'
     // 代办 每一栏
     import Announcement from './Announcement'
     // 清空图标
@@ -53,15 +58,15 @@
             return {
                 activeName: 'first',
                 dropOff: false,
-                notifyList:[],
-                messageList:[],
-                announcementList:{}
+                notifyList: [],
+                messageList: [],
+                announcementList: {}
             };
         },
         components: {
-            Drop,
+            SystemMail,
             Clear,
-            NewsBox,
+            MessageMail,
             Empy,
             Announcement
         },
@@ -76,7 +81,7 @@
                     this.notifyList = res.data
                 })
             },
-            getMessage(){
+            getMessage() {
                 service({
                     method: "get",
                     url: "/users/getMessage",
@@ -84,15 +89,16 @@
                     this.messageList = res.data
                 })
             },
-            getAnnouncement(){
+            getAnnouncement() {
                 service({
                     method: "get",
                     url: "users/announcement",
                 }).then(res => {
-                    this.announcementList = res.data
+                    this.announcementList = res.data;
                 })
-            }
-        },mounted() {
+            },
+
+        }, mounted() {
             this.getNotify();
             this.getMessage();
             this.getAnnouncement()

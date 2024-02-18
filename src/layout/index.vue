@@ -30,6 +30,7 @@
 </template>
 
 <script>
+
 import Sidebar from '../components/Sidebar/index.vue'
 import Headers from '../components/Headers/Headers.vue'
 

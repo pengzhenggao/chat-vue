@@ -212,7 +212,12 @@
                 this.peerConnection.setLocalDescription(sessionDescription);
                 this.sendMessage.extend = 5;
                 this.sendMessage.content = sessionDescription;
-                this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
+                if (this.friendItem.friendId.toString()){
+                    this.sendMessage.receiverId = this.friendItem.friendId.toString();
+                }else {
+                    this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
+                }
+
                 socket.send(this.sendMessage)
                 // ws.value.send(JSON.stringify({type:"4",uid:uid.value,to:rid.value,message:sessionDescription}))
             },
@@ -300,6 +305,18 @@
             },
         }, mounted() {
 
+        },
+        watch:{
+            connectStatus: {
+                handler(newName, oldName) {
+                    if (newName==6){
+                        setTimeout(()=>{
+                            this.$emit('closeVoice')
+                        },1000)
+                    }
+                },
+                immediate: true
+            }
         }
     }
 </script>

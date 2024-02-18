@@ -1,4 +1,4 @@
-<template>
+@2023 即时聊天系统(网页版)<template>
     <div class="CB">
         <el-container style="height: 100%">
             <el-main class="el-mai">
@@ -107,6 +107,11 @@
             },
             submitMessage(content) {
                 if (content.trim().length <= 0) {
+                    this.$notify({
+                        type:"warning",
+                        title:"聊天内容",
+                        message:"发送的内容不能为空"
+                    });
                     return
                 }
                 if (this.chatType === 1) {
