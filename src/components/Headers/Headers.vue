@@ -80,8 +80,8 @@
                         {{$store.getters.userLogin.nickName}}<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="updatePassword">修改密码</el-dropdown-item>
                         <el-dropdown-item command="person">个人中心</el-dropdown-item>
+                        <el-dropdown-item command="updatePassword">修改密码</el-dropdown-item>
                         <el-dropdown-item divided command="quit">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>

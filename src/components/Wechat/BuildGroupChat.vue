@@ -23,7 +23,7 @@
                 <el-form-item prop="groupChatName" label="名称">
                     <el-input size="small" v-model="ruleForm.groupChatName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-button type="primary" style="margin-left: 100px" @click="next('ruleForm')">下一步</el-button>
+                <el-button type="primary" style="margin-left: 100px;  margin-top: 10px;" @click="next('ruleForm')">下一步</el-button>
             </el-form>
         </div>
         <div v-if="active === 2" style="margin-top: 10px">
@@ -47,20 +47,24 @@
                                 style="width: 100%">
                             <el-table-column
                                     type="selection"
-                                    width="30">
+                                    width="50">
                             </el-table-column>
                             <el-table-column
-                                    width="50px">
+                                    width="60px">
                                 <template slot-scope="scope">
                                     <!-- 插槽内容，可以自定义表头 label -->
                                     <el-avatar size="large" :src="scope.row.avatar"></el-avatar>
                                 </template>
                             </el-table-column>
+
                             <el-table-column :show-overflow-tooltip='true' width="195px">
                                 <template slot-scope="scope">
                                     <p>{{scope.row.remark}}</p>
                                     <!-- 插槽内容，可以自定义表头 label -->
                                 </template>
+                            </el-table-column>
+                            <el-table-column
+                                   >
                             </el-table-column>
                         </el-table>
                     </div>

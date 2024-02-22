@@ -143,7 +143,7 @@ export const constRouter = [
                 }
             },
             {
-                path: '/mail-view',
+                path: '/mail-view/:id?/:type?',
                 component: () => import('@/views/mail/MailView.vue'),
                 name: '查看邮件',
                 meta: {

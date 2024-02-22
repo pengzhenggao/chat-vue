@@ -83,8 +83,13 @@ export default {
         Favorite
     },methods:{
         routerMailView(id){
-            console.log(id)
-            // this.$router.push("/mail-view")
+            this.$router.push({
+                path:"/mail-view",
+                query:{
+                    id:id,
+                    type:'notify'
+                }
+            })
         }
     }
 }

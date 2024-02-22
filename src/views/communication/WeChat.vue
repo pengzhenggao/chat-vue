@@ -120,7 +120,7 @@
         <div>
             <el-dialog
                     title="创建群聊"
-                    width="380px"
+                    width="500px"
                     :visible.sync="buildGroupChat"
                     :before-close="buildGroupChatClose"
                     center>

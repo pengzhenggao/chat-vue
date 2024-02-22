@@ -131,7 +131,7 @@
                         <el-card style="margin-top: 1rem">
                             <span style="font-weight: bold">登入通知</span>
                             <div style="height: 240px">
-                                <el-scrollbar style="height: 100%;width: 100%">
+                                <el-scrollbar style="height: 100%;width: 100%" wrap-style="overflow-x:hidden;">
                                     <div style="display: flex;flex-direction: column;justify-content: center;align-items: center">
                                         <div v-for="loginRecord in loginRecordsDTOList">
                                             <el-card style="margin: 10px">

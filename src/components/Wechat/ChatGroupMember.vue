@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="pull-group-chat">
-                    <div class="pull-icon">
+                    <div class="pull-icon" @click="pullPeople">
                         <span style="font-size: 18px"><i class="el-icon-plus"></i></span>
                     </div>
                 </div>
@@ -35,7 +35,56 @@
                 <span @click.prevent="disbandGroupChat" v-else-if="isGroupLeader">解散群聊</span>
             </div>
         </div>
+        <el-dialog
+                append-to-body
+                title="拉入群聊"
+                :visible.sync="pullChatView"
+                width="30%"
+                :before-close="handleClose">
+            <el-input placeholder="搜索好友(昵称/备注)"
+                      prefix-icon="el-icon-search"
+                      clearable
+                      style="width: 250px;margin-bottom: 5px"
+                      @input="getFriend"
+                      v-model="keyword" class="input-with-select" size="mini">
+            </el-input>
+            <div style="height: 200px">
+                <el-table
+                        ref="multipleTable"
+                        :data="tableData"
+                        tooltip-effect="dark"
+                        :show-header="false"
+                        @selection-change="handleSelectionChange"
+                        style="width: 100%;height: 200px">
+                    <el-table-column
+                            type="selection"
+                            width="50">
+                    </el-table-column>
+                                      <el-table-column
+                            width="60px">
+                        <template slot-scope="scope">
+                            <!-- 插槽内容，可以自定义表头 label -->
+                            <el-avatar size="large" :src="scope.row.avatar"></el-avatar>
+                        </template>
+                    </el-table-column>
 
+                    <el-table-column :show-overflow-tooltip='true' width="195px">
+                        <template slot-scope="scope">
+                            <p>{{scope.row.remark}}</p>
+                            <!-- 插槽内容，可以自定义表头 label -->
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                    >
+                    </el-table-column>
+                </el-table>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="cancel()">取 消</el-button>
+    <el-button type="primary" @click="confirm()">确 定</el-button>
+  </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -55,6 +104,10 @@
                 isGroupLeader: false,
                 groupMemberList: [],
                 total: 0,
+                pullChatView:false,
+                tableData:[],
+                keyword:null,
+                multipleSelection: null,
             }
         },
         props: {
@@ -63,6 +116,49 @@
             }
         },
         methods: {
+            getFriend() {
+                service.get("/users/notGroupChatFriend", {
+                    params: {
+                        keyword: this.keyword,
+                        groupId: this.item.friendshipId
+                    }
+                }).then(res => {
+                    this.tableData = res.data
+                })
+            },
+            confirm(){
+                let newSet = this.multipleSelection.map(obj => Number(obj.friendId));
+                const params={
+                    groupChatId:this.item.friendshipId,
+                    friendIds:newSet,
+                };
+                service({
+                    method:"post",
+                    url:"/users/pullGroupChat",
+                    data:params
+                }).then(res=>{
+                    if (res.code===20000){
+                        this.$notify({
+                            title:"拉入群聊",
+                            type:"success",
+                            message:"拉入群聊成功"
+                        });
+                        this.pullChatView = false;
+                        this.tableData = []
+                    }
+                })
+            },
+            cancel(){
+                this.pullChatView = false;
+                this.multipleSelection = null
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            pullPeople(){
+                this.pullChatView = true;
+                this.getFriend()
+            },
             loadMore() {
                 this.currentPage++;
                 this.getGroupMembers(this.item.friendshipId, true)
@@ -78,7 +174,7 @@
                 }
                 service({
                     method: "get",
-                    url: "users/groupChat",
+                    url: "/users/groupChat",
                     params: {
                         currentPage: this.currentPage,
                         size: this.size,
@@ -182,7 +278,15 @@
                 }).catch(() => {
                 });
 
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
             }
+
         }, mounted() {
 
         }
