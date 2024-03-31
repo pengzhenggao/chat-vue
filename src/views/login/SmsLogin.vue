@@ -133,7 +133,7 @@
                             }).then(res=>{
                                 if (res.code===20000){
                                     this.$store.dispatch('user/saveUserLogin', res.data).then(res=>{
-                                        this.$router.push('/')
+                                        this.$router.push('/wechat')
                                     }).catch(()=>{
                                         this.loading=false;
                                     })
@@ -151,7 +151,7 @@
                 if (regex.test(this.loginForm.phone)) {
                     service({
                         method: "get",
-                        url: "users/userAuth/sendCode/phoneLogin",
+                        url: "/users/userAuth/sendCode/phoneLogin",
                         params: {
                             account: this.loginForm.phone
                         }
@@ -186,7 +186,7 @@
                 if (regex.test(this.loginForm.phone)) {
                     service({
                         method: "get",
-                        url: "/users/sliderlocation",
+                        url: "/sliderlocation",
                         params:{
                             type:"SmsLogin"
                         }

@@ -8,7 +8,7 @@
             <div class="member">
                 <div v-for="(item,index) in groupMemberList" :key="index"
                      class="member-item">
-                    <div style="margin: 2px 7px 2px 7px;display: flex;flex-direction: column;">
+                    <div style="margin: 2px 7px 2px 7px;display: flex;flex-direction: column;" @click="selectMember(item)">
                         <img style="width: 40px;height: 40px" :src="item.avatar"/>
                         <div class="member-username">
                             <span>{{item.customizeRemark?item.customizeRemark:item.username}}</span>
@@ -116,6 +116,9 @@
             }
         },
         methods: {
+            selectMember(item){
+
+            },
             getFriend() {
                 service.get("/users/notGroupChatFriend", {
                     params: {
@@ -137,6 +140,7 @@
                     url:"/users/pullGroupChat",
                     data:params
                 }).then(res=>{
+
                     if (res.code===20000){
                         this.$notify({
                             title:"拉入群聊",
@@ -145,7 +149,15 @@
                         });
                         this.pullChatView = false;
                         this.tableData = []
+                    }else {
+                        this.$notify({
+                            title:"拉入群聊",
+                            type:"error",
+                            message:res.message
+                        });
                     }
+                }).catch(()=>{
+                    this.pullChatView = false;
                 })
             },
             cancel(){

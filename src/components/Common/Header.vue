@@ -1,8 +1,10 @@
 <template>
     <div class="header">
         <div class="system-name">
-            <img src="../../../public/logo.png" style="width: 25px"/>
-            <span class="logo-name">{{$t('system.logoName')}}</span><span style="margin-left: 20px">{{this.name}}</span>
+            <div style="display: flex;flex-direction: row;align-items: center;cursor: pointer" @click="routerHome">
+                <img src="../../../public/logo.png" style="width: 40px"/>
+                <span class="logo-name">{{$t('system.logoName')}}</span>
+            </div>
             <div style="margin-left: auto;margin-right: 50px;font-size: 15px">
                 <el-dropdown trigger="click" @command="switchLanguages" v-model="selectedValue">
   <span class="el-dropdown-link languages">
@@ -44,6 +46,9 @@
             }
         },
         methods: {
+            routerHome(){
+                this.$router.push("/home")
+            },
             switchLanguages(command) {
                 this.selectedValue = command;
                 this.$i18n.locale = command;
@@ -71,7 +76,7 @@
         flex-direction: row;
         flex-wrap: nowrap;
         align-items: center;
-        margin-left: 3%;
+        margin-left: 9%;
         font-family: "PingFang SC", serif;
         line-height: 60px;
         font-size: 20px;
@@ -80,6 +85,7 @@
     }
 
     .system-name .logo-name {
+        font-size: 28px;
         background-image: -webkit-linear-gradient(top, #bc8550, #d77f34, #de6912);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;

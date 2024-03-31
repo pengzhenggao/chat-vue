@@ -7,16 +7,20 @@
 
 <script>
 
+    import service from "./http";
+
     export default {
         components:{
 
         },
         mounted() {
-
+            this.report()
         },
         methods: {
-            pingServer() {
+            report() {
+                service.post("/report").then(res=>{
 
+                })
             }
         }
 

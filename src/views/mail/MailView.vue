@@ -73,8 +73,7 @@
                     method: "get",
                     url: `/users/NotifyById/${emailId}`
                 }).then(res => {
-                    this.mailFrom = res.data
-                    console.log(this.mailFrom)
+                    this.mailFrom = res.data;
                 })
             },
             announcementDetail(emailId) {

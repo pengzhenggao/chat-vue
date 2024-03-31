@@ -7,6 +7,9 @@
                 <div @click="switchTool(2)" :class="{'toolFocus':select===2,'tool':select!==2}" style="margin-top: 30px">
                     <span class="el-icon-user"></span>
                 </div>
+                <div class="tool-operation">
+                    <span slot="reference" class="el-icon-s-operation"></span>
+                </div>
             </div>
             <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7" >
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
@@ -85,7 +88,7 @@
                 </el-header>
                 <el-main>
                     <ChatBox ref="chatBox"  v-show="this.select===1"/>
-                    <FriendDetail ref="friendDetail" @initFriendDetailId="initFriendDetailId" @chatView="chatView" :select="select"  v-show="this.select===2"/>
+                    <FriendDetail ref="friendDetail" @initFriendDetailId="initFriendDetailId" @chatView="chatView" :select="select"  v-show="this.select===2 && this.friendDetailId!==null"/>
                 </el-main>
             </el-container>
 <!--            初始LOGO-->
@@ -269,8 +272,15 @@
                     this.$refs.friendDetail.friendMessageItem(this.friendDetailId)
                 }else if (event.type ===0){
                     this.select = 1;
+                    this.friendDetailId = null;
+                    // this.chatFlag = false;
+
                     this.$store.commit('updateToolbarSelectState', this.select);
-                    this.$refs.asideFriend.getChat(event)
+                    // this.$nextTick(()=>{
+                    //     this.chatFlag = true
+                    // });
+                        this.$refs.asideFriend.getChat(event)
+
                 }
 
             },
@@ -547,13 +557,14 @@
                     remark: this.$route.query.remark,
                     userInfoId: this.$route.query.userInfoId
                 };
+                this.select = 1
                     this.$refs.asideFriend.clickAddSession(params)
             }
         }
     }
 </script>
 
-<style scoped>
+<style scoped  >
     .WeChat {
 
         width: 100%;
@@ -729,4 +740,13 @@
     .toolbar .toolFocus:hover{
         color: #15c2ff;
     }
+    .tool-operation{
+        margin-top: 420px;
+        cursor: pointer;
+        color: #d8d8d8;
+    }
+    .tool-operation:hover{
+        color: #fff;
+    }
+
 </style>

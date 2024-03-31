@@ -16,7 +16,7 @@ NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 
 
 const whiteList = ['/login','/register','/oauth/login/gitee','/oauth/login/github','/oauth/login/qq',
-    '/account-find','/authentication','/set-password','/forgot-account']; //排除的路径
+    '/account-find','/authentication','/set-password','/forgot-account','/home']; //排除的路径
 
 router.beforeEach(async (to,from,next) => {
     NProgress.start();
@@ -25,11 +25,10 @@ router.beforeEach(async (to,from,next) => {
     document.title = to.meta.title?to.meta.title:"后台聊天系统";
     // 有令牌 表示已经登陆
     if(hasToken){
-        if(to.path === '/login'){
-            // 已登录重定向到首页
-            next({path: '/'})
+        if(to.path === '/login' || to.path === '/home'){
+            // 已登录重定向到主页
+            next({path: '/wechat'})
         }else{
-
             //若用户角色已附加则说明动态路由已经添加
             const hasRoles = store.getters.roles && store.getters.roles.length > 0;
             if(hasRoles){
@@ -41,7 +40,6 @@ router.beforeEach(async (to,from,next) => {
                     const { roles } = await store.dispatch('user/getInfo');
                     // 根据当前用户角色动态生成路由
                     const accessRoutes = await store.dispatch('permission/generateRoutes', roles);
-                    console.log(accessRoutes)
                     // 添加这些路由至路由器
                     router.addRoutes(accessRoutes)
 

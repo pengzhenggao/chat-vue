@@ -13,8 +13,8 @@ module.exports = {
       },
     devServer: {
         disableHostCheck: true,
-        open: true,
-        host: process.env.VUE_APP_HOST,
+        // open: true,
+        // host: process.env.VUE_APP_HOST,
         port: 8001,
         https: false,
         hotOnly: false,

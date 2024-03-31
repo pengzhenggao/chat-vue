@@ -425,6 +425,7 @@
                     type: event.type,
                     groupChatCount: event.groupChatCount
                 };
+
                 this.$emit("currentFriend", from);
                 this.clearUnreadCount(event.friendId)
             },
@@ -474,6 +475,7 @@
             },
             messageUpdates(event) {
                 var params = event.detail.data;
+
                 for (let i = 0; i < this.friendMenu.length; i++) {
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         //双方都在面对面聊天
@@ -594,10 +596,11 @@
             }
         },
         created() {
+            this.getFriendshipsMenu(localStorage.getItem("showSwitching"));
             this.getInsertLocation();
         },
         mounted() {
-            this.getFriendshipsMenu(localStorage.getItem("showSwitching"));
+
             window.addEventListener('listeningStar', this.listeningStar);
             window.addEventListener('delFriendNotice', this.delFriendNotice);
             window.addEventListener('initAsideFriend', this.initAsideFriend);
@@ -612,6 +615,7 @@
             document.addEventListener("click", (event) => {
                 this.hideFloatWindow(event);
             });
+
         }, beforeDestroy() {
             window.removeEventListener('listeningStar', this.listeningStar);
             window.removeEventListener('delFriendNotice', this.delFriendNotice);
@@ -726,7 +730,7 @@
     .friend-latestNews {
         margin-top: -25px;
         font-size: 12px;
-        width: 100px;
+        width: 110px;
         color: #999999;
         white-space: nowrap;
         overflow: hidden;

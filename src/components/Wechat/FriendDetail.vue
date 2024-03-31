@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <div class="container">
+        <div class="container" v-show="!friendMessageIsNull">
             <div class="upper-part">
                 <el-image :src="friendMessage.avatar"
                           style="width: 80px;height: 80px;border-radius: 5px"></el-image>
@@ -30,19 +30,19 @@
             <div class="medium-part">
                 <div class="item" @mouseenter="handleMouseEnter(1)" @mouseleave="handleMouseLeave(1)">
                     <span class="item-name">备注</span>
-                    <span>{{friendMessage.remark}}</span>
+                    <p class="text-ellipsis">{{friendMessage.remark}}</p>
                     <span @click.prevent="edit" style="float: right;cursor: pointer" v-show="editShow1"><i
                             class="el-icon-edit-outline"></i></span>
                 </div>
                 <div class="item" @mouseenter="handleMouseEnter(2)" @mouseleave="handleMouseLeave(2)">
                     <span class="item-name">标签</span>
-                    <span>{{friendMessage.label}}</span>
+                    <p class="text-ellipsis">{{friendMessage.label}}</p>
                     <span @click.prevent="edit" style="float: right;cursor: pointer" v-show="editShow2"><i
                             class="el-icon-edit-outline"></i></span>
                 </div>
                 <div class="item" @mouseenter="handleMouseEnter(3)" @mouseleave="handleMouseLeave(3)">
                     <span class="item-name">描述</span>
-                    <span>{{friendMessage.description}}</span>
+                    <p class="text-ellipsis">{{friendMessage.description}}</p>
                     <span @click.prevent="edit" style="float: right;cursor: pointer" v-show="editShow3"><i
                             class="el-icon-edit-outline"></i></span>
                 </div>
@@ -67,6 +67,25 @@
                     </div>
                     <div style="font-size: 15px">视频通话</div>
                 </div>
+            </div>
+        </div>
+        <div class="container" v-show="friendMessageIsNull">
+            <div style="text-align: center">
+                <hide style="width: 80px;height: 80px"/>
+            </div>
+            <div style="font-size: 25px;text-align: center">
+              <span>对方已将您删除，请先添加对方后查看</span>
+            </div>
+            <div style="text-align: center;margin-top: 10px" @click="sendFriendCheck">
+                <span class="add-friend">进行好友验证？</span>
+            </div>
+            <div style="color: #909090;font-size: 12px;margin-top: 20px;line-height: 1.5rem">
+                <span> 温馨提示：</span> <br/>
+                <div style="width: 470px;text-align: left">
+                    <p> 1.对方与您不是好友关系，需进行好友验证成功后才能查看对方信息或与对方进行聊天。</p>
+                    <p> 2.只有对方同意您的好友请求后才能成为好友关系。</p>
+                </div>
+
             </div>
         </div>
         <div
@@ -189,6 +208,59 @@
                 <VoiceCalls v-if="dialogVisibleVoice" @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.friendMessage" ref="voiceCalls"/>
             </div>
         </PopContent>
+
+        <!--        请求添加好友-->
+        <div>
+            <el-dialog
+                    width="400px"
+                    :visible.sync="addFriendView"
+                    append-to-body>
+                <div style="padding: 10px">
+                    <div class="personal">
+                        <el-image
+                                v-if="searchResult.avatar"
+                                style="width: 75px; height: 75px;border-radius: 10px"
+                                :src="searchResult.avatar"
+                        ></el-image>
+                        <div class="base-content">
+                            <div style="display: flex;flex-direction: row">
+                                <el-tooltip class="item" effect="dark" :content="searchResult.nickName"
+                                            placement="bottom">
+                                    <p class="nick-name">{{searchResult.nickName}}</p>
+                                </el-tooltip>
+                                &nbsp;
+                                <span :class="{'man':searchResult.gender===1,'woman':searchResult.gender===0}">
+                                    <i class="el-icon-s-custom"></i>
+                                    </span>
+                            </div>
+                            <el-tooltip class="item" effect="dark" :content="searchResult.username"
+                                        placement="bottom">
+                                <p class="login-name">
+                                    <span>登入名:</span> <span>{{searchResult.username}}
+                                </span>
+                                </p>
+                            </el-tooltip>
+                        </div>
+                    </div>
+                    <div style="text-align: center;margin-top: 20px">
+                        <el-button v-if="searchResult.isFriend==0 " type="info">正在申请</el-button>
+                        <el-button @click.prevent="innerVisible=false"
+                                   v-else-if="searchResult.isFriend==1 || searchResult.isFriend==3"
+                                   type="primary">发消息
+                        </el-button>
+                        <div v-else>
+                            <el-input size="mini" v-model="sendMessage.content"
+                                      class="custom-input"
+                                      maxlength="30"
+                                      placeholder="输入留言"></el-input>
+                            <el-button style="margin-top: 10px" @click="addFriend(searchResult.userInfoId)"
+                                       type="success">添加为好友
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -202,6 +274,8 @@
     import VideoCalls from "../../components/Wechat/VideoCalls";
     import VoiceCalls from "../../components/Wechat/VoiceCalls";
     import {socket} from "../../config/websocket/socket";
+    import PrecisionSearch from "./PrecisionSearch";
+    import hide from "@/assets/icon/hide.svg"
     export default {
         name: "FriendDetail",
         components:{
@@ -209,7 +283,9 @@
             VoiceCalls,
             Complaints,
             PopContent,
-            ReferFriend
+            ReferFriend,
+            PrecisionSearch,
+            hide
         },
         props:{
             select:{
@@ -218,11 +294,13 @@
         },
         data() {
             return {
+                searchResult:{},
                 videoCountdownTimer:null,
                 voiceCountdownTimer:null,
                 dialogVisibleVoice:false,
                 dialogVisibleVideo:false,
                 poolClickView: false,
+                addFriendView:false,
                 px: 0,
                 py: 0,
                 x: 0, // 浮动窗口的X坐标
@@ -231,6 +309,7 @@
                 editShow2: false,
                 editShow3: false,
                 friendMessage: {},
+                friendMessageIsNull:true,
                 recommendFriendId: null,
                 referFriendVisible: false,
                 complaintsVisible: false,
@@ -250,7 +329,7 @@
                     action: 0,
                     token: getToken(),
                     receiverId: "",
-                    content: "",
+                    content: "你好",
                     extend: 1,
                 },
             }
@@ -397,6 +476,7 @@
             },
             friendMessageItem(friendId) {
                 this.searchUserId = friendId;
+                this.friendMessage = {};
                 service({
                     method: "get",
                     url: "/users/getFriendById",
@@ -404,7 +484,10 @@
                         friendId: friendId
                     }
                 }).then(res => {
-                    this.friendMessage = res.data
+                    this.friendMessage = res.data;
+                    this.friendMessageIsNull = false
+                }).catch(()=>{
+                    this.friendMessageIsNull = true
                 })
             },
             sendMsg(friendItem){
@@ -601,6 +684,43 @@
                 }
 
             },
+            sendFriendCheck() {
+                const loading = this.$loading({
+                    lock: true,
+                    text: '加载中',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.1)'
+                });
+                service({
+                    method: "get",
+                    url: `users/getUserById/${this.searchUserId}`,
+                }).then(res => {
+                    loading.close();
+                    if (res.data && res.data.userInfoId !== null) {
+                        this.addFriendView = true;
+                        this.searchResult = res.data
+                    } else {
+                        this.$notify({
+                            title: "查找用户",
+                            type: "error",
+                            message: "找不到该用户"
+                        });
+                    }
+                }).catch(() => {
+                    loading.close();
+                })
+            },
+            addFriend(friendId) {
+                this.sendMessage.receiverId = friendId;
+                this.sendMessage.action = 10004;
+                socket.send(this.sendMessage);
+                this.$notify({
+                    type: "success",
+                    title: "添加好友",
+                    message: "已申请添加"
+                });
+                this.addFriendView = false
+            },
             cancelConfirmUpdate() {
                 this.remarkView = false;
                 this.flag = false;
@@ -666,6 +786,8 @@
         margin-top: 100px;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        margin-bottom: 150px;
     }
 
     .upper-part {
@@ -720,6 +842,8 @@
     }
 
     .medium-part .item {
+        display: flex;
+        flex-direction: row;
         font-size: 14px;
         color: #999999;
     }
@@ -788,5 +912,69 @@
 
     /deep/ .form .el-form-item__label {
         line-height: 0
+    }
+    .text-ellipsis{
+        width: 250px;
+        overflow:hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        -o-text-overflow:ellipsis;
+    }
+
+
+    .add-friend {
+        color: #409EFF;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .add-friend:hover{
+        color: #3479ce;
+
+    }
+    .personal {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #d9d9d9
+    }
+    .personal .login-name {
+        margin-top: 5px;
+        color: #999999;
+        font-size: 13px;
+        width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .personal .nick-name {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .personal .base-content {
+        display: flex;
+        flex-direction: column;
+        align-self: flex-start;
+        color: black;
+        margin-left: 10px
+    }
+    .man {
+
+        color: #409EFF;
+    }
+
+    .woman {
+        color: #f38098;
+    }
+
+    /* 利用穿透，设置input边框隐藏 */
+    /deep/ .custom-input .el-input__inner {
+        border-radius: 0;
+        border: 0;
+        border-bottom: 1px solid #999999;
     }
 </style>

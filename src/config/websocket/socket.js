@@ -19,7 +19,7 @@ var socket = {
     /** //pengzhenggao.top
      * 这个是我们的ws的地址//pengzhenggao.top
      * */
-    ws_url: "ws://localhost:8089/ws",
+    ws_url: "ws://127.0.0.1:8089/ws",
     /**
      * 开启标识
      * */
@@ -211,6 +211,7 @@ var socket = {
      */
     receive: (message) => {
         var recData = JSON.parse(message.data);
+
         /**
          *这部分是我们具体的对消息的处理
          * */

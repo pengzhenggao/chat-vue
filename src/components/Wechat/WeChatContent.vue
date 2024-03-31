@@ -75,7 +75,7 @@
                               bottom: 0;
                               font-size: 15px;
                               color: #ff004f">
-                                    <span class="el-icon-warning"></span>
+                                    <span class="el-icon-warning abnormal" @click.prevent="reSend(itemc)"></span>
                                 </div>
                                 <div style="cursor: text" v-html="itemc.content"
                                      v-if="itemc.messageType==0 || itemc.messageType==1"></div>
@@ -131,7 +131,7 @@
                         </div>
                         <div class="info">
                             <p class="time">
-                            <span>{{itemc.customizeRemark!==null?item.customizeRemark:itemc.username}}
+                            <span>{{itemc.customizeRemark?itemc.customizeRemark:itemc.username}}
                             </span>&nbsp;<span>{{chatTime(itemc.createTime)}}</span>
                             </p>
                             <div class="info-content">
@@ -199,7 +199,7 @@
                 </div>
             </div>
         </div>
-<!--        请求添加好友-->
+        <!--        请求添加好友-->
         <div>
             <el-dialog
                     width="300px"
@@ -427,6 +427,7 @@
     import Complaints from "./Complaints";
     import ReferFriend from "./ReferFriend";
     import Postcard from "./Postcard";
+
     export default {
         components: {
             Postcard,
@@ -476,7 +477,14 @@
                     receiverId: "",     //接收方
                     extend: 1,
                     content: "你好",         //聊天输入内容
-                }
+                },
+                reSendMessage: {           //单聊
+                    action: 10003,       //聊天标识
+                    token: getToken(),
+                    receiverId: "",     //接收方
+                    content: "",  //聊天输入内容
+                    extend: 0,
+                },
             };
         },
         computed: {
@@ -510,7 +518,7 @@
                     }
                 }).then(res => {
                     this.loading = false;
-                    this.recordContent = res.data
+                    this.recordContent = res.data;
                     this.scroll()
                 }).catch(() => {
                     this.loading = false
@@ -620,7 +628,7 @@
                                 extend: 0,
                             };
                             socket.send(sendMessage);
-                        })
+                        });
 
                         break;
                     case 3: //删除
@@ -729,11 +737,26 @@
                 this.sendMessage.action = 10004;
                 socket.send(this.sendMessage);
                 this.$notify({
-                    type:"success",
-                    title:"添加好友",
-                    message:"已申请添加"
+                    type: "success",
+                    title: "添加好友",
+                    message: "已申请添加"
                 });
                 this.innerVisible = false
+            },
+            reSend(item) {
+                this.$confirm('请确认是否需要重新发送该条消息！', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.reSendMessage.content = item.content;
+                    this.reSendMessage.receiverId = item.othersUserId;
+                    socket.send(this.reSendMessage);
+
+                }).catch(() => {
+
+                });
+
             },
             //设置星标
             setFriendStar(isStar) {
@@ -786,9 +809,9 @@
                         this.searchResult = res.data
                     } else {
                         this.$notify({
-                            title:"查找用户",
-                            type:"error",
-                            message:"找不到该用户"
+                            title: "查找用户",
+                            type: "error",
+                            message: "找不到该用户"
                         });
                     }
                 }).catch(() => {
@@ -817,9 +840,9 @@
                                 }
                             }));
                             this.$notify({
-                                title:"加入黑名单",
-                                type:"success",
-                                message:"已加入黑名单"
+                                title: "加入黑名单",
+                                type: "success",
+                                message: "已加入黑名单"
                             });
                         }
                     })
@@ -878,7 +901,7 @@
                 var params = event.detail.data.message;
                 //如果发送消息后返回的消息的发送者是当前用户，则再判断是否还在发消息时的用户聊天窗口，是则追加，不在则不追加
                 if (userInfo.id == params.myUserId) {
-                    if (this.searchUserId ==params.othersUserId) {
+                    if (this.searchUserId == params.othersUserId) {
                         params.isMyselfMsg = true;
                         this.recordContent.push(params);
                         this.scroll()
@@ -968,7 +991,6 @@
             clearChatHistory(event) {
                 if (this.searchUserId === event.detail.data) {
                     this.recordContent = [];
-                    this.searchUserId = ""
                 }
             },
             handleClose() {
@@ -1204,12 +1226,9 @@
         border-bottom: 1px solid #999999;
     }
 
-    /deep/ .el-dialog__header {
-
-    }
 
     /deep/ .el-dialog__wrapper {
-        top: 0px;
+        top: 0;
         right: 0 !important;
     }
 
@@ -1282,6 +1301,7 @@
         flex-direction: column;
         margin-left: 10px
     }
+
     .base .text {
         font-size: 13px;
         color: #999999;
@@ -1364,5 +1384,9 @@
 
     /deep/ .info-content img {
         width: 160px;
+    }
+
+    .abnormal {
+        cursor: pointer;
     }
 </style>

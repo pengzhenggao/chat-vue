@@ -93,7 +93,7 @@
                 this.$router.push("/login")
             },
             goAccountRegister(){
-                window.open("/forgot-password")
+                this.show = true
             }
         }, mounted() {
 

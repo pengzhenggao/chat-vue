@@ -2,7 +2,6 @@
     <div class="main">
         <Header :name="$t('system.loginName')"/>
         <div style="position: absolute;left: 5%;top: 30%">
-
         </div>
         <div class="login">
             <!-- 登录面板 -->
@@ -30,8 +29,6 @@
                     <div class="flex-item">
                         <gitee @click="otherLogin('gitee')" class="list-button-icon icon"></gitee>
                         <github3 @click="otherLogin('github')" class="list-button-icon icon"></github3>
-                        <qq @click="otherLogin('qq')" class="list-button-icon icon"></qq>
-                        <weixin @click="otherLogin('weixin')" class="list-button-icon icon"></weixin>
                     </div>
                 </div>
             </div>

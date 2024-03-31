@@ -78,9 +78,9 @@ service.interceptors.response.use(
     },
     error => {
         if (error.message.includes('timeout')) {  // 如果错误信息中包含'timeout'，则认为是连接超时
-            Message.error("网络超时");
+            Message.error("网络超时，请刷新页面重试");
         }else{
-            Message.error("网络超时");
+            Message.error("服务器异常，请刷新页面重试");
         }
 
     }

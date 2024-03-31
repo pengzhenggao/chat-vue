@@ -9,6 +9,15 @@ Vue.use(VueRouter)
 // 通用页面, 这里的配置不需要权限
 export const constRouter = [
     {
+        path: '/home',
+        component: () => import('@/views/Home'),
+        hidden: true, //导航菜单忽略选项
+        meta: {
+            keepAlive:false,
+            title: '和语聊天系统'
+        }
+    },
+    {
         path: '/login',
         component: () => import('@/views/login/Login'),
         hidden: true, //导航菜单忽略选项
@@ -75,7 +84,7 @@ export const constRouter = [
     {
         path: '',
         component: Layout, //应用布局页
-        redirect: '/wechat',
+        redirect: '/home',
         hidden: true,
 
     },

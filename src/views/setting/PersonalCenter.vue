@@ -361,7 +361,7 @@
                     if (valid) {
                         service({
                             method:"post",
-                            url:"/update/password",
+                            url:"users/update/password",
                             data:this.updatePasswordForm
                         }).then(res=>{
                             if (res.code===20000){

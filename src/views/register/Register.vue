@@ -60,7 +60,6 @@
 
 <style scoped>
     .register {
-
         margin: 8% 0 10% 50%;
         display: flex;
         justify-content: center;

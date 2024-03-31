@@ -129,7 +129,7 @@
                         }
                         // 登陆成功后重定向
                         this.$router.push({
-                            path: this.$route.query.redirect || '/'
+                            path: this.$route.query.redirect || '/wechat'
                         })
                         setTimeout(() => {
                             this.loading = false;

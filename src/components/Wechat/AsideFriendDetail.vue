@@ -6,7 +6,7 @@
         <el-main>
             <el-menu  :default-active="activeIndex" class="el-menu-vertical-demo" @select="handleSelect" mode="vertical">
                 <div v-for="(group,index) in friendMenu" v-show="!isSearch" :key="index">
-                    <!--                    分组展示-->
+
                     <div>
                         <el-menu-item-group>
                             <span slot="title">{{group.groupName || '好友'}}</span>
