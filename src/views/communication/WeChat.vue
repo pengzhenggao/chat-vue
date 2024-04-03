@@ -7,9 +7,6 @@
                 <div @click="switchTool(2)" :class="{'toolFocus':select===2,'tool':select!==2}" style="margin-top: 30px">
                     <span class="el-icon-user"></span>
                 </div>
-                <div class="tool-operation">
-                    <span slot="reference" class="el-icon-s-operation"></span>
-                </div>
             </div>
             <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7" >
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',

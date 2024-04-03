@@ -8,7 +8,9 @@
                 v-model="content"
                 use-custom-image-handler>
         </vue-editor>
-        <div style="text-align: right"><el-button  @click="submitMessage">发送(S)</el-button></div>
+        <div style="text-align: right"><el-button :disabled="content.length<=0"  @click="submitMessage">
+           <span>发送(S)</span>
+        </el-button></div>
     </div>
 </template>
 

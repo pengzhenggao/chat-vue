@@ -6,7 +6,7 @@
             </router-link>
             <Breadcrumb/>
         </div>
-        <div class="headers-middle">
+        <div class="headers-middle" v-if="this.$store.getters.systemAnnouncements">
             <Notice ref="notice" v-if="this.noticeData.length>0 && refresh===true" :noticeData="noticeData"/>
         </div>
         <div class="headers-right">
@@ -80,9 +80,10 @@
                         {{$store.getters.userLogin.nickName}}<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="person">个人中心</el-dropdown-item>
-                        <el-dropdown-item command="updatePassword">修改密码</el-dropdown-item>
-                        <el-dropdown-item divided command="quit">退出登录</el-dropdown-item>
+                        <el-dropdown-item command="person" icon="el-icon-user-solid">个人中心</el-dropdown-item>
+                        <el-dropdown-item command="system" divided icon=" el-icon-s-tools">系统设置</el-dropdown-item>
+                        <el-dropdown-item command="updatePassword" icon="el-icon-edit">修改密码</el-dropdown-item>
+                        <el-dropdown-item divided command="quit" icon="el-icon-delete-solid">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -153,6 +154,13 @@
     <el-button type="primary" @click="update('updatePasswordForm')">确 定</el-button>
   </span>
         </el-dialog>
+        <el-drawer
+                title="系统设置"
+                :visible.sync="systemSetting"
+                direction="rtl"
+                :before-close="systemSettingHandleClose">
+        <SystemSetting></SystemSetting>
+        </el-drawer>
     </div>
 </template>
 
@@ -176,7 +184,7 @@
     import service from "../../http"; //还原
     import {socket} from "../../config/websocket/socket"
     import Notice from "../Notice";
-
+    import SystemSetting from "./Components/SystemSetting";
     export default {
         props: {
             switchMode: {
@@ -219,6 +227,7 @@
                     newPassword: null,
                     confirmPassword: null
                 },
+                systemSetting:false,
                 refresh: true,
                 noticeData: [],
                 feedbackShow: false,
@@ -253,6 +262,7 @@
             reduction,
             feedback,
             FeedBackView,
+            SystemSetting
         },
         methods: {
             initData() {
@@ -324,6 +334,9 @@
                 switch (command) {
                     case 'updatePassword':
                         this.updatePasswordView = true
+                        break;
+                    case 'system':
+                        this.systemSetting = true;
                         break;
                     case 'quit':
                         service.post("/userAuth/logout").then(res => {
@@ -443,6 +456,13 @@
             handleClose(done) {
                 this.$refs.feedBackView.dataClear()
                 done();
+            },
+            systemSettingHandleClose(done){
+                this.$confirm('确认关闭系统设置吗？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
             },
             broadcastContent() {
                 service.get("/users/config/notice").then(res => {

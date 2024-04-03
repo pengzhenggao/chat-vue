@@ -74,9 +74,9 @@
 <script>
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
-    import Loading1 from "../loading/Loading1";
-    import Loading2 from "../loading/Loading2";
-    import Loading3 from "../loading/Loading3";
+    import Loading1 from "../Loading/Loading1";
+    import Loading2 from "../Loading/Loading2";
+    import Loading3 from "../Loading/Loading3";
 
     export default {
         name: "VideoCalls",

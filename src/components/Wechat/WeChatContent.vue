@@ -907,7 +907,9 @@
                         this.scroll()
                     }
                 } else {
-                    this.$refs.chaTone.play();
+                    if (this.$store.getters.promptSounds){
+                        this.$refs.chaTone.play();
+                    }
                     //判断接收方的聊天框是在发送者的聊天框中
                     if (this.searchUserId == params.myUserId) {
                         params.isMyselfMsg = false;
@@ -924,7 +926,9 @@
             },
             groupChatMessage(event) {
                 if (this.isSingleChat || this.searchUserId !== event.detail.data.message.groupChatId) {
-                    this.$refs.chatGroupTone.play()
+                    if (this.$store.getters.promptSounds){
+                        this.$refs.chatGroupTone.play()
+                    }
                     return
                 }
                 this.recordContent.push(event.detail.data.message);
