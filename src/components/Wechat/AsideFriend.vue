@@ -475,7 +475,6 @@
             },
             messageUpdates(event) {
                 var params = event.detail.data;
-
                 for (let i = 0; i < this.friendMenu.length; i++) {
                     for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
                         //双方都在面对面聊天
@@ -504,6 +503,21 @@
                         }
                     }
 
+                }
+            },
+            groupChatMessageUpdates(event){
+                console.log(event)
+                var params = event.detail.data;
+                for (let i = 0; i < this.friendMenu.length; i++) {
+                    for (let f = 0; f < this.friendMenu[i].friendshipsDTOS.length; f++) {
+                        if (this.friendMenu[i].friendshipsDTOS[f].type===0 && this.friendMenu[i].friendshipsDTOS[f].id===params.groupChatId){
+                            this.friendMenu[i].friendshipsDTOS[f].latestNews = params.content;
+                            this.friendMenu[i].friendshipsDTOS[f].latestTime = params.createTime;
+                            this.friendMenu[i].friendshipsDTOS[f].messageType = params.messageType;
+                            const itemToMove = this.friendMenu[i].friendshipsDTOS.splice(f, 1)[0];
+                            this.friendMenu[i].friendshipsDTOS.splice(this.insertLocation, 0, itemToMove);
+                        }
+                    }
                 }
             },
             listeningStar(event) {
@@ -541,7 +555,7 @@
                 }
             },
             addUnreadCount(friendId) {
-                service.put(`users/addUnreadCount/${friendId}`)
+                service.put(`/users/addUnreadCount/${friendId}`)
             },
             clearUnreadCount(friendId) {
                 if (!friendId) {
@@ -606,6 +620,7 @@
             window.addEventListener('initAsideFriend', this.initAsideFriend);
             window.addEventListener('updateRemark', this.updateRemark);
             window.addEventListener('MessageUpdates', this.messageUpdates);
+            window.addEventListener('GroupChatMessageUpdates', this.groupChatMessageUpdates);
             window.addEventListener('getChat', this.preGetChat);
             window.addEventListener('buddyListPopulation', this.buddyListPopulation);
             window.addEventListener('OnAndOffLineNotifications', this.onAndOffLineNotifications);
@@ -622,6 +637,7 @@
             window.removeEventListener('updateRemark', this.updateRemark);
             window.removeEventListener('initAsideFriend', this.initAsideFriend);
             window.removeEventListener('MessageUpdates', this.messageUpdates);
+            window.removeEventListener('GroupChatMessageUpdates', this.groupChatMessageUpdates);
             window.removeEventListener('buddyListPopulation', this.buddyListPopulation);
             window.removeEventListener('OnAndOffLineNotifications', this.onAndOffLineNotifications);
             document.body.removeEventListener('contextmenu', e => {

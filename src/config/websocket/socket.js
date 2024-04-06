@@ -19,7 +19,7 @@ var socket = {
     /** //pengzhenggao.top
      * 这个是我们的ws的地址//pengzhenggao.top
      * */
-    ws_url: "ws://127.0.0.1:8089/ws",
+    ws_url: "ws://192.168.137.247:8089/ws",
     /**
      * 开启标识
      * */
@@ -237,7 +237,6 @@ var socket = {
             case 30005:   //发送群聊信息
                 if (VueRouter.path  !== "/wechat"){
                    header.updateIsDot();
-
                 }
                 chatbox.groupChatMessage(recData);
                 break;

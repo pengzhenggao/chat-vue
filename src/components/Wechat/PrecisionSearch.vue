@@ -119,6 +119,7 @@
                 }).then(res => {
                     this.loading = false;
                     if (res.data && res.data.userInfoId !== null) {
+                        this.emptyMessage = null;
                         this.innerVisible = true;
                         this.searchResult = res.data
                     } else {

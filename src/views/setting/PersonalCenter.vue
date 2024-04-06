@@ -45,6 +45,13 @@
                                     </el-button>
                                 </el-input>
                             </el-form-item>
+                            <el-form-item label="隐藏自己">
+                                <el-select style="width: 150px" size="small" v-model="personalForm.allowSearching"
+                                           placeholder="是否允许被搜索">
+                                    <el-option label="是" :value="0"></el-option>
+                                    <el-option label="否" :value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
                             <el-form-item label="性别">
                                 <el-select style="width: 150px" size="small" v-model="personalForm.gender"
                                            placeholder="选择性别">
@@ -81,95 +88,107 @@
                         </el-form>
                     </div>
                 </div>
-                <!--                图形化-->
-                <div class="visualization">
-                    <div>
-                        <el-row :gutter="31">
-                            <el-col :span="8">
-                                <el-card>
-                                    <div class="card-icon-container">
-                                        <FriendCount class="card-icon-container"/>
-                                    </div>
-                                    <div class="card-desc">
-                                        <div class="card-title">好友数</div>
-                                        <div class="card-count">{{this.friendCount}}</div>
-                                    </div>
-                                </el-card>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-card>
-                                    <div class="card-icon-container">
-                                        <GroupChatCount class="card-icon-container"/>
-                                    </div>
-                                    <div class="card-desc">
-                                        <div class="card-title">群聊数</div>
-                                        <div class="card-count">{{this.groupChatCount}}</div>
-                                    </div>
-                                </el-card>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-card>
-                                    <div class="card-icon-container">
-                                        <ActivityValue class="card-icon-container"/>
-                                    </div>
-                                    <div class="card-desc">
-                                        <div class="card-title">活跃值</div>
-                                        <div class="card-count">{{activityValue}}</div>
-                                    </div>
-                                </el-card>
-                            </el-col>
-
-                        </el-row>
-                    </div>
-                    <div>
-                        <el-card style="margin-top: 1rem">
-                            <span style="font-weight: bold">近期活跃视图</span>
-                            <ChatHistoryAnalysis v-if="chatHistoryData" :chatHistoryData="chatHistoryData"/>
-                        </el-card>
-                    </div>
-                    <div style="height: 320px">
-                        <el-card style="margin-top: 1rem">
-                            <span style="font-weight: bold">登入通知</span>
-                            <div style="height: 240px">
-                                <el-scrollbar style="height: 100%;width: 100%" wrap-style="overflow-x:hidden;">
-                                    <div style="display: flex;flex-direction: column;justify-content: center;align-items: center">
-                                        <div v-for="loginRecord in loginRecordsDTOList">
-                                            <el-card style="margin: 10px">
-                                                <div class="main" style="height: 225px;width: 350px;margin: 10px">
-                                                    <div class="title">
-                                                        <span><i class="el-icon-warning" style="color: red"></i>{{loginRecord.title}}</span>
-                                                    </div>
-                                                    <div class="description">
-                                                        {{loginRecord.description}}
-                                                    </div>
-                                                    <div class="detail">
-                                                        <div>
-                                                            <span class="title">登入时间:</span><span>{{loginRecord.createTime}}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span class="title">登入方式:</span><span>{{loginRecord.loginMethod}}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span class="title">登入地点:</span><span>{{loginRecord.ipSource}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="suggestion">
-                                                        <span>{{loginRecord.suggestion}}</span>
-                                                    </div>
-                                                    <div class="operate" @click="updatePassword">
-                                                        <span>修改密码</span>
-                                                        <span style="float: right;padding-top: 3px" class="el-icon-arrow-right"></span>
-                                                    </div>
-                                                </div>
-                                            </el-card>
-
-                                        </div>
-                                    </div>
-                                </el-scrollbar>
-                            </div>
-                        </el-card>
-                    </div>
+                <div style="display:flex;flex-direction: column">
+                    <el-button type="info" @click="visualization" v-if="!visualizationShow">
+                        <span >展开动态</span>
+                        <i class="el-icon-arrow-down"></i>
+                    </el-button>
+                    <el-button type="primary" @click="visualization" v-if="visualizationShow">
+                        <span >关闭动态</span>
+                        <i class="el-icon-arrow-up"></i>
+                    </el-button>
                 </div>
+                <!--                图形化-->
+                <transition name="el-zoom-in-top">
+                    <div class="visualization" v-show="visualizationShow">
+                        <div>
+                            <el-row :gutter="31">
+                                <el-col :span="8">
+                                    <el-card>
+                                        <div class="card-icon-container">
+                                            <FriendCount class="card-icon-container"/>
+                                        </div>
+                                        <div class="card-desc">
+                                            <div class="card-title">好友数</div>
+                                            <div class="card-count">{{this.friendCount}}</div>
+                                        </div>
+                                    </el-card>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-card>
+                                        <div class="card-icon-container">
+                                            <GroupChatCount class="card-icon-container"/>
+                                        </div>
+                                        <div class="card-desc">
+                                            <div class="card-title">群聊数</div>
+                                            <div class="card-count">{{this.groupChatCount}}</div>
+                                        </div>
+                                    </el-card>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-card>
+                                        <div class="card-icon-container">
+                                            <ActivityValue class="card-icon-container"/>
+                                        </div>
+                                        <div class="card-desc">
+                                            <div class="card-title">活跃值</div>
+                                            <div class="card-count">{{activityValue}}</div>
+                                        </div>
+                                    </el-card>
+                                </el-col>
+
+                            </el-row>
+                        </div>
+                        <div>
+                            <el-card style="margin-top: 1rem">
+                                <span style="font-weight: bold">近期活跃视图</span>
+                                <ChatHistoryAnalysis v-if="chatHistoryData" :chatHistoryData="chatHistoryData"/>
+                            </el-card>
+                        </div>
+                        <div style="height: 320px">
+                            <el-card style="margin-top: 1rem">
+                                <span style="font-weight: bold">登入通知</span>
+                                <div style="height: 240px">
+                                    <el-scrollbar style="height: 100%;width: 100%" wrap-style="overflow-x:hidden;">
+                                        <div style="display: flex;flex-direction: column;justify-content: center;align-items: center">
+                                            <div v-for="loginRecord in loginRecordsDTOList">
+                                                <el-card style="margin: 10px">
+                                                    <div class="main" style="height: 225px;width: 350px;margin: 10px">
+                                                        <div class="title">
+                                                            <span><i class="el-icon-warning" style="color: red"></i>{{loginRecord.title}}</span>
+                                                        </div>
+                                                        <div class="description">
+                                                            {{loginRecord.description}}
+                                                        </div>
+                                                        <div class="detail">
+                                                            <div>
+                                                                <span class="title">登入时间:</span><span>{{loginRecord.createTime}}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="title">登入方式:</span><span>{{loginRecord.loginMethod}}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span class="title">登入地点:</span><span>{{loginRecord.ipSource}}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="suggestion">
+                                                            <span>{{loginRecord.suggestion}}</span>
+                                                        </div>
+                                                        <div class="operate" @click="updatePassword">
+                                                            <span>修改密码</span>
+                                                            <span style="float: right;padding-top: 3px" class="el-icon-arrow-right"></span>
+                                                        </div>
+                                                    </div>
+                                                </el-card>
+
+                                            </div>
+                                        </div>
+                                    </el-scrollbar>
+                                </div>
+                            </el-card>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </el-card>
         <UpdateEmailOrPhone ref="updateEmailOrPhone"/>
@@ -261,6 +280,7 @@
                     newPassword: null,
                     confirmPassword: null
                 },
+                visualizationShow:false,
                 friendCount: 0,
                 groupChatCount: 0,
                 chatHistoryData: null,
@@ -275,6 +295,7 @@
                     avatar: "",
                     nickName: "",
                     gender: 1,
+                    allowSearching:null,
                     address: "",
                     dateBirth: "",
                     phone: "",
@@ -338,6 +359,9 @@
                     this.activityValue = res.data.activityValue;
                     this.loginRecordsDTOList = res.data.loginRecordsDTOList
                 })
+            },
+            visualization(){
+            this.visualizationShow = !this.visualizationShow
             },
             handleAvatarSuccess(res, file) {
                 this.personalForm.avatar = res.message
@@ -443,7 +467,7 @@
     }
 
     .visualization {
-        margin-left: 10rem;
+        margin-left: 3rem;
         display: flex;
         flex-direction: column;
     }

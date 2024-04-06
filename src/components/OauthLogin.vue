@@ -47,6 +47,8 @@
                     }else{
                         this.$router.push("/login")
                     }
+                }).catch(()=>{
+                    this.$router.push("/login")
                 })
             },
             github(code){
@@ -62,6 +64,8 @@
                     }else{
                         this.$router.push("/login")
                     }
+                }).catch(()=>{
+                    this.$router.push("/login")
                 })
             },
             gitee(code){
@@ -77,6 +81,9 @@
                     }else{
                         this.$router.push("/login")
                     }
+                }).catch(()=>{
+
+                    this.$router.push("/login")
                 })
             },
             oauthLogin(accessToken,type){
@@ -94,6 +101,9 @@
                     }else{
                         this.$router.push("/login")
                     }
+                }).catch(()=>{
+
+                    this.$router.push("/login")
                 })
             }
         }

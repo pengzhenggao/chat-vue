@@ -925,13 +925,18 @@
                 }))
             },
             groupChatMessage(event) {
-                if (this.isSingleChat || this.searchUserId !== event.detail.data.message.groupChatId) {
+                var params  = event.detail.data.message;
+                if (this.isSingleChat || this.searchUserId !== params.groupChatId) {
                     if (this.$store.getters.promptSounds){
                         this.$refs.chatGroupTone.play()
                     }
-                    return
                 }
                 this.recordContent.push(event.detail.data.message);
+                window.dispatchEvent(new CustomEvent('GroupChatMessageUpdates', {
+                    detail: {
+                        data: params
+                    }
+                }));
                 this.scroll();
             },
             delFriend(friendId) {
@@ -1078,7 +1083,6 @@
 
 <style scoped>
     .chat-content {
-
         width: 100%;
         /*padding: 20px;*/
     }

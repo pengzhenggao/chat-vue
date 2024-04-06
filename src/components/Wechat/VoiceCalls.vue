@@ -212,8 +212,8 @@
                 this.peerConnection.setLocalDescription(sessionDescription);
                 this.sendMessage.extend = 5;
                 this.sendMessage.content = sessionDescription;
-                if (this.friendItem.friendId.toString()){
-                    this.sendMessage.receiverId = this.friendItem.friendId.toString();
+                if (this.friendItem.friendshipId.toString()){
+                    this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
                 }else {
                     this.sendMessage.receiverId = this.friendItem.friendshipId.toString();
                 }
