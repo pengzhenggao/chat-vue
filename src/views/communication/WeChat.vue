@@ -2,13 +2,15 @@
     <div class="WeChat">
         <el-container style="height: 100%; border: 1px solid #eee">
             <div class="toolbar">
-                <div @click="switchTool(1)" :class="{'toolFocus':select===1,'tool':select!==1}" style="margin-top: 70px">
+                <div @click="switchTool(1)" :class="{'toolFocus':select===1,'tool':select!==1}"
+                     style="margin-top: 70px">
                     <span class="el-icon-chat-line-square"></span></div>
-                <div @click="switchTool(2)" :class="{'toolFocus':select===2,'tool':select!==2}" style="margin-top: 30px">
+                <div @click="switchTool(2)" :class="{'toolFocus':select===2,'tool':select!==2}"
+                     style="margin-top: 30px">
                     <span class="el-icon-user"></span>
                 </div>
             </div>
-            <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7" >
+            <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
                     }">
                     <div class="header-R">
@@ -45,59 +47,82 @@
                         </el-dropdown>
                     </div>
                 </el-header>
-<!--                好友消息-->
-                <AsideFriend v-show="select===1" v-if="chatFlag"  @currentFriend="currentFriend" @completeSearch="completeSearch" ref="asideFriend"/>
-<!--                好友详情-->
-                <AsideFriendDetail ref="asideFriendDetail" v-show="select===2" v-if="friendFlag" @friendMessage="friendMessage" />
+                <!--                好友消息-->
+                <AsideFriend v-show="select===1" v-if="chatFlag" @currentFriend="currentFriend"
+                             @completeSearch="completeSearch" ref="asideFriend"/>
+                <!--                好友详情-->
+                <AsideFriendDetail ref="asideFriendDetail" v-show="select===2" v-if="friendFlag"
+                                   @friendMessage="friendMessage"/>
             </el-aside>
-            <el-container v-show="(this.item.friendshipId && this.select===1) || (this.friendDetailId!==null && this.select===2)">
-                <el-header  class="my-header"
-                            v-show="this.select===1"
+            <el-container
+                    v-show="(this.item.friendshipId && this.select===1) || (this.friendDetailId!==null && this.select===2)">
+                <el-header class="my-header"
+                           v-show="this.select===1"
                            style="background-color:#ffffff;border-bottom: 1px solid #e1e1e1">
                     <div style="display: flex;flex-direction: row;align-items: center;position: relative">
                         <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
                         </div>
                         <div class="callFriend">
-                            <el-tooltip content="操作栏" placement="bottom" effect="light" v-show="item.type===1">
-                                <el-dropdown trigger="click" @command="operationCommand">
-                                    <span class="bell"><i class="el-icon-s-operation"></i></span>
-                                    <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item icon="el-icon-bell" command="notifyOnline">通知上线</el-dropdown-item>
-                                        <el-dropdown-item icon="el-icon-video-camera" command="videoCalls">视频通话</el-dropdown-item>
-                                        <el-dropdown-item icon="el-icon-phone-outline" command="voiceCalls">语音通话</el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </el-dropdown>
-                            </el-tooltip>
+                            <div v-if="item.type===1" style="display: flex;flex-direction: row;align-items: center">
+                                <div class="voice function" @click="operationCommand('voiceCalls')">
+                                    <span class="el-icon-phone-outline"></span>
+                                </div>
+                                <el-divider direction="vertical"></el-divider>
+                                <div class="video function" @click="operationCommand('videoCalls')">
+                                    <span class="el-icon-video-camera"></span>
+                                </div>
+                                <el-divider direction="vertical"></el-divider>
+                                <div class="prompt function" @click="operationCommand('notifyOnline')">
+                                    <span class="el-icon-bell"></span>
+                                </div>
+                            </div>
+
+                            <!--                            <el-tooltip content="操作栏" placement="bottom" effect="light" v-show="item.type===1">-->
+                            <!--                                <el-dropdown trigger="click" @command="operationCommand">-->
+                            <!--                                    <span class="bell"><i class="el-icon-s-operation"></i></span>-->
+                            <!--                                    <el-dropdown-menu slot="dropdown">-->
+                            <!--                                        <el-dropdown-item icon="el-icon-bell" command="notifyOnline">通知上线</el-dropdown-item>-->
+                            <!--                                        <el-dropdown-item icon="el-icon-video-camera" command="videoCalls">视频通话</el-dropdown-item>-->
+                            <!--                                        <el-dropdown-item icon="el-icon-phone-outline" command="voiceCalls">语音通话</el-dropdown-item>-->
+                            <!--                                    </el-dropdown-menu>-->
+                            <!--                                </el-dropdown>-->
+                            <!--                            </el-tooltip>-->
 
                             <el-tooltip :disabled="true" placement="left" effect="light" v-show="item.type===0">
                                 <el-popover
                                         placement="bottom"
                                         width="245"
                                         trigger="click">
-                                    <span class="bell" slot="reference" @click.prevent="getGroupMembers(item.friendshipId)"><i class="el-icon-more"></i></span>
-                                    <el-scrollbar><ChatGroupMember :total="this.total" ref="chatGroupMember"
+                                    <span class="bell" slot="reference"
+                                          @click.prevent="getGroupMembers(item.friendshipId)"><i
+                                            class="el-icon-more"></i></span>
+                                    <el-scrollbar>
+                                        <ChatGroupMember :total="this.total" ref="chatGroupMember"
                                                          :loadingMore="this.loadingMore" :loadFlag="this.loadFlag"
-                                                         :item="this.item"/></el-scrollbar>
+                                                         :item="this.item"/>
+                                    </el-scrollbar>
                                 </el-popover>
                             </el-tooltip>
                         </div>
                     </div>
                 </el-header>
                 <el-main>
-                    <ChatBox ref="chatBox"  v-show="this.select===1"/>
-                    <FriendDetail ref="friendDetail" @initFriendDetailId="initFriendDetailId" @chatView="chatView" :select="select"  v-show="this.select===2 && this.friendDetailId!==null"/>
+                    <ChatBox ref="chatBox" v-show="this.select===1"/>
+                    <FriendDetail ref="friendDetail" @initFriendDetailId="initFriendDetailId" @chatView="chatView"
+                                  :select="select" v-show="this.select===2 && this.friendDetailId!==null"/>
                 </el-main>
             </el-container>
-<!--            初始LOGO-->
-        <el-container v-if="(this.item.friendshipId===null && this.select===1) || (this.friendDetailId===null && this.select===2)"
-                      style="display: flex;justify-content: center;align-items: center;">
-            <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
-                <WechatFriend/>
-                <div class="WeChatLOGO">
-                    和语聊天系统
+            <!--            初始LOGO-->
+            <el-container
+                    v-if="(this.item.friendshipId===null && this.select===1) || (this.friendDetailId===null && this.select===2)"
+                    style="display: flex;justify-content: center;align-items: center;">
+                <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
+                    <WechatFriend/>
+                    <div class="WeChatLOGO">
+                        和语聊天系统
+                    </div>
                 </div>
-            </div>
-        </el-container>
+            </el-container>
         </el-container>
         <div>
             <el-dialog
@@ -136,7 +161,8 @@
                 title="视频通话"
                 @closePop="dialogVisibleVideo = false">
             <div>
-                <VideoCalls @clearVideoTimer="clearVideoTimer" @closeVideo="closeVideo" :friendItem="this.item" ref="videoCalls"/>
+                <VideoCalls @clearVideoTimer="clearVideoTimer" @closeVideo="closeVideo" :friendItem="this.item"
+                            ref="videoCalls"/>
             </div>
         </PopContent>
         <PopContent
@@ -147,7 +173,8 @@
                 title="语音通话"
                 @closePop="dialogVisibleVoice = false">
             <div>
-                <VoiceCalls @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.item" ref="voiceCalls"/>
+                <VoiceCalls @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.item"
+                            ref="voiceCalls"/>
             </div>
         </PopContent>
     </div>
@@ -171,6 +198,7 @@
     import VoiceCalls from "../../components/Wechat/VoiceCalls";
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
+
     export default {
         components: {
             addFriend,
@@ -190,12 +218,12 @@
         },
         data() {
             return {
-                chatFlag:true,
-                friendFlag:true,
-                videoCountdownTimer:null,
-                voiceCountdownTimer:null,
-                dialogVisibleVoice:false,
-                dialogVisibleVideo:false,
+                chatFlag: true,
+                friendFlag: true,
+                videoCountdownTimer: null,
+                voiceCountdownTimer: null,
+                dialogVisibleVoice: false,
+                dialogVisibleVideo: false,
                 showSwitching: '0',
                 name: null,
                 buildGroupChat: false,
@@ -209,9 +237,9 @@
                 loadingMore: false,
                 loadFlag: true,
                 total: 0,
-                friendDetailId:null,
+                friendDetailId: null,
                 groupMemberList: [],
-                select:1,
+                select: 1,
                 sendMessage: {
                     action: 0,
                     token: getToken(),
@@ -263,11 +291,11 @@
                 }
                 this.$refs.chatBox.chatBox(this.item);
             },
-            friendMessage(event){
-                if (event.type===1){
+            friendMessage(event) {
+                if (event.type === 1) {
                     this.friendDetailId = event.friendId;
                     this.$refs.friendDetail.friendMessageItem(this.friendDetailId)
-                }else if (event.type ===0){
+                } else if (event.type === 0) {
                     this.select = 1;
                     this.friendDetailId = null;
                     // this.chatFlag = false;
@@ -276,7 +304,7 @@
                     // this.$nextTick(()=>{
                     //     this.chatFlag = true
                     // });
-                        this.$refs.asideFriend.getChat(event)
+                    this.$refs.asideFriend.getChat(event)
 
                 }
 
@@ -323,37 +351,37 @@
                 }
 
             },
-            closeVideo(message){
+            closeVideo(message) {
                 this.clearVideoTimer();
                 this.dialogVisibleVideo = false;
                 this.$notify({
-                    title:"视频通话",
-                    type:"warning",
+                    title: "视频通话",
+                    type: "warning",
                     message: message
                 });
             },
-            clearVideoTimer(){
-                if (this.videoCountdownTimer!==null){
+            clearVideoTimer() {
+                if (this.videoCountdownTimer !== null) {
                     clearTimeout(this.videoCountdownTimer);
                     this.videoCountdownTimer = null;
                 }
             },
-            closeVoice(message){
+            closeVoice(message) {
                 this.clearVoiceTimer();
                 this.dialogVisibleVoice = false;
                 this.$notify({
-                    title:"语音通话",
-                    type:"warning",
+                    title: "语音通话",
+                    type: "warning",
                     message: message
                 });
             },
-            clearVoiceTimer(){
-                if (this.voiceCountdownTimer!==null){
+            clearVoiceTimer() {
+                if (this.voiceCountdownTimer !== null) {
                     clearTimeout(this.voiceCountdownTimer);
                     this.voiceCountdownTimer = null;
                 }
             },
-            operationCommand(command){
+            operationCommand(command) {
                 switch (command) {
                     case "notifyOnline":
                         this.notifyFriend(this.item.friendshipId);
@@ -368,14 +396,14 @@
                         setTimeout(() => {
                             videoLoading.close();
                             service({
-                                method:"get",
-                                url:"users/userInfo/userOnlineStatus",
-                                params:{
+                                method: "get",
+                                url: "users/userInfo/userOnlineStatus",
+                                params: {
                                     userInfo: this.item.friendshipId
                                 }
-                            }).then(res=>{
-                                if (res && res.code===20000){
-                                    if (res.data===true){
+                            }).then(res => {
+                                if (res && res.code === 20000) {
+                                    if (res.data === true) {
                                         this.sendMessage.action = 10007;
                                         this.sendMessage.receiverId = this.item.friendshipId;
                                         socket.send(this.sendMessage);
@@ -383,12 +411,12 @@
                                         var _this = this;
                                         _this.videoCountdownTimer = setTimeout(function () {
                                             _this.$refs.videoCalls.closeVideo(_this.sendMessage.receiverId)
-                                        },10*1000)
-                                    }else{
+                                        }, 10 * 1000)
+                                    } else {
                                         this.$notify({
-                                            title:"视屏通话",
-                                            type:"warning",
-                                            message:"对方不在线，无法进行视频通话"
+                                            title: "视屏通话",
+                                            type: "warning",
+                                            message: "对方不在线，无法进行视频通话"
                                         })
                                     }
                                 }
@@ -406,14 +434,14 @@
                         setTimeout(() => {
                             voiceLoading.close();
                             service({
-                                method:"get",
-                                url:"users/userInfo/userOnlineStatus",
-                                params:{
+                                method: "get",
+                                url: "users/userInfo/userOnlineStatus",
+                                params: {
                                     userInfo: this.item.friendshipId
                                 }
-                            }).then(res=>{
-                                if (res && res.code===20000){
-                                    if (res.data===true){
+                            }).then(res => {
+                                if (res && res.code === 20000) {
+                                    if (res.data === true) {
                                         this.sendMessage.action = 10008;
                                         this.sendMessage.receiverId = this.item.friendshipId;
                                         socket.send(this.sendMessage);
@@ -421,12 +449,12 @@
                                         var _this = this;
                                         _this.voiceCountdownTimer = setTimeout(function () {
                                             _this.$refs.voiceCalls.closeVoice(_this.sendMessage.receiverId)
-                                        },10*1000)
-                                    }else{
+                                        }, 10 * 1000)
+                                    } else {
                                         this.$notify({
-                                            title:"语音通话",
-                                            type:"warning",
-                                            message:"对方不在线，无法进行语音通话"
+                                            title: "语音通话",
+                                            type: "warning",
+                                            message: "对方不在线，无法进行语音通话"
                                         })
                                     }
                                 }
@@ -468,29 +496,29 @@
                 this.$refs.asideFriend.clickAddSession(searchResult);
             },
             initFriendshipId() {
-                if (this.select === 1){
+                if (this.select === 1) {
                     this.friendFlag = false;
-                    this.$nextTick(()=>{
+                    this.$nextTick(() => {
                         this.friendFlag = true;
                     })
                     this.item.friendshipId = null
-                }else {
+                } else {
                     this.chatFlag = false;
-                    this.$nextTick(()=>{
+                    this.$nextTick(() => {
                         this.chatFlag = true;
                     })
                     this.friendDetailId = null;
                 }
 
             },
-            initFriendDetailId(){
+            initFriendDetailId() {
                 this.friendDetailId = null;
             },
-            chatView(friendItem){
+            chatView(friendItem) {
                 this.select = 1;
                 this.$refs.asideFriend.getChat(friendItem)
             },
-            switchTool(type){
+            switchTool(type) {
                 this.select = type;
                 this.$store.commit('updateToolbarSelectState', this.select);
             },
@@ -509,22 +537,22 @@
                     }
                 }
             },
-            videoCallsResponse(event){
-                if (this.select===1){
+            videoCallsResponse(event) {
+                if (this.select === 1) {
                     this.dialogVisibleVideo = true;
                     var _this = this
-                    _this.$nextTick(()=>{
+                    _this.$nextTick(() => {
                         _this.$refs.videoCalls.VCResponse(event.detail.data);
                     })
                 }
 
 
             },
-            voiceCallsResponse(event){
-                if (this.select===1){
+            voiceCallsResponse(event) {
+                if (this.select === 1) {
                     this.dialogVisibleVoice = true;
                     var _this = this;
-                    _this.$nextTick(()=>{
+                    _this.$nextTick(() => {
                         _this.$refs.voiceCalls.voiceResponse(event.detail.data);
                     })
                 }
@@ -545,8 +573,8 @@
             }
             window.addEventListener('initFriendshipId', this.initFriendshipId);
             window.addEventListener("initContainer", this.initContainer);
-            window.addEventListener("videoCallsResponse",this.videoCallsResponse);
-            window.addEventListener("voiceCallsResponse",this.voiceCallsResponse);
+            window.addEventListener("videoCallsResponse", this.videoCallsResponse);
+            window.addEventListener("voiceCallsResponse", this.voiceCallsResponse);
             if (this.$route.query.friendId && this.$route.query.remark) {
 
                 const params = {
@@ -555,13 +583,13 @@
                     userInfoId: this.$route.query.userInfoId
                 };
                 this.select = 1
-                    this.$refs.asideFriend.clickAddSession(params)
+                this.$refs.asideFriend.clickAddSession(params)
             }
         }
     }
 </script>
 
-<style scoped  >
+<style scoped>
     .WeChat {
 
         width: 100%;
@@ -580,9 +608,11 @@
     .my-header {
         box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
     }
-    /deep/.el-card__body, .el-main{
+
+    /deep/ .el-card__body, .el-main {
         padding-top: 5px !important;
     }
+
     .el-header {
         background-color: #f5f5f5;
         color: #333;
@@ -669,9 +699,9 @@
     }
 
     .callFriend {
-        position: absolute;
-        right: 20px;
-        cursor: pointer;
+        display: flex;
+        margin-left: auto;
+
     }
 
     .callFriend .bell {
@@ -685,15 +715,16 @@
     /deep/ .el-popover {
         padding: 0 !important;
     }
-    .WeChatLOGO{
-        background-image:-webkit-linear-gradient(top, #bc8550, #d77f34,#de6912);
-        -webkit-background-clip:text;
-        -webkit-text-fill-color:transparent;
+
+    .WeChatLOGO {
+        background-image: -webkit-linear-gradient(top, #bc8550, #d77f34, #de6912);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         font-size: 6em;
         font-weight: bold;
         height: 100%;
         color: #dadada;
-        font-family: "PingFang SC",serif;
+        font-family: "PingFang SC", serif;
     }
 
 
@@ -704,14 +735,14 @@
         border-radius: 4px;
         background-color: white;
         text-align: center;
-        z-index: 100000000!important;
+        z-index: 100000000 !important;
         color: #fff;
         padding: 40px 20px;
         box-sizing: border-box;
         margin-right: 20px;
     }
 
-    .toolbar{
+    .toolbar {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -720,30 +751,69 @@
 
         background-color: #525252;
     }
-    .toolbar .tool,.toolFocus{
+
+    .toolbar .tool, .toolFocus {
         font-size: 25px;
         cursor: pointer;
     }
-    .toolbar .tool{
+
+    .toolbar .tool {
         color: #bfbfbf;
         margin-top: 70px;
     }
-    .toolbar .toolFocus{
+
+    .toolbar .toolFocus {
         color: #0badf9;
     }
-    .toolbar .tool:hover{
+
+    .toolbar .tool:hover {
         color: #d8d8d8;
     }
-    .toolbar .toolFocus:hover{
+
+    .toolbar .toolFocus:hover {
         color: #15c2ff;
     }
-    .tool-operation{
+
+    .tool-operation {
         margin-top: 420px;
         cursor: pointer;
         color: #d8d8d8;
     }
-    .tool-operation:hover{
+
+    .tool-operation:hover {
         color: #fff;
     }
 
+    .voice {
+        cursor: pointer;
+        font-size: 25px;
+        margin: 0 15px 0 15px;
+    }
+
+    .voice:hover {
+        cursor: pointer;
+        transition: 0.4s;
+        transform: scale(1.2);
+    }
+
+    .video {
+        cursor: pointer;
+        font-size: 25px;
+        margin: 0 15px 0 15px;
+    }
+    .video:hover {
+        cursor: pointer;
+        transition: 0.4s;
+        transform: scale(1.2);
+    }
+    .prompt{
+        cursor: pointer;
+        font-size: 25px;
+        margin: 0 15px 0 15px;
+    }
+    .prompt:hover {
+        cursor: pointer;
+        transition: 0.4s;
+        transform: scale(1.2);
+    }
 </style>
