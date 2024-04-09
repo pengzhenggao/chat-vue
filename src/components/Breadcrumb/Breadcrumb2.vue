@@ -22,7 +22,6 @@
       },
       watch: {
         $route() {
-
           this.getBreadcrumb()
         }
       },
@@ -34,14 +33,14 @@
           const first = matched[0];
           if (first && first.name !== 'wechat') {
             matched = [{ path: '/wechat', meta: { title: '主页' }}].concat(matched)
+              this.isDot = false
           }
           this.levelList = matched
         },
           updateIsDot(){
-            if (this.isDot != true){
+            if (this.isDot !== true && this.$route.path!=='/wechat'){
                 this.isDot = true
             }
-
           },
       },mounted() {
           window.addEventListener("updateIsDot",this.updateIsDot)

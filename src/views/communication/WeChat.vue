@@ -63,35 +63,41 @@
                         <div><span>{{item.remark}}</span>&nbsp;<span v-if="this.item.type===0">({{this.item.groupChatCount}})</span>
                         </div>
                         <div class="callFriend">
-                            <div v-if="item.type===1" style="display: flex;flex-direction: row;align-items: center">
+                            <transition name="el-zoom-in-top">
+                            <div v-if="item.type===1 && animation"
+                                 class="transition-box"
+                                 style="display: flex;flex-direction: row;align-items: center">
                                 <div class="voice function" @click="operationCommand('voiceCalls')">
-                                    <span class="el-icon-phone-outline"></span>
+                                    <el-tooltip class="item" :open-delay="400" effect="light" content="语音通话" placement="bottom">
+                                        <span class="el-icon-phone-outline"></span>
+                                    </el-tooltip>
                                 </div>
                                 <el-divider direction="vertical"></el-divider>
                                 <div class="video function" @click="operationCommand('videoCalls')">
-                                    <span class="el-icon-video-camera"></span>
+                                    <el-tooltip class="item" :open-delay="400"  effect="light" content="视频通话" placement="bottom">
+                                        <span class="el-icon-video-camera"></span>
+                                    </el-tooltip>
                                 </div>
                                 <el-divider direction="vertical"></el-divider>
                                 <div class="prompt function" @click="operationCommand('notifyOnline')">
-                                    <span class="el-icon-bell"></span>
+                                    <el-tooltip class="item" :open-delay="400" effect="light" content="通知上线" placement="bottom">
+                                        <span class="el-icon-bell"></span>
+                                    </el-tooltip>
                                 </div>
                             </div>
-
-                            <!--                            <el-tooltip content="操作栏" placement="bottom" effect="light" v-show="item.type===1">-->
-                            <!--                                <el-dropdown trigger="click" @command="operationCommand">-->
-                            <!--                                    <span class="bell"><i class="el-icon-s-operation"></i></span>-->
-                            <!--                                    <el-dropdown-menu slot="dropdown">-->
-                            <!--                                        <el-dropdown-item icon="el-icon-bell" command="notifyOnline">通知上线</el-dropdown-item>-->
-                            <!--                                        <el-dropdown-item icon="el-icon-video-camera" command="videoCalls">视频通话</el-dropdown-item>-->
-                            <!--                                        <el-dropdown-item icon="el-icon-phone-outline" command="voiceCalls">语音通话</el-dropdown-item>-->
-                            <!--                                    </el-dropdown-menu>-->
-                            <!--                                </el-dropdown>-->
-                            <!--                            </el-tooltip>-->
-
+                            </transition>
+                            <div class="flexible function" @click="animation = !animation"  v-if="item.type===1">
+                                <el-tooltip class="item" effect="light" :content="animation?'收起':'展开'"
+                                            :open-delay="400"
+                                            placement="bottom">
+                                    <span class="el-icon-s-fold" v-if="animation"></span>
+                                    <span class="el-icon-s-unfold" v-else-if="!animation"></span>
+                                </el-tooltip>
+                            </div>
                             <el-tooltip :disabled="true" placement="left" effect="light" v-show="item.type===0">
                                 <el-popover
                                         placement="bottom"
-                                        width="245"
+                                        width="300"
                                         trigger="click">
                                     <span class="bell" slot="reference"
                                           @click.prevent="getGroupMembers(item.friendshipId)"><i
@@ -218,6 +224,7 @@
         },
         data() {
             return {
+                animation:true,
                 chatFlag: true,
                 friendFlag: true,
                 videoCountdownTimer: null,
@@ -253,7 +260,6 @@
                 this.name = null;
                 this.completeSearch()
             },
-
             clearName(done) {
                 this.$confirm('确认关闭？')
                     .then(_ => {
@@ -276,7 +282,6 @@
 
                     });
             },
-
             getGroupMembers(groupId) {
                 this.$refs.chatGroupMember.getGroupMembers(groupId)
 
@@ -288,6 +293,7 @@
                 this.item = event;
                 if (this.item.type === 0) {
                     this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId)
+                    this.$refs.chatGroupMember.groupChatMessageList(this.item.friendshipId)
                 }
                 this.$refs.chatBox.chatBox(this.item);
             },
@@ -706,6 +712,7 @@
 
     .callFriend .bell {
         font-size: 18px;
+        cursor: pointer;
     }
 
     .callFriend .bell:hover {
@@ -729,13 +736,14 @@
 
 
     .transition-box {
+
         margin-bottom: 10px;
         width: 200px;
         height: 100px;
         border-radius: 4px;
         background-color: white;
         text-align: center;
-        z-index: 100000000 !important;
+        z-index: 0 !important;
         color: #fff;
         padding: 40px 20px;
         box-sizing: border-box;
@@ -786,7 +794,7 @@
 
     .voice {
         cursor: pointer;
-        font-size: 25px;
+        font-size: 23px;
         margin: 0 15px 0 15px;
     }
 
@@ -794,26 +802,43 @@
         cursor: pointer;
         transition: 0.4s;
         transform: scale(1.2);
+        color: #000000;
     }
 
     .video {
         cursor: pointer;
-        font-size: 25px;
+        font-size: 23px;
         margin: 0 15px 0 15px;
     }
     .video:hover {
         cursor: pointer;
         transition: 0.4s;
         transform: scale(1.2);
+        color: #000000;
     }
     .prompt{
         cursor: pointer;
-        font-size: 25px;
+        font-size: 23px;
         margin: 0 15px 0 15px;
     }
     .prompt:hover {
         cursor: pointer;
         transition: 0.4s;
         transform: scale(1.2);
+        color: #000000;
+    }
+    .flexible{
+        cursor: pointer;
+        font-size: 23px;
+        margin: 0 0 0 15px;
+    }
+    .transition-box {
+        margin-bottom:0;
+        height: 50px;
+        border-radius:0;
+        background-color: revert;
+        color: #494949;
+        padding: 0;
+        margin-right: 0;
     }
 </style>

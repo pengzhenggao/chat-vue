@@ -39,7 +39,7 @@
                 <div class="header-right-friendDropdown" @mouseover="friendDropShowBtn"
                      @mouseout="friendDropShow = false">
                     <el-collapse-transition>
-                        <Friends ref="friendsRef" @reduceRequests="reduceRequests" v-show="friendDropShow"/>
+                        <Friends  ref="friendsRef" @reduceRequests="reduceRequests" v-show="friendDropShow"/>
                     </el-collapse-transition>
                 </div>
                 <!-- </el-tooltip> -->

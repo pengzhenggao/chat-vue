@@ -1,6 +1,5 @@
 <template>
-    <div style="height: 60vh;padding-right: 10px;padding-left: 10px;">
-
+    <div style="height: 78vh;padding-right: 10px;padding-left: 10px;">
         <div style="border-bottom: 1px solid #e2e2e2">
             <div style="text-align: center;font-weight: 700;font-size: 15px;margin-bottom: 5px">
                 群成员({{this.total}})
@@ -26,7 +25,30 @@
                 <div v-else-if=" currentPage>1" @click="collapse">收起&nbsp;<i class="el-icon-arrow-up"></i></div>
             </div>
         </div>
-
+        <div class="group-chat-message">
+            <el-form label-position="top" label-width="80px" :model="groupChatMessage">
+                <el-form-item label="群聊名称">
+                    <el-input size="small"
+                              :disabled="!isGroupLeader"
+                              :placeholder="isGroupLeader?this.groupChatMessage.groupChatName:'仅群主可以进行修改'"
+                              v-model="groupChatMessage.groupName"></el-input>
+                </el-form-item>
+<!--                <el-form-item label="群公告">-->
+<!--                    <el-input v-model="groupChatMessage.region"></el-input>-->
+<!--                </el-form-item>-->
+                <el-form-item label="备注">
+                    <el-input size="small"
+                              placeholder="群聊备注仅自己可见"
+                              v-model="groupChatMessage.groupChatRemark" @keyup.enter.native="updateGroupChatMessage($event)" ></el-input>
+                </el-form-item>
+                <el-form-item label="我在本群的名称">
+                    <el-input size="small"
+                              placeholder="本群昵称全部人可见"
+                              v-model="groupChatMessage.customizeRemark" @keyup.enter.native="updateGroupChatMessage($event)"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
+        <el-divider></el-divider>
         <!--        操作栏-->
         <div class="operation-tool">
             <div class="clear-group-record" @click="clearGroupChatMessage"><span>清空聊天记录</span></div>
@@ -106,6 +128,7 @@
                 total: 0,
                 pullChatView:false,
                 tableData:[],
+                groupChatMessage:{},
                 keyword:null,
                 multipleSelection: null,
             }
@@ -200,6 +223,31 @@
                         this.groupMemberList.push(res.data[i])
                     }
                     this.total = res.total
+                })
+            },
+            groupChatMessageList(groupChatId){
+                service({
+                    method: "get",
+                    url: "/users/groupChatMessage",
+                    params: {
+                        chatGroupId: groupChatId
+                    }
+                }).then(res=>{
+                    this.groupChatMessage = res.data
+                })
+            },
+            updateGroupChatMessage(event){
+                service.put("/users/update/groupChatMessage",this.groupChatMessage).then(res=>{
+                    if (res.flag){
+                        if (event){
+                            event.target.blur()
+                        }
+                        this.$notify({
+                            type:"success",
+                            title:"修改群聊信息",
+                            message:"修改成功"
+                        })
+                    }
                 })
             },
             leaveGroupChat() {
@@ -379,5 +427,30 @@
     .back-chatgroup {
         margin-top: 10px;
         color: #ff4347;
+    }
+    .group-chat-message{
+        margin-top: 20px;
+    }
+    /deep/.el-form--label-top .el-form-item__label{
+        padding: 0;
+    }
+    /deep/.el-form-item__label{
+        line-height: 0;
+    }
+    /deep/.el-form-item{
+        margin-bottom:0
+    }
+  /deep/.el-form--label-top .el-form-item__label{
+        font-weight: 600;
+ }
+    /* 利用穿透，设置input边框隐藏 */
+    /deep/ .group-chat-message .el-input__inner{
+        border-radius: 0;
+        border: 0;
+        border:none;
+        padding: 0 5px;
+    }
+    /deep/ .el-input__inner:focus{
+        background-color: #f6f6f6;
     }
 </style>
