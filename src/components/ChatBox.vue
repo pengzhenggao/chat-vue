@@ -1,28 +1,10 @@
-@2023 即时聊天系统(网页版)<template>
+<template>
     <div class="CB">
         <el-container style="height: 100%">
             <el-main class="el-mai">
                 <WeChatContent ref="weChatContent" @positionView="positionView" @reEdit="reEdit"/>
             </el-main>
             <el-footer height="160px">
-                <!--                <el-popover-->
-                <!--                        placement="bottom"-->
-                <!--                        title="标题"-->
-                <!--                        width="500"-->
-                <!--                        height="700"-->
-                <!--                        trigger="click"-->
-                <!--                        v-model="emojiShow">-->
-                <!--                    <el-button class="la" slot="reference" @click="loadEmojis">😀</el-button>-->
-                <!--                    <div class="browBox">-->
-                <!--                        <ul>-->
-                <!--                            <li v-for="(item, index) in faceList"-->
-                <!--                                :key="index"-->
-                <!--                                @click="getBrow(index)">-->
-                <!--                                {{ item }}-->
-                <!--                            </li>-->
-                <!--                        </ul>-->
-                <!--                    </div>-->
-                <!--                </el-popover>-->
                 <div v-show="groupChatStatus">
                     <ChatEditor ref="chatEditor" :parentContent="this.sendMessage.content"
                                 @submitMessage="submitMessage"/>
@@ -268,30 +250,6 @@
 
     /deep/ .el-textarea .el-input__count {
         display: none;
-    }
-
-    .browBox {
-        width: 100%;
-        height: 200px;
-        background: #e6e6e6;
-        position: absolute;
-        z-index: 100;
-        bottom: 0px;
-        overflow: scroll;
-    }
-
-    .browBox ul {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 10px;
-    }
-
-    .browBox li {
-        cursor: pointer;
-        width: 10%;
-        font-size: 26px;
-        list-style: none;
-        text-align: center;
     }
 
     .submit-btn {

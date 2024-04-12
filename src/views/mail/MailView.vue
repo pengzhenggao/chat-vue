@@ -9,8 +9,11 @@
                 <p class="date">通知时间：{{mailFrom.createTime}}</p>
             </div>
             <div style=" background-color: #eaeaea;padding: 20px 0 10px 0">
-                <el-button @click="read(mailFrom.id)" v-if="mailFrom.isRead===0">我已阅读</el-button>
-                <el-button v-else type="info">已阅读</el-button>
+                <div v-if="mailFrom.isRead!=null">
+                    <el-button @click="read(mailFrom.id)" v-if="mailFrom.isRead===0">我已阅读</el-button>
+                    <el-button v-else type="info">已阅读</el-button>
+                </div>
+
             </div>
         </div>
 
@@ -63,9 +66,6 @@
                     case 'announcement':
                         this.announcementDetail(emailId);
                         break;
-                    case 'message':
-                        this.messageDetail(emailId);
-                        break
                 }
             },
             notifyDetail(emailId) {
@@ -77,11 +77,14 @@
                 })
             },
             announcementDetail(emailId) {
-
+                service({
+                    method: "get",
+                    url: `/users/announcementById/${emailId}`
+                }).then(res => {
+                    console.log(res)
+                    this.mailFrom = res.data;
+                })
             },
-            messageDetail(emailId) {
-
-            }
         }
     }
 </script>
@@ -115,5 +118,9 @@
         line-height: 1.5rem;
         text-indent: 2em;
         text-align: left;
+    }
+
+    /deep/.el-scrollbar__wrap {
+        overflow-y: hidden;
     }
 </style>

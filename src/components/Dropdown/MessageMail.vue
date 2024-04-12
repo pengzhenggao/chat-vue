@@ -1,5 +1,5 @@
 <template>
-    <div class="drop">
+    <div class="drop" @click="routerMailView(id)">
         <div class="drop-left">
             <img src="http://public.nodebook.top/20200319164136.jpg" />
         </div>
@@ -22,6 +22,10 @@ export default {
             type: String,
             required: true
         },
+        id:{
+            type: Number,
+            required: true
+        },
         image:{
             type: String,
             default: 'http://public.nodebook.top/20200319164136.jpg',
@@ -34,6 +38,16 @@ export default {
                 return false;
             }
         }
+    },methods:{
+        routerMailView(id){
+            this.$router.push({
+                path:"/mail-view",
+                query:{
+                    id:id,
+                    type:'message'
+                }
+            })
+        },
     }
 }
 </script>
@@ -77,7 +91,7 @@ export default {
 .drop-left-icon{
     width: 20px;
     height: 20px;
-    fill: currentColor; 
+    fill: currentColor;
     opacity: 0.9;
     transition: all 0.5s;
 }

@@ -339,21 +339,30 @@
                         this.systemSetting = true;
                         break;
                     case 'quit':
-                        service.post("/userAuth/logout").then(res => {
-                            if (res.code === 20000) {
-                                this.$store.dispatch('user/resetToken');
-                                this.$router.replace('/login');
-                            } else {
-                                this.$notify({
-                                    title: "退出登入",
-                                    type: "warning",
-                                    message: "退出失败"
-                                });
-                            }
+                        this.$confirm('是否退出当前登录?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            service.post("/userAuth/logout").then(res => {
+                                if (res.code === 20000) {
+                                    this.$store.dispatch('user/resetToken');
+                                    this.$router.replace('/login');
+                                } else {
+                                    this.$notify({
+                                        title: "退出登入",
+                                        type: "warning",
+                                        message: "退出失败"
+                                    });
+                                }
+                            });
+                        }).catch(() => {
+
                         });
+
                         break;
                     case 'person':
-                        this.$router.push("/settings")
+                        this.$router.push("/settings");
                         break;
                 }
             },

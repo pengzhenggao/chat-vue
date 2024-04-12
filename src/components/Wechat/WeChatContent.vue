@@ -131,7 +131,7 @@
                         </div>
                         <div class="info">
                             <p class="time">
-                            <span>{{itemc.customizeRemark?itemc.customizeRemark:itemc.username}}
+                            <span>{{(itemc.customizeRemark && itemc.customizeRemark!='')?itemc.customizeRemark:itemc.username}}
                             </span>&nbsp;<span>{{chatTime(itemc.createTime)}}</span>
                             </p>
                             <div class="info-content">
@@ -147,7 +147,7 @@
                         <div class="info">
                             <p class="time">
                                 <span>{{chatTime(itemc.createTime)}}</span>
-                                &nbsp;<span>{{itemc.customizeRemark!==null?itemc.customizeRemark:itemc.username}}</span>
+                                &nbsp;<span>{{(itemc.customizeRemark!==null && itemc.customizeRemark!='')?itemc.customizeRemark:itemc.username}}</span>
                             </p>
                             <div class="info-content">
                                 <div v-if="messageHandlerFlag===itemc.id" class="messageHandler"

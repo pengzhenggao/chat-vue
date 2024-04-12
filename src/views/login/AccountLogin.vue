@@ -112,6 +112,8 @@
                     this.yl = res.data.yl;
                     this.sliderName = res.data.sliderName;
                     this.validationVisible = true;
+                }).catch(()=>{
+                    this.loading = false;
                 })
             },
             successValidation() {
@@ -130,7 +132,7 @@
                         // 登陆成功后重定向
                         this.$router.push({
                             path: this.$route.query.redirect || '/wechat'
-                        })
+                        });
                         setTimeout(() => {
                             this.loading = false;
                         }, 1000)

@@ -86,6 +86,7 @@
                     loginAccount:_this.form.username
                     }
                 }).then(res=>{
+                    console.log(res)
                     if (res &&res.code===20000){
                         this.$router.push({
                             path:"/authentication",

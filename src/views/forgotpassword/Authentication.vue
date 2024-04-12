@@ -51,7 +51,8 @@
                 activeName:"email",
                 type:"",
             }
-        },mounted() {this.loading = true;
+        },mounted() {
+          this.loading = true;
           var tag = this.$route.query.tag;
           this.type = Base64.decode(this.$route.query.type)
           if (tag){

@@ -30,8 +30,9 @@
                 <el-form-item label="群聊名称">
                     <el-input size="small"
                               :disabled="!isGroupLeader"
+                              @keyup.enter.native="updateGroupChatMessage($event)"
                               :placeholder="isGroupLeader?this.groupChatMessage.groupChatName:'仅群主可以进行修改'"
-                              v-model="groupChatMessage.groupName"></el-input>
+                              v-model="groupChatMessage.groupChatName"></el-input>
                 </el-form-item>
 <!--                <el-form-item label="群公告">-->
 <!--                    <el-input v-model="groupChatMessage.region"></el-input>-->
@@ -129,6 +130,7 @@
                 pullChatView:false,
                 tableData:[],
                 groupChatMessage:{},
+                groupChatMessageMediator:{},
                 keyword:null,
                 multipleSelection: null,
             }
@@ -233,10 +235,20 @@
                         chatGroupId: groupChatId
                     }
                 }).then(res=>{
-                    this.groupChatMessage = res.data
+                    this.groupChatMessage = res.data;
+                    this.groupChatMessageMediator = JSON.parse(JSON.stringify(res.data))
                 })
             },
             updateGroupChatMessage(event){
+                if (this.groupChatMessage.groupChatName==null || this.groupChatMessage.groupChatName===''){
+                    this.$notify({
+                       type:"warning",
+                        title:"修改群聊信息",
+                        message:"群聊昵称不能为空"
+                    });
+                    this.groupChatMessage = this.groupChatMessageMediator;
+                    return
+                }
                 service.put("/users/update/groupChatMessage",this.groupChatMessage).then(res=>{
                     if (res.flag){
                         if (event){

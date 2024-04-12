@@ -60,12 +60,12 @@ router.beforeEach(async (to,from,next) => {
         if(whiteList.indexOf(to.path) !== -1){
             if (to.path ==="/authentication"){
                 var tag = Base64.decode(to.query.tag);
-                if (Cookie.get("IV"+tag)){
-                    next(`/set-password?token=${Cookie.get("IV"+tag)}`)
+                if (Cookie.get("IV"+tag.toString())){
+                    next(`/set-password?token=${Cookie.get("IV"+tag.toString())}`)
                 }
             }
             if (to.path==='/set-password' && from.path!=='/authentication'){
-                if (from.path!=='/password-find' || to.query.token === null){
+                if (from.path!=='/password-find' && to.query.token === null){
                     next(`/login?redirect=${to.path}`)
                 }
             }

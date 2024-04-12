@@ -148,7 +148,7 @@
                         <div style="height: 320px">
                             <el-card style="margin-top: 1rem">
                                 <span style="font-weight: bold">登入通知</span>
-                                <div style="height: 240px">
+                                <div style="height: 240px" v-if="loginRecordsDTOList!=null && loginRecordsDTOList.length>0">
                                     <el-scrollbar style="height: 100%;width: 100%" wrap-style="overflow-x:hidden;">
                                         <div style="display: flex;flex-direction: column;justify-content: center;align-items: center">
                                             <div v-for="loginRecord in loginRecordsDTOList">
@@ -184,6 +184,11 @@
                                             </div>
                                         </div>
                                     </el-scrollbar>
+                                </div>
+                                <div v-else style="height: 240px">
+                                   <div >
+                                       <el-empty description="暂无数据"></el-empty>
+                                   </div>
                                 </div>
                             </el-card>
                         </div>

@@ -9,12 +9,12 @@
         <div class="setPassword-title">设置密码</div>
         <div class="content">
             <div class="BJ">
-                <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+                <el-form ref="form" :model="form" label-position="top" :rules="rules" label-width="80px">
                     <el-form-item prop="newPassword" label="新密码">
-                        <el-input style="width: 340px"  placeholder="输入新密码" v-model="form.newPassword"></el-input>
+                        <el-input type="password" clearable show-password style="width: 340px"  placeholder="输入新密码" v-model="form.newPassword"></el-input>
                     </el-form-item>
                     <el-form-item label="确认密码" prop="confirmPassword">
-                        <el-input style="width: 340px" placeholder="再次输入新密码" v-model="form.confirmPassword"></el-input>
+                        <el-input type="password" clearable show-password style="width: 340px" placeholder="再次输入新密码" v-model="form.confirmPassword"></el-input>
                     </el-form-item>
                     <el-form-item >
                         <el-button style="width: 340px" type="warning" @click="submit('form')">确认修改</el-button>
@@ -51,7 +51,6 @@
                 }
             };
             return {
-
                 form: {
                     newPassword: "",
                     confirmPassword: "",
@@ -140,5 +139,8 @@
         display: flex;
         justify-content: center;
         background-color: #f8f8f8;
+    }
+    /deep/.el-form-item__label{
+        line-height: 0;
     }
 </style>

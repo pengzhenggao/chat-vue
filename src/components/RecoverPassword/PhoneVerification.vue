@@ -83,7 +83,7 @@
                     if (res.code===20000){
                         let seconds = 60*9;
                         let expires = new Date(new Date() * 1 + seconds * 1000);
-                        Cookies.set("IV"+this.phoneVerificationList.id,res.message, { expires: expires });
+                        Cookies.set("IV"+this.phoneVerificationList.id.toString(),res.message, { expires: expires });
                         this.$router.push({
                             path:"/set-password",
                             query:{

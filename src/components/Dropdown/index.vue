@@ -1,7 +1,6 @@
 <template>
     <el-tabs class="dropdowns" v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="系统邮件" name="first" style="padding:0; " class="dropdowns-dropBox">
-
             <div class="dropdowns-list-box">
                 <SystemMail v-for="item in notifyList"  :type='item.icon' iconColor='#ffffff' iconBgColor='#3593FE'
                             :key="item.id"
@@ -11,29 +10,24 @@
                             style="background: #AFFCDD"/>
                 <el-button class="dropdowns-more" :loading="false" type="text">加载更多</el-button>
             </div>
-            <div class="dropdowns-foots">
-                <!-- <Clear class="dropdowns-foots-iconsClear"  /> -->
-                清空邮件
-            </div>
+<!--            <div class="dropdowns-foots">-->
+<!--                &lt;!&ndash; <Clear class="dropdowns-foots-iconsClear"  /> &ndash;&gt;-->
+<!--                清空邮件-->
+<!--            </div>-->
             <!-- <Empy type='Horn' text='你还没有新的通知' /> -->
-        </el-tab-pane>
-        <el-tab-pane label="消息邮件" name="second" style="padding:0" class="dropdowns-dropBox">
-            <div class="dropdowns-list-box">
-                <MessageMail v-for="item in messageList" :text='item.messageTitle' :time='item.createTime'/>
-            </div>
-            <div class="dropdowns-foots">
-                清空邮件
-            </div>
-            <!-- <Empy type='News' text='你还没有新的消息' /> -->
         </el-tab-pane>
         <el-tab-pane name="third" style="padding:0">
             <span slot="label">公告邮件</span>
             <div class="dropdowns-list-box">
-                <Announcement :announcementList="announcementList"/>
+                <Announcement v-for="item in announcementList"
+                              :key="item.id"
+                              :id="item.id"
+                              :title='item.title'
+                              :time='item.createTime'/>
             </div>
-            <div class="dropdowns-foots">
-                清空邮件
-            </div>
+<!--            <div class="dropdowns-foots">-->
+<!--                清空邮件-->
+<!--            </div>-->
             <!-- <Empy type='Flag' text='你还没有新的代办事项' /> -->
         </el-tab-pane>
     </el-tabs>
@@ -60,7 +54,7 @@
                 dropOff: false,
                 notifyList: [],
                 messageList: [],
-                announcementList: {}
+                announcementList:[]
             };
         },
         components: {
@@ -92,7 +86,7 @@
             getAnnouncement() {
                 service({
                     method: "get",
-                    url: "users/announcement",
+                    url: "/users/announcement",
                 }).then(res => {
                     this.announcementList = res.data;
                 })
