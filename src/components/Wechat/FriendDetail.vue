@@ -1,6 +1,7 @@
 <template>
     <div class="main">
-        <div class="container" v-show="!friendMessageIsNull">
+<!--        是好友，可查看-->
+        <div class="container" v-show="friendMessageIsNull===false">
             <div class="upper-part">
                 <el-image :src="friendMessage.avatar"
                           style="width: 80px;height: 80px;border-radius: 5px"></el-image>
@@ -69,7 +70,8 @@
                 </div>
             </div>
         </div>
-        <div class="container" v-show="friendMessageIsNull">
+<!--        不是好友不可查看-->
+        <div class="container" v-show="friendMessageIsNull===true">
             <div style="text-align: center">
                 <hide style="width: 80px;height: 80px"/>
             </div>
@@ -87,6 +89,10 @@
                 </div>
 
             </div>
+        </div>
+<!--        加载过程-->
+        <div class="container" v-show="friendMessageIsNull===null">
+            <div v-loading="friendMessageIsNull===null"></div>
         </div>
         <div
                 v-show="poolClickView"
@@ -309,7 +315,7 @@
                 editShow2: false,
                 editShow3: false,
                 friendMessage: {},
-                friendMessageIsNull:true,
+                friendMessageIsNull:null,
                 recommendFriendId: null,
                 referFriendVisible: false,
                 complaintsVisible: false,
@@ -475,6 +481,7 @@
 
             },
             friendMessageItem(friendId) {
+                this.friendMessageIsNull = null;
                 this.searchUserId = friendId;
                 this.friendMessage = {};
                 service({

@@ -376,6 +376,7 @@
              */
             clickSession(friend) {
                 this.activeIndex = friend.id.toString();
+                friend.type = 1
                 this.$emit("completeSearch");
                 this.getChat(friend)
             },

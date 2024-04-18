@@ -6,9 +6,9 @@
             <el-button type="info" icon="el-icon-c-scale-to-original"
                        v-else  @click="closeAnnouncements(true)">打开公告</el-button>
             <el-button type="warning" icon="el-icon-microphone"
-                       v-if="promptSounds" @click="closeSounds(false)">关闭声音</el-button>
+                       v-if="promptSounds" @click="closeSounds(false)">关闭提醒</el-button>
             <el-button type="info" icon="el-icon-turn-off-microphone"
-                       v-else  @click="closeSounds(true)">打开声音</el-button>
+                       v-else  @click="closeSounds(true)">打开提醒</el-button>
             <el-button type="danger" icon="el-icon-refresh-right" @click="refreshConnect">重新连接</el-button>
         </div>
         <div>

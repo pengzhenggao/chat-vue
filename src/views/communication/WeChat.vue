@@ -21,6 +21,7 @@
                                 style="width: 85%;"
                                 v-model="keyword"
                                 placeholder="搜索" size="mini"
+                                :disabled="select===2"
                                 @input="remoteSearch"
                                 @focus="focusInit"
                                 @blur="isLoseFocus">
@@ -292,7 +293,7 @@
             currentFriend(event) {
                 this.item = event;
                 if (this.item.type === 0) {
-                    this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId)
+                    this.$refs.chatGroupMember.getIsGroupLeader(this.item.friendshipId);
                     this.$refs.chatGroupMember.groupChatMessageList(this.item.friendshipId)
                 }
                 this.$refs.chatBox.chatBox(this.item);
@@ -331,6 +332,7 @@
                 this.$refs.input.blur()
             },
             focusInit() {
+
                 this.clearFlag = true;
                 this.$refs.asideFriend.isSearchStatus(this.clearFlag);
                 this.$refs.asideFriend.remoteSearchFriend(this.keyword)
@@ -527,6 +529,7 @@
             switchTool(type) {
                 this.select = type;
                 this.$store.commit('updateToolbarSelectState', this.select);
+                this.cancelFocus()
             },
             chatTime(time) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/; // 验证YYYY-MM-DD格式

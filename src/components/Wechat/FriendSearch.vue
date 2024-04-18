@@ -1,8 +1,10 @@
 <template>
     <div style="margin: 0 auto">
         <el-menu class="el-menu-vertical-demo" mode="vertical">
-            <div v-for="item in friendSearchList" class="item">
-                <el-menu-item :index="item.id.toString()">
+            <div v-for="(item,index) in friendSearchList" class="item" :key="index">
+                <el-menu-item
+                        :key="item.id"
+                        :index="item.id.toString()">
                     <div class="search-content" @click="$emit('clickSession',item)">
                         <div>
                             <img :src="item.avatar" style="width: 35px;height: 35px; overflow: hidden;"
