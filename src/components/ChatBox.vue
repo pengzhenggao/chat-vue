@@ -105,14 +105,15 @@
                 }
             },
             chatBox(data) {
+                this.groupChatStatus = true
                 this.content = '';
                 if (data.type === 1) {
                     this.sendMessage.receiverId = data.friendshipId;
                     this.scrolltMax = 0;
-                    this.groupChatStatus = true
                 } else if (data.type === 0) {
                     this.sendGroupChatMessage.groupChatId = data.friendshipId;
                     this.scrolltMax = 0;
+
                     this.getGroupChatStatus(this.sendGroupChatMessage.groupChatId)
                 } else {
                     return

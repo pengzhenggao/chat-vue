@@ -1,62 +1,67 @@
 <template>
     <div style="height: 78vh;padding-right: 10px;padding-left: 10px;">
-        <div style="border-bottom: 1px solid #e2e2e2">
-            <div style="text-align: center;font-weight: 700;font-size: 15px;margin-bottom: 5px">
-                群成员({{this.total}})
-            </div>
-            <div class="member">
-                <div v-for="(item,index) in groupMemberList" :key="index"
-                     class="member-item">
-                    <div style="margin: 2px 7px 2px 7px;display: flex;flex-direction: column;" @click="selectMember(item)">
-                        <img style="width: 40px;height: 40px" :src="item.avatar"/>
-                        <div class="member-username">
-                            <span>{{item.customizeRemark?item.customizeRemark:item.username}}</span>
+        <div v-show="!groupChatNotExist">
+            <div style="border-bottom: 1px solid #e2e2e2">
+                <div style="text-align: center;font-weight: 700;font-size: 15px;margin-bottom: 5px">
+                    群成员({{this.total}})
+                </div>
+                <div class="member">
+                    <div v-for="(item,index) in groupMemberList" :key="index"
+                         class="member-item">
+                        <div style="margin: 2px 7px 2px 7px;display: flex;flex-direction: column;" @click="selectMember(item)">
+                            <img style="width: 40px;height: 40px" :src="item.avatar"/>
+                            <div class="member-username">
+                                <span>{{item.customizeRemark?item.customizeRemark:item.username}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-group-chat">
+                        <div class="pull-icon" @click="pullPeople">
+                            <span style="font-size: 18px"><i class="el-icon-plus"></i></span>
                         </div>
                     </div>
                 </div>
-                <div class="pull-group-chat">
-                    <div class="pull-icon" @click="pullPeople">
-                        <span style="font-size: 18px"><i class="el-icon-plus"></i></span>
-                    </div>
+                <div class="load">
+                    <div v-if="loadFlag" @click="loadMore">加载更多&nbsp;<i class="el-icon-arrow-down"></i></div>
+                    <div v-else-if=" currentPage>1" @click="collapse">收起&nbsp;<i class="el-icon-arrow-up"></i></div>
                 </div>
             </div>
-            <div class="load">
-                <div v-if="loadFlag" @click="loadMore">加载更多&nbsp;<i class="el-icon-arrow-down"></i></div>
-                <div v-else-if=" currentPage>1" @click="collapse">收起&nbsp;<i class="el-icon-arrow-up"></i></div>
+            <div class="group-chat-message">
+                <el-form label-position="top" label-width="80px" :model="groupChatMessage">
+                    <el-form-item label="群聊名称">
+                        <el-input size="small"
+                                  :disabled="!isGroupLeader"
+                                  @keyup.enter.native="updateGroupChatMessage($event)"
+                                  :placeholder="isGroupLeader?this.groupChatMessage.groupChatName:'仅群主可以进行修改'"
+                                  v-model="groupChatMessage.groupChatName"></el-input>
+                    </el-form-item>
+                    <!--                <el-form-item label="群公告">-->
+                    <!--                    <el-input v-model="groupChatMessage.region"></el-input>-->
+                    <!--                </el-form-item>-->
+                    <el-form-item label="备注">
+                        <el-input size="small"
+                                  placeholder="群聊备注仅自己可见"
+                                  v-model="groupChatMessage.groupChatRemark" @keyup.enter.native="updateGroupChatMessage($event)" ></el-input>
+                    </el-form-item>
+                    <el-form-item label="我在本群的名称">
+                        <el-input size="small"
+                                  placeholder="本群昵称全部人可见"
+                                  v-model="groupChatMessage.customizeRemark" @keyup.enter.native="updateGroupChatMessage($event)"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <el-divider></el-divider>
+            <!--        操作栏-->
+            <div class="operation-tool">
+                <div class="clear-group-record" @click="clearGroupChatMessage"><span>清空聊天记录</span></div>
+                <div class="back-chatgroup">
+                    <span @click.prevent="leaveGroupChat" v-if="!isGroupLeader">退出群聊</span>
+                    <span @click.prevent="disbandGroupChat" v-else-if="isGroupLeader">解散群聊</span>
+                </div>
             </div>
         </div>
-        <div class="group-chat-message">
-            <el-form label-position="top" label-width="80px" :model="groupChatMessage">
-                <el-form-item label="群聊名称">
-                    <el-input size="small"
-                              :disabled="!isGroupLeader"
-                              @keyup.enter.native="updateGroupChatMessage($event)"
-                              :placeholder="isGroupLeader?this.groupChatMessage.groupChatName:'仅群主可以进行修改'"
-                              v-model="groupChatMessage.groupChatName"></el-input>
-                </el-form-item>
-<!--                <el-form-item label="群公告">-->
-<!--                    <el-input v-model="groupChatMessage.region"></el-input>-->
-<!--                </el-form-item>-->
-                <el-form-item label="备注">
-                    <el-input size="small"
-                              placeholder="群聊备注仅自己可见"
-                              v-model="groupChatMessage.groupChatRemark" @keyup.enter.native="updateGroupChatMessage($event)" ></el-input>
-                </el-form-item>
-                <el-form-item label="我在本群的名称">
-                    <el-input size="small"
-                              placeholder="本群昵称全部人可见"
-                              v-model="groupChatMessage.customizeRemark" @keyup.enter.native="updateGroupChatMessage($event)"></el-input>
-                </el-form-item>
-            </el-form>
-        </div>
-        <el-divider></el-divider>
-        <!--        操作栏-->
-        <div class="operation-tool">
-            <div class="clear-group-record" @click="clearGroupChatMessage"><span>清空聊天记录</span></div>
-            <div class="back-chatgroup">
-                <span @click.prevent="leaveGroupChat" v-if="!isGroupLeader">退出群聊</span>
-                <span @click.prevent="disbandGroupChat" v-else-if="isGroupLeader">解散群聊</span>
-            </div>
+        <div v-show="groupChatNotExist" style="display: flex;justify-content: center;padding-top: 200px">
+            <span v-loading="loading">暂无数据！</span>
         </div>
         <el-dialog
                 append-to-body
@@ -125,8 +130,10 @@
                 size: 20,
                 loadFlag: true,
                 isGroupLeader: false,
+                groupChatNotExist:true,
                 groupMemberList: [],
                 total: 0,
+                loading:true,
                 pullChatView:false,
                 tableData:[],
                 groupChatMessage:{},
@@ -165,7 +172,6 @@
                     url:"/users/pullGroupChat",
                     data:params
                 }).then(res=>{
-
                     if (res.code===20000){
                         this.$notify({
                             title:"拉入群聊",
@@ -218,6 +224,8 @@
                         chatGroupId: groupId
                     }
                 }).then(res => {
+                    this.groupChatNotExist = false;
+                    this.loading = false
                     if (!res.data || res.data.length < this.size) {
                         this.loadFlag = false
                     }
@@ -225,6 +233,8 @@
                         this.groupMemberList.push(res.data[i])
                     }
                     this.total = res.total
+                }).catch(()=>{
+                    this.loading = false
                 })
             },
             groupChatMessageList(groupChatId){

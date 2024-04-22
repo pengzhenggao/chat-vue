@@ -132,7 +132,6 @@
             addFriend(friendId) {
                 this.sendMessage.receiverId = friendId;
                 this.sendMessage.action = 10004;
-
                 socket.send(this.sendMessage);
                 this.clear();
                 this.$notify({

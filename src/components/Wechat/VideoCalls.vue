@@ -24,7 +24,7 @@
         </div>
         <div v-show="connecting===3" style="text-align: center">
             <div style="display: flex;justify-content: center;align-items: center">
-                <video ref="localVideo" playsinline autoplay
+                <video ref="localVideo" playsinline autoplay muted
                        :class="{'localVideo':this.switch,'remoteVideo':!this.switch}"></video>
                 <video ref="remoteVideo" playsinline autoplay
                        :class="{'localVideo':!this.switch,'remoteVideo':this.switch}"></video>

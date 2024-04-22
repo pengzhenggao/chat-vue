@@ -7,7 +7,7 @@ export default {
     GitHubLogin:{
         clientID: "fbda68b96e8462c032ce",
         clientSecret:"c6c3db323aaf3c0a95e39ed6a9051c563a5df613",
-        redirectUri:"https://www.pengzhenggao.top/oauth/login/github"
+        redirectUri:"http://localhost:8001/oauth/login/github"
     },
     QQ:{
         clientID: "102066641",

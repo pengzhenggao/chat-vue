@@ -157,7 +157,7 @@
                                      style="position: absolute;
                               left: -20px;
                               bottom: 0;
-                              font-size: 20px;
+                              font-size: 15px;
                               color: #ff004f">
                                     <span class="el-icon-warning"></span>
                                 </div>
@@ -166,24 +166,11 @@
                         </div>
                         <img :src="itemc.memberAvatar">
                     </div>
-                    <div v-if="itemc.isSendSuccessfully===0 && itemc.isMyselfMsg===true"
-                         style="background-color: #e9e9e9;width: 220px;border-radius:3px;margin: 0 auto;padding: 10px">
+                    <div v-if="itemc.isSendSuccessfully===0 && itemc.isMyselfMessage===true"
+                         style="background-color: #e9e9e9;width: 230px;border-radius:3px;margin: 0 auto;padding: 10px">
                         <p style="text-align: center;font-size: 13px;color: #828282">
-                            不支持临时会话，请先添加他（她）
-                            <span @click.prevent="sendFriendCheck" style="color: #409EFF;cursor: pointer">发送朋友验证</span>
+                            群聊已解散，消息无法被其他成员接收
                         </p>
-                    </div>
-                    <div v-else-if="itemc.isSendSuccessfully===2 && itemc.isMyselfMsg===true"
-                         style="background-color: #e9e9e9;width: 410px;border-radius:3px;margin: 0 auto;padding: 10px">
-                        <p style="text-align: center;font-size: 13px;color: #828282">
-                            您还不是他（她）的朋友。请先发送朋友验证请求，对方验证通过后，才能聊天。
-                            <span @click.prevent="sendFriendCheck" style="color: #409EFF;cursor: pointer">发送朋友验证</span>
-                        </p>
-                    </div>
-                    <div v-else-if="itemc.isSendSuccessfully === 3 && itemc.isMyselfMsg===true"
-                         style="background-color: #e9e9e9;width: 170px;border-radius:3px;margin: 0 auto;padding: 10px">
-                        <p style="text-align: center;font-size: 13px;color: #828282">
-                            消息已发出，但被对方拒收了</p>
                     </div>
                 </div>
                 <div v-if="itemc.isRetract===1"
@@ -648,11 +635,6 @@
                                             }
                                         }
                                         this.recordContent.splice(flag, 1);
-                                        this.$notify({
-                                            type: "success",
-                                            title: "删除聊天消息",
-                                            message: "删除成功"
-                                        })
                                     } else {
                                         this.$notify({
                                             type: "error",
@@ -972,21 +954,11 @@
                 if (data.flag) {
                     for (let i = 0; i < this.recordContent.length; i++) {
                         if (this.recordContent[i].id === data.message.id) {
-                            this.recordContent[i].isRetract = data.message.isRetract
+                            this.recordContent[i].isRetract = data.message.isRetract;
                             break
                         }
                     }
-                    this.$notify({
-                        type: "success",
-                        title: "撤回聊天消息",
-                        message: "消息撤回成功"
-                    });
-                } else {
-                    this.$notify({
-                        type: "error",
-                        title: "撤回聊天消息",
-                        message: data.message
-                    });
+
                 }
             },
             compareTime(date) {

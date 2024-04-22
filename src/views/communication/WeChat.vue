@@ -285,7 +285,6 @@
             },
             getGroupMembers(groupId) {
                 this.$refs.chatGroupMember.getGroupMembers(groupId)
-
             },
             cancelBuildGroupChat() {
                 this.buildGroupChat = false;
