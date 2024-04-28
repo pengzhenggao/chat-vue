@@ -192,7 +192,7 @@
             </el-dialog>
         </div>
 
-        <PopContent
+        <AudioPopUps
                 v-if="dialogVisibleVideo"
                 :pop-width="700"
                 :full-screen-icon="true"
@@ -202,8 +202,8 @@
             <div>
                 <VideoCalls v-if="dialogVisibleVideo" @clearVideoTimer="clearVideoTimer" @closeVideo="closeVideo" :friendItem="this.friendMessage" ref="videoCalls"/>
             </div>
-        </PopContent>
-        <PopContent
+        </AudioPopUps>
+        <AudioPopUps
                 v-if="dialogVisibleVoice"
                 :pop-width="700"
                 :full-screen-icon="false"
@@ -213,7 +213,7 @@
             <div>
                 <VoiceCalls v-if="dialogVisibleVoice" @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.friendMessage" ref="voiceCalls"/>
             </div>
-        </PopContent>
+        </AudioPopUps>
 
         <!--        请求添加好友-->
         <div>
@@ -275,10 +275,10 @@
     import ReferFriend from "./ReferFriend";
     import service from "../../http";
     import {getToken} from "../../utils/auth";
-    import PopContent from "../../components/PopUps/PopContent";
+    import AudioPopUps from "../PopUps/AudioPopUps.vue";
     import {asidefriend} from "../../listening/asidefriend";
-    import VideoCalls from "../../components/Wechat/VideoCalls";
-    import VoiceCalls from "../../components/Wechat/VoiceCalls";
+    import VideoCalls from "./VideoCalls";
+    import VoiceCalls from "./VoiceCalls";
     import {socket} from "../../config/websocket/socket";
     import PrecisionSearch from "./PrecisionSearch";
     import hide from "@/assets/icon/hide.svg"
@@ -288,7 +288,7 @@
             VideoCalls,
             VoiceCalls,
             Complaints,
-            PopContent,
+            AudioPopUps,
             ReferFriend,
             PrecisionSearch,
             hide

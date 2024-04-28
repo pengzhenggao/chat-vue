@@ -9,6 +9,9 @@
                      style="margin-top: 30px">
                     <span class="el-icon-user"></span>
                 </div>
+                <div @click="dynamic()" class="tool" style="margin-top: 30px">
+                    <span class="el-icon-help"></span>
+                </div>
             </div>
             <el-aside class="sidebar" style="background-color: #f5f7fa;border-right: 1px solid #e7e7e7">
                 <el-header height="60px" :style="{ backgroundColor: '#ffffff' ,borderBottom: '1px solid #e2e2e2', position: 'relative',
@@ -160,7 +163,7 @@
             </el-dialog>
         </div>
 
-        <PopContent
+        <AudioPopUps
                 v-if="dialogVisibleVideo"
                 :pop-width="700"
                 :full-screen-icon="true"
@@ -171,8 +174,8 @@
                 <VideoCalls @clearVideoTimer="clearVideoTimer" @closeVideo="closeVideo" :friendItem="this.item"
                             ref="videoCalls"/>
             </div>
-        </PopContent>
-        <PopContent
+        </AudioPopUps>
+        <AudioPopUps
                 v-if="dialogVisibleVoice"
                 :pop-width="700"
                 :full-screen-icon="false"
@@ -183,7 +186,29 @@
                 <VoiceCalls @clearVoiceTimer="clearVoiceTimer" @closeVoice="closeVoice" :friendItem="this.item"
                             ref="voiceCalls"/>
             </div>
-        </PopContent>
+        </AudioPopUps>
+<!--        朋友动态-->
+        <DynamicPopUps
+                v-model="dialogVisibleDynamic"
+                width="500"
+                :showConfimButton="false"
+                :showCancelButton="false"
+                cancelType="primary"
+                title="好友动态"
+        >
+            <FriendDynamic v-if="dialogVisibleDynamic" @closeDynamic="closeDynamic"></FriendDynamic>
+        </DynamicPopUps>
+
+        <!--        发表动态-->
+            <PostNewsPopUps
+                    v-model="postNewsShow"
+                    v-if="postNewsShow"
+                    @openDynamic="openDynamic"
+                    width="400"
+                    :confimText="'发表'"
+                    :showConfimButton="true"
+                    :showCancelButton="true">
+            </PostNewsPopUps>
     </div>
 </template>
 
@@ -192,7 +217,9 @@
     import AsideFriendDetail from "../../components/Wechat/AsideFriendDetail";
     import FriendDetail from "../../components/Wechat/FriendDetail";
     import WechatFriend from "@/assets/icon/wechat-friend.svg"
-    import PopContent from "../../components/PopUps/PopContent";
+    import AudioPopUps from "../../components/PopUps/AudioPopUps.vue";
+    import DynamicPopUps from "../../components/PopUps/DynamicPopUps";
+    import PostNewsPopUps from "../../components/PopUps/PostNewsPopUps";
     import AsideFriend from "../../components/Wechat/AsideFriend";
     import ChatBox from "../../components/ChatBox";
     import addFriend from "@/assets/icon/add-friend.svg"
@@ -203,6 +230,7 @@
     import ChatGroupMember from "../../components/Wechat/ChatGroupMember";
     import VideoCalls from "../../components/Wechat/VideoCalls";
     import VoiceCalls from "../../components/Wechat/VoiceCalls";
+    import FriendDynamic from "../../components/Sidebar/FriendDynamic";
     import {socket} from "../../config/websocket/socket";
     import {getToken} from "../../utils/auth";
 
@@ -215,9 +243,12 @@
             PrecisionSearch,
             BuildGroupChat,
             ChatGroupMember,
-            PopContent,
+            AudioPopUps,
+            DynamicPopUps,
+            PostNewsPopUps,
             VideoCalls,
             VoiceCalls,
+            FriendDynamic,
             WechatFriend,
             Flag,
             AsideFriendDetail,
@@ -232,6 +263,8 @@
                 voiceCountdownTimer: null,
                 dialogVisibleVoice: false,
                 dialogVisibleVideo: false,
+                dialogVisibleDynamic:false,
+                postNewsShow:false,
                 showSwitching: '0',
                 name: null,
                 buildGroupChat: false,
@@ -257,6 +290,12 @@
                 },
             }
         }, methods: {
+            closeDynamic(){
+                this.dialogVisibleDynamic = false;
+                this.$nextTick(()=>{
+                    this.postNewsShow = true
+                })
+            },
             handleOpen() {
                 this.name = null;
                 this.completeSearch()
@@ -267,10 +306,7 @@
                         this.precisionSearchView = false;
                         this.name = null;
                         done();
-                    })
-                    .catch(_ => {
-
-                    });
+                    }).catch(_ => {});
             },
             buildGroupChatClose(done) {
                 this.$confirm('确认关闭创建群聊窗口吗？')
@@ -529,6 +565,16 @@
                 this.select = type;
                 this.$store.commit('updateToolbarSelectState', this.select);
                 this.cancelFocus()
+            },
+            openDynamic(){
+                this.postNewsShow = false;
+                this.$nextTick(()=>{
+                    this.dialogVisibleDynamic = true
+                })
+
+            },
+            dynamic(){
+                this.dialogVisibleDynamic = true
             },
             chatTime(time) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/; // 验证YYYY-MM-DD格式

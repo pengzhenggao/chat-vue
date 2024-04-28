@@ -5,7 +5,7 @@
                 <img src="../../../public/logo.png" style="width: 40px"/>
                 <span class="logo-name">{{$t('system.logoName')}}</span>
             </div>
-            <div style="margin-left: auto;margin-right: 50px;font-size: 15px">
+            <div style="margin-left: auto;margin-right: 50px;font-size: 15px" v-if="this.$store.getters.websiteConfig.multiLanguage!==0">
                 <el-dropdown trigger="click" @command="switchLanguages" v-model="selectedValue">
   <span class="el-dropdown-link languages">
     <languages style="width: 18px;height: 18px;margin-right: 5px"/><span>{{this.languages}}</span> <span class="el-icon-arrow-down "></span>

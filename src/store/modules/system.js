@@ -8,6 +8,7 @@ export default {
     state: {
         systemAnnouncements:true,
         promptSounds:true,
+        websiteConfig:{},
 
     },
     mutations: {
@@ -16,6 +17,9 @@ export default {
         },
         updatePromptSounds(state, current) {
             state.promptSounds = current
+        },
+        updateWebsiteConfig(state, websiteConfig) {
+            state.websiteConfig = websiteConfig
         },
     },
     actions: {},

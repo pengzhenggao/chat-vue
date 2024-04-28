@@ -30,6 +30,7 @@ export default new Vuex.Store({
     permission_routes: state => state.permission.routes,
     toolbarSelect:state => state.persistence.toolbarSelect,
     systemAnnouncements:state => state.system.systemAnnouncements,
+    websiteConfig:state => state.system.websiteConfig,
     promptSounds:state => state.system.promptSounds
   },
   plugins: [

@@ -30,8 +30,6 @@
 </template>
 
 <script>
-
-import Sidebar from '../components/Sidebar/index.vue'
 import Headers from '../components/Headers/Headers.vue'
 
 // 获取本地存储的主题
@@ -127,7 +125,6 @@ export default {
         }
     },
     components: {
-        Sidebar,
         Headers,
     },
     methods:{

@@ -1,7 +1,6 @@
 <template>
     <div id="app">
         <router-view/>
-
     </div>
 </template>
 
@@ -14,12 +13,18 @@
 
         },
         mounted() {
-            this.report()
+            this.report();
+            this.websiteConfig()
         },
         methods: {
             report() {
                 service.post("/report").then(res=>{
 
+                })
+            },
+            websiteConfig(){
+                service.get("/users/website/config").then(res=>{
+                    this.$store.commit('updateWebsiteConfig', res.data);
                 })
             }
         }

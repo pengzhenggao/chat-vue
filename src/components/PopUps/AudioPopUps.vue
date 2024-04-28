@@ -22,7 +22,7 @@
 
 <script>
     export default {
-        name: 'PopContent',
+        name: 'AudioPopUps',
         props: {
             title: {
                 type: String,
