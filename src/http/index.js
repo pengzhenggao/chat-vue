@@ -21,7 +21,6 @@ service.interceptors.request.use(
         }
 
         if (config.method === 'post' && whiteList.indexOf(config.url)===-1 && config.data){
-            console.log(config.data)
             config.headers['Content-Type'] = 'application/json;charset=UTF-8';
             config.data = encrypt(config.data)
         }

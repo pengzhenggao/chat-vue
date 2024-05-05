@@ -15,7 +15,7 @@
                     <div class="semiel-lipse"></div>
                 </div>
                 <div class="model-body" >
-                    <el-backtop target=".model-body" :visibility-height=100></el-backtop>
+                    <el-backtop target=".model-body" :visibility-height=700></el-backtop>
                     <slot></slot>
                 </div>
                 <div class="footer_btn">
@@ -33,7 +33,6 @@
                     <div class="dis_in_center right-btn" :class="{ margin_left_20: showCancelButton }" v-if="showCancelButton">
                         <el-button plain :type="cancelType" :size="size" @click="close">{{ cancelText }}</el-button>
                     </div>
-
                 </div>
             </div>
         </transition>

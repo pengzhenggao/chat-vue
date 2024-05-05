@@ -68,29 +68,32 @@
                         </div>
                         <div class="callFriend">
                             <transition name="el-zoom-in-top">
-                            <div v-if="item.type===1 && animation"
-                                 class="transition-box"
-                                 style="display: flex;flex-direction: row;align-items: center">
-                                <div class="voice function" @click="operationCommand('voiceCalls')">
-                                    <el-tooltip class="item" :open-delay="400" effect="light" content="语音通话" placement="bottom">
-                                        <span class="el-icon-phone-outline"></span>
-                                    </el-tooltip>
+                                <div v-if="item.type===1 && animation"
+                                     class="transition-box"
+                                     style="display: flex;flex-direction: row;align-items: center">
+                                    <div class="voice function" @click="operationCommand('voiceCalls')">
+                                        <el-tooltip class="item" :open-delay="400" effect="light" content="语音通话"
+                                                    placement="bottom">
+                                            <span class="el-icon-phone-outline"></span>
+                                        </el-tooltip>
+                                    </div>
+                                    <el-divider direction="vertical"></el-divider>
+                                    <div class="video function" @click="operationCommand('videoCalls')">
+                                        <el-tooltip class="item" :open-delay="400" effect="light" content="视频通话"
+                                                    placement="bottom">
+                                            <span class="el-icon-video-camera"></span>
+                                        </el-tooltip>
+                                    </div>
+                                    <el-divider direction="vertical"></el-divider>
+                                    <div class="prompt function" @click="operationCommand('notifyOnline')">
+                                        <el-tooltip class="item" :open-delay="400" effect="light" content="通知上线"
+                                                    placement="bottom">
+                                            <span class="el-icon-bell"></span>
+                                        </el-tooltip>
+                                    </div>
                                 </div>
-                                <el-divider direction="vertical"></el-divider>
-                                <div class="video function" @click="operationCommand('videoCalls')">
-                                    <el-tooltip class="item" :open-delay="400"  effect="light" content="视频通话" placement="bottom">
-                                        <span class="el-icon-video-camera"></span>
-                                    </el-tooltip>
-                                </div>
-                                <el-divider direction="vertical"></el-divider>
-                                <div class="prompt function" @click="operationCommand('notifyOnline')">
-                                    <el-tooltip class="item" :open-delay="400" effect="light" content="通知上线" placement="bottom">
-                                        <span class="el-icon-bell"></span>
-                                    </el-tooltip>
-                                </div>
-                            </div>
                             </transition>
-                            <div class="flexible function" @click="animation = !animation"  v-if="item.type===1">
+                            <div class="flexible function" @click="animation = !animation" v-if="item.type===1">
                                 <el-tooltip class="item" effect="light" :content="animation?'收起':'展开'"
                                             :open-delay="400"
                                             placement="bottom">
@@ -187,7 +190,7 @@
                             ref="voiceCalls"/>
             </div>
         </AudioPopUps>
-<!--        朋友动态-->
+        <!--        朋友动态-->
         <DynamicPopUps
                 v-model="dialogVisibleDynamic"
                 width="500"
@@ -200,15 +203,27 @@
         </DynamicPopUps>
 
         <!--        发表动态-->
-            <PostNewsPopUps
-                    v-model="postNewsShow"
-                    v-if="postNewsShow"
-                    @openDynamic="openDynamic"
-                    width="400"
-                    :confimText="'发表'"
-                    :showConfimButton="true"
-                    :showCancelButton="true">
-            </PostNewsPopUps>
+        <PostNewsPopUps
+                v-model="postNewsShow"
+                v-if="postNewsShow"
+                @openDynamic="openDynamic"
+                width="400"
+                :confimText="'发表'"
+                :showConfimButton="true"
+                :showCancelButton="true">
+        </PostNewsPopUps>
+        <!--        某个动态视图-->
+        <DynamicView
+                v-model="dynamicViewShow"
+                v-if="dynamicViewShow"
+                @openDynamic="openDynamic"
+                ref="dynamicView"
+                width="750"
+                :confimText="'返回'"
+                :showConfimButton="true"
+                :showCancelButton="true">
+
+        </DynamicView>
     </div>
 </template>
 
@@ -220,6 +235,7 @@
     import AudioPopUps from "../../components/PopUps/AudioPopUps.vue";
     import DynamicPopUps from "../../components/PopUps/DynamicPopUps";
     import PostNewsPopUps from "../../components/PopUps/PostNewsPopUps";
+    import DynamicView from "../../components/PopUps/DynamicView";
     import AsideFriend from "../../components/Wechat/AsideFriend";
     import ChatBox from "../../components/ChatBox";
     import addFriend from "@/assets/icon/add-friend.svg"
@@ -246,6 +262,7 @@
             AudioPopUps,
             DynamicPopUps,
             PostNewsPopUps,
+            DynamicView,
             VideoCalls,
             VoiceCalls,
             FriendDynamic,
@@ -256,15 +273,16 @@
         },
         data() {
             return {
-                animation:true,
+                animation: true,
                 chatFlag: true,
                 friendFlag: true,
                 videoCountdownTimer: null,
                 voiceCountdownTimer: null,
                 dialogVisibleVoice: false,
                 dialogVisibleVideo: false,
-                dialogVisibleDynamic:false,
-                postNewsShow:false,
+                dialogVisibleDynamic: false,
+                dynamicViewShow: false,
+                postNewsShow: false,
                 showSwitching: '0',
                 name: null,
                 buildGroupChat: false,
@@ -290,11 +308,19 @@
                 },
             }
         }, methods: {
-            closeDynamic(){
+            closeDynamic(event,friendFeedId) {
                 this.dialogVisibleDynamic = false;
-                this.$nextTick(()=>{
-                    this.postNewsShow = true
-                })
+                if (event === 'postNewsShow') {
+                    this.$nextTick(() => {
+                        this.postNewsShow = true
+                    })
+                } else if (event === 'dynamicView') {
+                    this.dynamicViewShow = true;
+                    this.$nextTick(() => {
+                        this.$refs.dynamicView.dynamic(friendFeedId)
+                    })
+                }
+
             },
             handleOpen() {
                 this.name = null;
@@ -306,7 +332,8 @@
                         this.precisionSearchView = false;
                         this.name = null;
                         done();
-                    }).catch(_ => {});
+                    }).catch(_ => {
+                });
             },
             buildGroupChatClose(done) {
                 this.$confirm('确认关闭创建群聊窗口吗？')
@@ -566,14 +593,15 @@
                 this.$store.commit('updateToolbarSelectState', this.select);
                 this.cancelFocus()
             },
-            openDynamic(){
+            openDynamic() {
                 this.postNewsShow = false;
-                this.$nextTick(()=>{
+                this.dynamicViewShow = false;
+                this.$nextTick(() => {
                     this.dialogVisibleDynamic = true
                 })
 
             },
-            dynamic(){
+            dynamic() {
                 this.dialogVisibleDynamic = true
             },
             chatTime(time) {
@@ -858,32 +886,37 @@
         font-size: 23px;
         margin: 0 15px 0 15px;
     }
+
     .video:hover {
         cursor: pointer;
         transition: 0.4s;
         transform: scale(1.2);
         color: #000000;
     }
-    .prompt{
+
+    .prompt {
         cursor: pointer;
         font-size: 23px;
         margin: 0 15px 0 15px;
     }
+
     .prompt:hover {
         cursor: pointer;
         transition: 0.4s;
         transform: scale(1.2);
         color: #000000;
     }
-    .flexible{
+
+    .flexible {
         cursor: pointer;
         font-size: 23px;
         margin: 0 0 0 15px;
     }
+
     .transition-box {
-        margin-bottom:0;
+        margin-bottom: 0;
         height: 50px;
-        border-radius:0;
+        border-radius: 0;
         background-color: revert;
         color: #494949;
         padding: 0;

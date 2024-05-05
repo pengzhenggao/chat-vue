@@ -7,17 +7,44 @@
                 </el-tooltip>
             </div>
             <div class="submit-dynamic">
-                <el-tooltip content="消息" placement="bottom" effect="light" :open-delay="450">
-                    <span class="el-icon-bell camera"></span>
-                </el-tooltip>
+                <el-popover
+                        placement="bottom-start"
+                        width="350"
+                        @show="read()"
+                        trigger="hover">
+                    <el-scrollbar style="height: 100%">
+                        <div style="max-height: 360px">
+                            <div class="friend-dynamic-message" v-for="(item,index) in this.friendDynamicMessageList"
+                                 @click="openDynamicView(item.friendFeedId)"
+                                 :key="index">
+                                <img :src="item.userAvatar" style="width: 50px;height: 50px;border-radius: 5px"/>
+                                <div style="display: flex;flex-direction: column;margin-left: 10px;line-height: 22px">
+                                    <div style="color: #78a1ff;font-weight: bold">{{item.remark}}</div>
+                                    <div v-if="item.type===1"><span v-if="item.isReply===1">回复
+                                    <span style="color: #78a1ff">{{item.replyUserName}}</span>: </span>
+                                        <span>{{item.content}}</span></div>
+                                    <div v-else><i style="color: #ffba0b" class="el-icon-s-opportunity"/>点亮了</div>
+                                    <span style="font-size: 12px;color: #999999">{{item.createTime}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </el-scrollbar>
+                    <div slot="reference">
+                        <el-badge :value="dynamicCount" class="item" :max="100" v-if="dynamicCount>0">
+                            <span class="el-icon-chat-square camera"></span>
+                        </el-badge>
+                        <span class="el-icon-chat-square camera" v-else></span>
+                    </div>
+                </el-popover>
+
             </div>
-            <div class="submit-dynamic" @click="publication()">
+            <div class="submit-dynamic" @click="publication()" style="display: flex;margin-left: auto">
                 <el-tooltip content="发动态" placement="bottom" effect="light" :open-delay="450">
                     <span class="el-icon-camera camera"></span>
                 </el-tooltip>
             </div>
             <div class="avatar">
-                <img :src="$store.getters.userLogin.avatar">
+                <img :src="$store.getters.userLogin.avatar"/>
             </div>
         </div>
         <div class="dynamic-main" v-if="this.friendDynamicList.length>0">
@@ -30,7 +57,7 @@
                     <div class="text">
                         <span>{{friendDynamicListItem.content}}</span>
                     </div>
-                    <div class="image">
+                    <div class="image" v-if="friendDynamicListItem.imageList.length>0">
                         <el-image
                                 v-for=" (img,index) in friendDynamicListItem.imageList"
                                 :key="index"
@@ -41,7 +68,7 @@
                     </div>
                     <div class="footer">
                         <div class="released">
-                            <span>{{friendDynamicListItem.createTime}}</span>
+                            <span>{{friendDynamicListItem.updateTime}}</span>
                         </div>
                         <div class="comment-section">
                             <div class="tool" @click.stop="more(friendDynamicListItem.id)">
@@ -50,7 +77,8 @@
                         </div>
                         <div class="operate" v-show="commentsAndThumbsUp === friendDynamicListItem.id">
                             <div class="thumbs-up" @click="lit(friendDynamicListItem.id)">
-                                <span v-if="friendDynamicListItem.isLightUp===0"><i style="color: #ffba0b" class="el-icon-s-opportunity"></i> 点亮</span>
+                                <span v-if="friendDynamicListItem.isLightUp===0"><i style="color: #ffba0b"
+                                                                                    class="el-icon-s-opportunity"></i> 点亮</span>
                                 <span v-else><i style="color: #cbcbcb" class="el-icon-s-opportunity"></i> 取消</span>
                             </div>
                             <el-divider direction="vertical"></el-divider>
@@ -67,15 +95,21 @@
                             </div>
                         </div>
                         <!--                    评论详情-->
-                        <div class="review-details" v-if="friendDynamicListItem.commentNodeDTOS.length>0" v-for="(comment,index) in friendDynamicListItem.commentNodeDTOS"
+                        <div class="review-details" v-if="friendDynamicListItem.commentNodeDTOS.length>0"
+                             v-for="(comment,index) in friendDynamicListItem.commentNodeDTOS"
                              :key="index">
                             <div style="display: flex;flex-direction: row">
                                 <div class="review-message" v-show="comment.replyUserName!=null">
-                                    <span class="user-nick">{{comment.commentUserName}} 回复 {{comment.replyUserName}}:</span>
+                                    <span class="user-nick"
+                                          @click.prevent.stop="respondComments(friendDynamicListItem.id,comment.commentUserName,comment.commentUserId)">
+                                        {{comment.commentUserName}} <span style="color:#6394ff">回复</span> {{comment.replyUserName}}:</span>
                                     &nbsp;<span>{{comment.commentContent}}</span>
                                 </div>
                                 <div class="review-message" v-show="comment.replyUserName==null">
-                                    <span class="user-nick">{{comment.commentUserName}}:&nbsp;</span><span>{{comment.commentContent}}</span>
+                                    <span class="user-nick"
+                                          @click.prevent.stop="respondComments(friendDynamicListItem.id,comment.commentUserName,comment.commentUserId)">
+                                        {{comment.commentUserName}}:&nbsp;</span><span>{{comment.commentContent}}
+                                </span>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +121,8 @@
                                     type="textarea"
                                     :autosize="{ minRows: 4, maxRows: 4 }"
                                     maxlength="60"
-                                    placeholder="请输入评论内容（按回车或Enter进行发送）"
+                                    :placeholder="respondCommentsContent==null?
+                                    '请输入评论内容（按回车或Enter进行发送）':respondCommentsContent"
                                     @keyup.enter.native="submitComment()"
                                     show-word-limit
                                     v-model="commentForm.commentContent">
@@ -100,10 +135,10 @@
         </div>
         <div v-else style="display: flex;justify-content: center;margin-top: 200px;
         color: #999999;cursor: pointer">
-                <div @click.stop="publication()">
-                    <span class="el-icon-camera"></span>&nbsp;
-                    <span>暂无其他动态</span>
-                </div>
+            <div @click.stop="publication()">
+                <span class="el-icon-camera"></span>&nbsp;
+                <span>暂无其他动态</span>
+            </div>
         </div>
     </div>
 </template>
@@ -121,6 +156,9 @@
                     friendFeedId: null,
                     replyUserId: null,
                 },
+                respondCommentsContent: null,
+                friendDynamicMessageList: [],
+                dynamicCount: 0,
                 commentsAndThumbsUp: null,
                 commentBox: false,
                 postNewsShow: false,
@@ -138,21 +176,37 @@
                     }
                 }).then(res => {
                     this.friendDynamicList = res.data
+                }).catch(() => {
+
                 })
+            },
+            friendDynamicMessage() {
+                service.get("/users/friendFeedMessage")
+                    .then(res => {
+                        this.friendDynamicMessageList = res.data
+                    })
+            },
+            dynamicMessageCount() {
+                service.get("/users/friendFeedMessageCount")
+                    .then(res => {
+                        this.dynamicCount = res.data
+                    })
             },
             reset() {
                 this.commentForm = {
                     commentContent: "",
                     friendFeedId: null,
                     replyUserId: null,
-                }
+                    respondCommentsContent: null,
+                    respondUserId: null,
+                };
             },
-            lit(friendFeedId){
+            lit(friendFeedId) {
                 service({
-                    method:"put",
-                    url:`/users/friendFeed/lit/${friendFeedId}`
-                }).then(res=>{
-                    if (res.flag){
+                    method: "put",
+                    url: `/users/friendFeed/lit/${friendFeedId}`
+                }).then(res => {
+                    if (res.flag) {
                         this.dynamicLists()
                     }
 
@@ -163,19 +217,27 @@
                 this.commentsAndThumbsUp = null;
                 this.commentForm.friendFeedId = id
             },
+            respondComments(id, userName, respondUserId) {
+                this.respondCommentsContent = "回复 " + userName;
+                this.commentForm.replyUserId = respondUserId;
+                this.comment(id)
+            },
             more(id) {
                 this.commentsAndThumbsUp = id;
                 this.commentBox = null;
             },
             publication() {
-                this.$emit('closeDynamic')
+                this.$emit('closeDynamic','postNewsShow')
+            },
+            openDynamicView(friendFeedId){
+                this.$emit('closeDynamic','dynamicView',friendFeedId)
             },
             handleClickOutsideMore() {
                 this.commentsAndThumbsUp = null;
                 this.commentBox = false;
             },
             submitComment() {
-                const params = JSON.parse(JSON.stringify(this.commentForm))
+                const params = JSON.parse(JSON.stringify(this.commentForm));
                 this.reset();
                 service({
                     method: "post",
@@ -190,6 +252,13 @@
 
                 })
             },
+            read() {
+                service.put("/users/friendFeedMessage/read").then(res => {
+                    if (res.flag) {
+                        this.dynamicCount = 0
+                    }
+                })
+            },
             scrollIntoView() {
 
             }
@@ -197,7 +266,9 @@
         mounted() {
             // 添加事件监听器
             document.addEventListener('click', this.handleClickOutsideMore);
-            this.dynamicLists()
+            this.dynamicLists();
+            this.dynamicMessageCount();
+            this.friendDynamicMessage()
         },
         beforeDestroy() {
             // 移除事件监听器
@@ -258,6 +329,7 @@
     }
 
     .dynamic-main .friend-dynamic .content {
+        width: 100%;
         margin-left: 12px;
         display: flex;
         flex-direction: column;
@@ -333,7 +405,7 @@
     .custom-image:nth-child(1):nth-last-child(n + 5),
     .custom-image:nth-child(1):nth-last-child(n + 5) ~ .custom-image {
         width: 32%;
-        height: 100px;
+        height: 130px;
     }
 
     .custom-image:nth-child(n + 5):not(:nth-child(3n + 1)),
@@ -342,6 +414,7 @@
     }
 
     .dynamic-main .friend-dynamic .content .footer {
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -433,7 +506,7 @@
         text-align: left;
         align-items: center;
         word-break: break-all;
-
+        border-radius: 5px;
         background-color: #f6f6f6;
         line-height: 35px;
         width: 100%;
@@ -463,5 +536,25 @@
 
     /deep/ .el-textarea__inner:focus {
         border-color: #dca10a
+    }
+
+    /deep/ .el-badge__content.is-fixed {
+        top: 15px;
+    }
+
+    .friend-dynamic-message {
+        padding: 3px 10px 3px 10px;
+        display: flex;
+        flex-direction: row;
+        cursor: pointer;
+    }
+
+    .friend-dynamic-message:hover {
+        background-color: #f6f6f6;
+    }
+
+    /deep/ .el-popover {
+        height: 100px;
+        overflow: auto;
     }
 </style>
